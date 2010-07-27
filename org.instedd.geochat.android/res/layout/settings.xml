@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/geochat_settings"
+        android:key="org.instedd.geochat.settings">
+        
+    <EditTextPreference 
+               android:key="user" 
+               android:title="@string/user"
+               android:summary="@string/user_summary" 
+               android:dialogTitle="@string/user_dialogTitle"/>
+               
+    <EditTextPreference 
+               android:key="password" 
+               android:title="@string/password"
+               android:summary="@string/password_summary" 
+               android:dialogTitle="@string/password_dialogTitle"
+               android:password="true"/>
+
+</PreferenceScreen>

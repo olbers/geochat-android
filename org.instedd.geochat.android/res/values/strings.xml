@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, GeoChatTabsActivity!</string>
+    <string name="app_name">GeoChat</string>
+    <string name="groups">Groups</string>
+    <string name="people">People</string>
+    <string name="messages">Messages</string>
+    <string name="geochat_settings">GeoChat Settings</string>
+    <string name="user">User</string>
+    <string name="user_summary">Tap to enter your GeoChat user name</string>
+    <string name="user_dialogTitle">Enter your GeoChat user name:</string>
+    <string name="password">Password</string>
+    <string name="password_summary">Tap to set or change your password</string>
+    <string name="password_dialogTitle">Enter your GeoChat password:</string>
+    <string name="settings">Settings</string>
+</resources>
