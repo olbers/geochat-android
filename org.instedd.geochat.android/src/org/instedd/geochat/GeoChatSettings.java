@@ -1,44 +1,35 @@
 package org.instedd.geochat;
 
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.PreferenceActivity;
+import android.content.Context;
+import android.content.SharedPreferences.Editor;
 
-public class GeoChatSettings extends PreferenceActivity implements OnSharedPreferenceChangeListener {
+
+public class GeoChatSettings {
 	
 	public final static String SHARED_PREFS_NAME = "org.instedd.geochat.settings";
 	
 	public final static String USER = "user";
 	public final static String PASSWORD = "password";
-	
-	@Override
-	protected void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-		
-        getPreferenceManager().setSharedPreferencesName(SHARED_PREFS_NAME);
-        addPreferencesFromResource(R.layout.settings);
-        
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        
-        updateUser();
-	}
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if (USER.equals(key)) {
-			updateUser();
-		}
+	private final Context context;
+	
+	public GeoChatSettings(Context context) {
+		this.context = context;
 	}
 	
-	private void updateUser() {
-		String user = getPreferenceManager().getSharedPreferences().getString(USER, null);
-		if (user != null) {
-        	((EditTextPreference) getPreferenceScreen().findPreference(USER)).setSummary(user);
-        } else {
-        	((EditTextPreference) getPreferenceScreen().findPreference(USER)).setSummary(R.string.user_summary);
-        }
+	public String getUser() {
+		return context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).getString(USER, "");
+	}
+	
+	public String getPassword() {
+		return context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).getString(PASSWORD, "");
+	}
+	
+	public void setUserAndPassword(String user, String password) {
+		Editor editor = context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit();
+		editor.putString(USER, user);
+		editor.putString(PASSWORD, password);
+		editor.commit();
 	}
 
 }
