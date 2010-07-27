@@ -37,8 +37,7 @@ public final class R {
         public static final int login=0x7f030002;
         public static final int main=0x7f030003;
         public static final int message_item=0x7f030004;
-        public static final int settings=0x7f030005;
-        public static final int user_item=0x7f030006;
+        public static final int user_item=0x7f030005;
     }
     public static final class string {
         public static final int app_name=0x7f040001;
