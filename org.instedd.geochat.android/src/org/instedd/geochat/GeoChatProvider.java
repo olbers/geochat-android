@@ -29,7 +29,7 @@ public class GeoChatProvider extends ContentProvider {
 	private static final String TAG = "GeoChatProvider";
 	
 	private static final String DATABASE_NAME = "geochat.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     
     private static final String USERS_TABLE_NAME = "users";
     private static final String GROUPS_TABLE_NAME = "groups";
@@ -69,13 +69,19 @@ public class GeoChatProvider extends ContentProvider {
             db.execSQL("CREATE TABLE " + USERS_TABLE_NAME + " ("
                     + Users._ID + " INTEGER PRIMARY KEY,"
                     + Users.LOGIN + " TEXT,"
-                    + Users.DISPLAY_NAME + " DISPLAY_NAME"
+                    + Users.DISPLAY_NAME + " TEXT,"
+                    + Users.LAT + " REAL,"
+                    + Users.LNG + " REAL,"
+                    + Users.LOCATION_NAME + " TEXT"
                     + ");");
             
             db.execSQL("CREATE TABLE " + GROUPS_TABLE_NAME + " ("
                     + Groups._ID + " INTEGER PRIMARY KEY,"
                     + Groups.NAME + " TEXT,"
-                    + Groups.ALIAS + " DISPLAY_NAME"
+                    + Groups.ALIAS + " TEXT,"
+                    + Users.LAT + " REAL,"
+                    + Users.LNG + " REAL,"
+                    + Users.LOCATION_NAME + " TEXT"
                     + ");");
             
             db.execSQL("CREATE TABLE " + MESSAGES_TABLE_NAME + " ("
@@ -84,8 +90,9 @@ public class GeoChatProvider extends ContentProvider {
                     + Messages.FROM_USER + " INTEGER,"
                     + Messages.TO_GROUP + " INTEGER,"
                     + Messages.MESSAGE + " TEXT,"
-                    + Messages.LOCATION_LAT + " TEXT,"
-                    + Messages.LOCATION_LNG + " TEXT,"
+                    + Messages.LAT + " TEXT,"
+                    + Messages.LNG + " TEXT,"
+                    + Users.LOCATION_NAME + " TEXT,"
                     + Messages.CREATED_DATE + " INTEGER"
                     + ");");
             
@@ -354,11 +361,17 @@ public class GeoChatProvider extends ContentProvider {
         sUsersProjectionMap.put(Users._ID, Users._ID);
         sUsersProjectionMap.put(Users.LOGIN, Users.LOGIN);
         sUsersProjectionMap.put(Users.DISPLAY_NAME, Users.DISPLAY_NAME);
+        sUsersProjectionMap.put(Users.LAT, Users.LAT);
+        sUsersProjectionMap.put(Users.LNG, Users.LNG);
+        sUsersProjectionMap.put(Users.LOCATION_NAME, Users.LOCATION_NAME);
         
         sGroupsProjectionMap = new HashMap<String, String>();
         sGroupsProjectionMap.put(Groups._ID, Groups._ID);
         sGroupsProjectionMap.put(Groups.NAME, Groups.NAME);
         sGroupsProjectionMap.put(Groups.ALIAS, Groups.ALIAS);
+        sGroupsProjectionMap.put(Groups.LAT, Groups.LAT);
+        sGroupsProjectionMap.put(Groups.LNG, Groups.LNG);
+        sGroupsProjectionMap.put(Groups.LOCATION_NAME, Groups.LOCATION_NAME);
         
         sMessagesProjectionMap = new HashMap<String, String>();
         sMessagesProjectionMap.put(Messages._ID, Messages._ID);
@@ -366,8 +379,9 @@ public class GeoChatProvider extends ContentProvider {
         sMessagesProjectionMap.put(Messages.FROM_USER, Messages.FROM_USER);
         sMessagesProjectionMap.put(Messages.TO_GROUP, Messages.TO_GROUP);
         sMessagesProjectionMap.put(Messages.MESSAGE, Messages.MESSAGE);
-        sMessagesProjectionMap.put(Messages.LOCATION_LAT, Messages.LOCATION_LAT);
-        sMessagesProjectionMap.put(Messages.LOCATION_LNG, Messages.LOCATION_LNG);
+        sMessagesProjectionMap.put(Messages.LAT, Messages.LAT);
+        sMessagesProjectionMap.put(Messages.LNG, Messages.LNG);
+        sMessagesProjectionMap.put(Messages.LOCATION_NAME, Messages.LOCATION_NAME);
         sMessagesProjectionMap.put(Messages.CREATED_DATE, Messages.CREATED_DATE);
         
         sLocationsProjectionMap = new HashMap<String, String>();

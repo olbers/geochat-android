@@ -68,9 +68,8 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("Group 1", groups[0].name);
 		assertEquals("alias1", groups[0].alias);
-		
-		assertEquals("Group 2", groups[1].name);
-		assertEquals("alias2", groups[1].alias);
+		assertEquals(Double.valueOf("16.23"), groups[0].lat);
+		assertEquals(Double.valueOf("-47.15"), groups[0].lng);
 	}
 	
 	public void testUsers() throws Exception {
@@ -107,9 +106,6 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("Member 1", users[0].displayName);
 		assertEquals("login1", users[0].login);
-		
-		assertEquals("Member 2", users[1].displayName);
-		assertEquals("login2", users[1].login);
 	}
 	
 	public void testMessages() throws Exception {
@@ -174,8 +170,8 @@ public class GeoChatApiTest extends TestCase {
 		assertEquals("{Sender Alias Name}", messages[0].fromUser);
 		assertEquals("{Group Alias}", messages[0].toGroup);
 		assertEquals("{Message #1}", messages[0].message);
-		assertEquals("16.23", messages[0].locationLat);
-		assertEquals("-47.15", messages[0].locationLng);
+		assertEquals(Double.valueOf("16.23"), messages[0].lat);
+		assertEquals(Double.valueOf("-47.15"), messages[0].lng);
 	}
 
 }

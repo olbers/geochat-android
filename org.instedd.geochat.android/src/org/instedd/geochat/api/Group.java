@@ -4,14 +4,8 @@ public class Group implements Comparable<Group> {
 	
 	public String alias;
 	public String name;
-	
-	public Group() {
-	}
-	
-	public Group(String alias, String name) {
-		this.alias = alias;
-		this.name = name;
-	}
+	public double lat;
+	public double lng;
 	
 	@Override
 	public int hashCode() {

@@ -6,8 +6,8 @@ public class Message {
 	public String fromUser;
 	public String toGroup;
 	public String message;
-	public String locationLat;
-	public String locationLng;
+	public double lat;
+	public double lng;
 	public long createdDate;
 
 }

@@ -252,7 +252,12 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 					
 					if (comparison < 0) {
 						// Found new group in server, must create it
-						createGroup(serverGroups[serverIndex].alias, serverGroups[serverIndex].name);
+						createGroup(
+								serverGroups[serverIndex].alias, 
+								serverGroups[serverIndex].name,
+								serverGroups[serverIndex].lat,
+								serverGroups[serverIndex].lng
+								);
 						serverIndex++;
 					} else if (comparison > 0) {
 						// Cached group not found, must delete it
@@ -377,8 +382,8 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 						values.put(Messages.FROM_USER, message.fromUser);
 						values.put(Messages.TO_GROUP, message.toGroup);
 						values.put(Messages.MESSAGE, message.message);
-						values.put(Messages.LOCATION_LAT, message.locationLat);
-						values.put(Messages.LOCATION_LNG, message.locationLng);
+						values.put(Messages.LAT, message.lat);
+						values.put(Messages.LNG, message.lng);
 						values.put(Messages.CREATED_DATE, message.createdDate);
 						
 						getContentResolver().insert(Messages.CONTENT_URI, values);
@@ -397,10 +402,12 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 			}
 		}
 
-		private void createGroup(String alias, String name) {
+		private void createGroup(String alias, String name, double lat, double lng) {
 			ContentValues values = new ContentValues();
 			values.put(Groups.ALIAS, alias);
 			values.put(Groups.NAME, name);
+			values.put(Groups.LAT, lat);
+			values.put(Groups.LNG, lng);
 			getContentResolver().insert(Groups.CONTENT_URI, values);
 		}
 		

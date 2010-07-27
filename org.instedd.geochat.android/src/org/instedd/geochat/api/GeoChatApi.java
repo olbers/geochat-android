@@ -60,6 +60,10 @@ public class GeoChatApi implements IGeoChatApi {
 							group.name = value;
 						} else if (name.endsWith(":Alias")) {
 							group.alias = value;
+						} else if (name.endsWith(":lat")) {
+							group.lat = Double.valueOf(value);
+						} else if (name.endsWith(":long")) {
+							group.lng = Double.valueOf(value);
 						}
 					}
 					groups.add(group);
@@ -100,9 +104,9 @@ public class GeoChatApi implements IGeoChatApi {
 						} else if (name.endsWith(":GroupAlias")) {
 							msg.toGroup = value;
 						} else if (name.endsWith(":lat")) {
-							msg.locationLat = value;
+							msg.lat = Double.valueOf(value);
 						} else if (name.endsWith(":long")) {
-							msg.locationLng = value;
+							msg.lng = Double.valueOf(value);
 						}
 					}
 					msgs.add(msg);

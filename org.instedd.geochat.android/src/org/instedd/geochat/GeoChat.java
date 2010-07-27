@@ -53,6 +53,24 @@ public class GeoChat {
          * <P>Type: TEXT</P>
          */
         public static final String DISPLAY_NAME = "display_name";
+        
+        /**
+         * The latitude of the group
+         * <P>Type: REAL</P>
+         */
+        public static final String LAT = "lat";
+        
+        /**
+         * The longitude of the group
+         * <P>Type: REAL</P>
+         */
+        public static final String LNG = "lng";
+        
+        /**
+         * The name of the location
+         * <P>Type: TEXT</P>
+         */
+        public static final String LOCATION_NAME = "location_name";
     }
     
     /**
@@ -93,6 +111,25 @@ public class GeoChat {
          * <P>Type: ALIAS</P>
          */
         public static final String ALIAS = "alias";
+        
+        /**
+         * The latitude of the user
+         * <P>Type: REAL</P>
+         */
+        public static final String LAT = "lat";
+        
+        /**
+         * The longitude of the user
+         * <P>Type: REAL</P>
+         */
+        public static final String LNG = "lng";
+        
+        /**
+         * The name of the location
+         * <P>Type: TEXT</P>
+         */
+        public static final String LOCATION_NAME = "location_name";
+        
     }
     
     /**
@@ -148,15 +185,21 @@ public class GeoChat {
         
         /**
          * The latitude of the message's location
-         * <P>Type: TEXT</P>
+         * <P>Type: REAL</P>
          */
-        public static final String LOCATION_LAT = "location_lat";
+        public static final String LAT = "lat";
         
         /**
          * The longitude of the message's location
+         * <P>Type: REAL</P>
+         */
+        public static final String LNG = "lng";
+        
+        /**
+         * The name of the location
          * <P>Type: TEXT</P>
          */
-        public static final String LOCATION_LNG = "location_lng";
+        public static final String LOCATION_NAME = "location_name";
         
         /**
          * The timestamp for when the message was created
