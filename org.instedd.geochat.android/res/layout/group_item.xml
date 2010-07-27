@@ -9,6 +9,11 @@
 	   android:textSize="10pt"
 	   android:textColor="#FFF"
 	   android:id="@+id/name" />
+	<TextView
+		   android:layout_width="wrap_content"
+		   android:layout_height="wrap_content"
+		   android:textSize="6pt"
+		   android:id="@+id/location" />
 	<LinearLayout android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"

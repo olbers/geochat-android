@@ -36,6 +36,7 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 	private boolean running;
 	private boolean resync;
 	private boolean connectivityChanged;
+	private LocationResolver locationResolver;
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -87,6 +88,8 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		
+		this.locationResolver = new LocationResolver(this);
 		
 		recreateApi();
 		
@@ -384,6 +387,7 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 						values.put(Messages.MESSAGE, message.message);
 						values.put(Messages.LAT, message.lat);
 						values.put(Messages.LNG, message.lng);
+						values.put(Messages.LOCATION_NAME, locationResolver.getLocationName(message.lat, message.lng));
 						values.put(Messages.CREATED_DATE, message.createdDate);
 						
 						getContentResolver().insert(Messages.CONTENT_URI, values);
@@ -408,6 +412,7 @@ public class SyncService extends Service implements OnSharedPreferenceChangeList
 			values.put(Groups.NAME, name);
 			values.put(Groups.LAT, lat);
 			values.put(Groups.LNG, lng);
+			values.put(Groups.LOCATION_NAME, locationResolver.getLocationName(lat, lng));
 			getContentResolver().insert(Groups.CONTENT_URI, values);
 		}
 		

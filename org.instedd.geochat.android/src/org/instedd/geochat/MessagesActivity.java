@@ -20,11 +20,12 @@ public class MessagesActivity extends ListActivity {
      * The columns we are interested in from the database
      */
     private static final String[] PROJECTION = new String[] {
-            Messages._ID, // 0
-            Messages.MESSAGE, // 1
-            Messages.FROM_USER, // 2
-            Messages.TO_GROUP, // 3
-            Messages.CREATED_DATE, // 4
+            Messages._ID,
+            Messages.MESSAGE,
+            Messages.FROM_USER,
+            Messages.TO_GROUP,
+            Messages.LOCATION_NAME,
+            Messages.CREATED_DATE,
     };
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class MessagesActivity extends ListActivity {
 
         // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new MessageCursorAdapter(this, R.layout.message_item, cursor,
-                new String[] { Messages.MESSAGE, Messages.FROM_USER, Messages.TO_GROUP }, new int[] { R.id.message, R.id.from, R.id.group });
+                new String[] { }, new int[] { });
         
         setListAdapter(adapter);
     }
@@ -73,6 +74,7 @@ public class MessagesActivity extends ListActivity {
 			((TextView) v.findViewById(R.id.message)).setText(c.getString(c.getColumnIndex(Messages.MESSAGE)));
 			((TextView) v.findViewById(R.id.from)).setText(c.getString(c.getColumnIndex(Messages.FROM_USER)));
 			((TextView) v.findViewById(R.id.group)).setText(c.getString(c.getColumnIndex(Messages.TO_GROUP)));
+			((TextView) v.findViewById(R.id.location)).setText(c.getString(c.getColumnIndex(Messages.LOCATION_NAME)));
 			
 			CharSequence date = DateUtils.getRelativeDateTimeString(context, c.getLong(c.getColumnIndex(Messages.CREATED_DATE)), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
 			((TextView) v.findViewById(R.id.date)).setText(date);

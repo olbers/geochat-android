@@ -35,13 +35,13 @@ public class LoginActivity extends Activity {
 	    uiPassword.setText(existingPassword);
 	    
 	    // Automatic login (no server authentication so that the user can view offline content)
-	    if (!TextUtils.isEmpty(existingUser) && !TextUtils.isEmpty(existingPassword)) {
-	    	uiLogin.setEnabled(false);
-	    	uiFeedback.setTextColor(Color.GREEN);
-			uiFeedback.setText(R.string.logging_in_to_geochat);
-			enterGeoChat();
-	    	return;
-	    }
+//	    if (!TextUtils.isEmpty(existingUser) && !TextUtils.isEmpty(existingPassword)) {
+//	    	uiLogin.setEnabled(false);
+//	    	uiFeedback.setTextColor(Color.GREEN);
+//			uiFeedback.setText(R.string.logging_in_to_geochat);
+//			enterGeoChat();
+//	    	return;
+//	    }
 	    
 	    uiLogin.setOnClickListener(new OnClickListener() {
 			@Override

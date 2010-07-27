@@ -14,9 +14,10 @@ public class GroupsActivity extends ListActivity {
      * The columns we are interested in from the database
      */
     private static final String[] PROJECTION = new String[] {
-            Groups._ID, // 0
-            Groups.NAME, // 1
-            Groups.ALIAS, // 2
+            Groups._ID,
+            Groups.NAME,
+            Groups.ALIAS,
+            Groups.LOCATION_NAME,
     };
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +36,7 @@ public class GroupsActivity extends ListActivity {
 
         // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.group_item, cursor,
-                new String[] { Groups.NAME, Groups.ALIAS }, new int[] { R.id.name, R.id.alias });
+                new String[] { Groups.NAME, Groups.ALIAS, Groups.LOCATION_NAME }, new int[] { R.id.name, R.id.alias, R.id.location });
         
         setListAdapter(adapter);
 	}

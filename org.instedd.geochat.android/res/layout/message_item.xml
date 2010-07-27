@@ -9,30 +9,36 @@
 	   android:textSize="10pt"
 	   android:textColor="#FFF"
 	   android:id="@+id/message" />
-	<LinearLayout android:orientation="horizontal"
+	<LinearLayout android:orientation="vertical"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		>
+		<LinearLayout android:orientation="horizontal"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			>
+			<TextView
+			   android:layout_width="wrap_content"
+			   android:layout_height="wrap_content"
+			   android:textSize="6pt"
+			   android:textStyle="bold"
+			   android:id="@+id/from" />
+			<TextView
+			   android:layout_width="wrap_content"
+			   android:layout_height="wrap_content"
+			   android:textSize="6pt"
+			   android:text=" to " />
+			<TextView
+			   android:layout_width="wrap_content"
+			   android:layout_height="wrap_content"
+			   android:textSize="6pt"
+			   android:id="@+id/group" />
+		</LinearLayout>
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
 		   android:textSize="6pt"
-		   android:id="@+id/from" />
-		<TextView
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
-		   android:text=" to " />
-		<TextView
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
-		   android:id="@+id/group" />
-		<TextView
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
-		   android:text=", " />
+		   android:id="@+id/location" />
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
