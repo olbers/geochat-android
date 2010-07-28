@@ -6,7 +6,7 @@
 	<TextView
 	   android:layout_width="fill_parent"
 	   android:layout_height="fill_parent"
-	   android:textSize="10pt"
+	   android:textSize="24dp"
 	   android:textColor="#FFF"
 	   android:id="@+id/message" />
 	<LinearLayout android:orientation="vertical"
@@ -20,29 +20,29 @@
 			<TextView
 			   android:layout_width="wrap_content"
 			   android:layout_height="wrap_content"
-			   android:textSize="6pt"
+			   android:textSize="14dp"
 			   android:textStyle="bold"
 			   android:id="@+id/from" />
 			<TextView
 			   android:layout_width="wrap_content"
 			   android:layout_height="wrap_content"
-			   android:textSize="6pt"
+			   android:textSize="14dp"
 			   android:text=" to " />
 			<TextView
 			   android:layout_width="wrap_content"
 			   android:layout_height="wrap_content"
-			   android:textSize="6pt"
+			   android:textSize="14dp"
 			   android:id="@+id/group" />
 		</LinearLayout>
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:id="@+id/location" />
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:id="@+id/date" />
 	</LinearLayout>
 </LinearLayout>

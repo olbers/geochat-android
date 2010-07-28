@@ -6,13 +6,13 @@
 	<TextView
 	   android:layout_width="fill_parent"
 	   android:layout_height="fill_parent"
-	   android:textSize="10pt"
+	   android:textSize="24dp"
 	   android:textColor="#FFF"
 	   android:id="@+id/name" />
 	<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:id="@+id/location" />
 	<LinearLayout android:orientation="horizontal"
 		android:layout_width="fill_parent"
@@ -21,12 +21,12 @@
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:text="Alias: " />
 		<TextView
 		   android:layout_width="fill_parent"
 		   android:layout_height="fill_parent"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:id="@+id/alias" />
 	</LinearLayout>
 </LinearLayout>

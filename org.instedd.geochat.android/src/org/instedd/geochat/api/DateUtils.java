@@ -127,7 +127,8 @@ public class DateUtils
 			}
 		}
 		int i = 0;
-		while (i < dateFormats.length) {
+		int dateFormatsLength = dateFormats.length;
+		while (i < dateFormatsLength) {
 			try {
 				result = dateFormats[i].parse(strdate);
 				// logger.debug("******Parsing Success "+strdate+"->"+result+" with

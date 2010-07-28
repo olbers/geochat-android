@@ -1,0 +1,90 @@
+package org.instedd.geochat.api;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+public class GroupHandler extends DefaultHandler {
+	
+	private final static Group[] NO_GROUPS = {};
+	
+	private final static int NONE = 0;
+	private final static int TITLE = 1;
+	private final static int ALIAS = 2;
+	private final static int LAT = 3;
+	private final static int LNG = 4;
+	
+	private boolean inItem;
+	private int tagName;
+	private List<Group> groups;
+	private Group group;
+	
+	public Group[] getGroups() {
+		return groups == null ? NO_GROUPS : groups.toArray(new Group[groups.size()]);
+	}
+	
+	@Override
+	public void startElement(String uri, String localName, String qName,
+			Attributes attributes) throws SAXException {
+		if ("item".equals(localName)) {
+			if (groups == null) {
+				groups = new ArrayList<Group>(10);
+			}
+			group = new Group();
+			inItem = true;
+			tagName = NONE;
+			return;
+		}
+		
+		if (!inItem)
+			return;
+		
+		if ("title".equals(localName)) {
+			tagName = TITLE;
+		} else if ("Alias".equals(localName)) {
+			tagName = ALIAS;
+		} else if ("lat".equals(localName)) {
+			tagName = LAT;
+		} else if ("long".equals(localName)) {
+			tagName = LNG;
+		} else {
+			tagName = NONE;
+		}
+	}
+	
+	@Override
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
+		if (!inItem)
+			return;
+		
+		switch(tagName) {
+		case TITLE:
+			group.name = new String(ch, start, length);
+			break;
+		case ALIAS:
+			group.alias = new String(ch, start, length);
+			break;
+		case LAT:
+			group.lat = Double.parseDouble(new String(ch, start, length));
+			break;
+		case LNG:
+			group.lng = Double.parseDouble(new String(ch, start, length));
+			break;
+		}
+	}
+	
+	@Override
+	public void endElement(String uri, String localName, String qName)
+			throws SAXException {
+		if ("item".equals(localName)) {
+			groups.add(group);
+			inItem = false;
+		}
+		tagName = NONE;
+	}
+
+}

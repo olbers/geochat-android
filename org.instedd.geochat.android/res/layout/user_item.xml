@@ -6,7 +6,7 @@
 	<TextView
 	   android:layout_width="fill_parent"
 	   android:layout_height="fill_parent"
-	   android:textSize="10pt"
+	   android:textSize="24dp"
 	   android:textColor="#FFF"
 	   android:id="@+id/display_name" />
 	<LinearLayout android:orientation="horizontal"
@@ -16,12 +16,12 @@
 		<TextView
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:text="Login: " />
 		<TextView
 		   android:layout_width="fill_parent"
 		   android:layout_height="fill_parent"
-		   android:textSize="6pt"
+		   android:textSize="14dp"
 		   android:id="@+id/login" />
 	</LinearLayout>
 </LinearLayout>

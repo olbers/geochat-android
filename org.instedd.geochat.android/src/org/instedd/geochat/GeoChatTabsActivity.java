@@ -12,7 +12,7 @@ public class GeoChatTabsActivity extends TabActivity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
-	    startService(new Intent().setClass(this, SyncService.class));
+	    startService(new Intent().setClass(this, GeoChatService.class));
 	    
 	    Resources res = getResources(); // Resource object to get Drawables
 	    TabHost tabHost = getTabHost();  // The activity TabHost

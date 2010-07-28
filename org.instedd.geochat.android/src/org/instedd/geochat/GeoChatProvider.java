@@ -29,7 +29,7 @@ public class GeoChatProvider extends ContentProvider {
 	private static final String TAG = "GeoChatProvider";
 	
 	private static final String DATABASE_NAME = "geochat.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
     
     private static final String USERS_TABLE_NAME = "users";
     private static final String GROUPS_TABLE_NAME = "groups";
