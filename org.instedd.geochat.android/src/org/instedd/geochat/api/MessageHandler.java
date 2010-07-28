@@ -1,8 +1,5 @@
 package org.instedd.geochat.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.impl.cookie.DateParseException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -23,11 +20,20 @@ public class MessageHandler extends DefaultHandler {
 	
 	private boolean inItem;
 	private int tagName;
-	private List<Message> messages;
+	private Message[] messages;
+	private int messagesCount;
 	private Message message;
 	
 	public Message[] getMessages() {
-		return messages == null ? NO_MESSAGES : messages.toArray(new Message[messages.size()]);
+		if (messages == null)
+			return NO_MESSAGES;
+		
+		if (messagesCount == 10)
+			return messages;
+		
+		Message[] finalMessages = new Message[messagesCount];
+		System.arraycopy(messages, 0, finalMessages, 0, messagesCount);
+		return finalMessages;
 	}
 	
 	@Override
@@ -35,7 +41,7 @@ public class MessageHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		if ("item".equals(localName)) {
 			if (messages == null) {
-				messages = new ArrayList<Message>(10);
+				messages = new Message[10];
 			}
 			message = new Message();
 			inItem = true;
@@ -107,7 +113,8 @@ public class MessageHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		if ("item".equals(localName)) {
-			messages.add(message);
+			messages[messagesCount] = message;
+			messagesCount++;
 			inItem = false;
 		}
 		tagName = NONE;

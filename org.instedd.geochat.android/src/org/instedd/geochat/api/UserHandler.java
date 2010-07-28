@@ -1,8 +1,5 @@
 package org.instedd.geochat.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -17,11 +14,20 @@ public class UserHandler extends DefaultHandler {
 	
 	private boolean inItem;
 	private int tagName;
-	private List<User> users;
+	private int usersCount = 0;
+	private User[] users;
 	private User user;
 	
 	public User[] getUsers() {
-		return users == null ? NO_USERS : users.toArray(new User[users.size()]);
+		if (users == null)
+			return NO_USERS;
+		
+		if (usersCount == 10)
+			return users;
+		
+		User[] finalUsers = new User[usersCount];
+		System.arraycopy(users, 0, finalUsers, 0, usersCount);
+		return finalUsers;
 	}
 	
 	@Override
@@ -29,7 +35,7 @@ public class UserHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		if ("item".equals(localName)) {
 			if (users == null) {
-				users = new ArrayList<User>(10);
+				users = new User[10];
 			}
 			user = new User();
 			inItem = true;
@@ -69,7 +75,8 @@ public class UserHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		if ("item".equals(localName)) {
-			users.add(user);
+			users[usersCount] = user;
+			usersCount++;
 			inItem = false;
 		}
 		tagName = NONE;

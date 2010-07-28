@@ -1,8 +1,5 @@
 package org.instedd.geochat.api;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -19,11 +16,20 @@ public class GroupHandler extends DefaultHandler {
 	
 	private boolean inItem;
 	private int tagName;
-	private List<Group> groups;
+	private Group[] groups;
+	private int groupsCount;
 	private Group group;
 	
 	public Group[] getGroups() {
-		return groups == null ? NO_GROUPS : groups.toArray(new Group[groups.size()]);
+		if (groups == null)
+			return NO_GROUPS;
+		
+		if (groupsCount == 10)
+			return groups;
+		
+		Group[] finalGroups = new Group[groupsCount];
+		System.arraycopy(groups, 0, finalGroups, 0, groupsCount);
+		return finalGroups;
 	}
 	
 	@Override
@@ -31,7 +37,7 @@ public class GroupHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		if ("item".equals(localName)) {
 			if (groups == null) {
-				groups = new ArrayList<Group>(10);
+				groups = new Group[10];
 			}
 			group = new Group();
 			inItem = true;
@@ -81,7 +87,8 @@ public class GroupHandler extends DefaultHandler {
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
 		if ("item".equals(localName)) {
-			groups.add(group);
+			groups[groupsCount] = group;
+			groupsCount++;
 			inItem = false;
 		}
 		tagName = NONE;
