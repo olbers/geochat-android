@@ -25,13 +25,13 @@ import android.text.TextUtils;
 
 public class Synchronizer {
 	
-	private final Context context;
-	private IGeoChatApi api;
-	private LocationResolver locationResolver;
-	private boolean running;
-	private boolean resync;
-	private boolean connectivityChanged;
-	private SyncThread syncThread;
+	final Context context;
+	IGeoChatApi api;
+	final LocationResolver locationResolver;
+	boolean running;
+	boolean resync;
+	boolean connectivityChanged;
+	SyncThread syncThread;
 
 	public Synchronizer(Context context) {
 		this.context = context;

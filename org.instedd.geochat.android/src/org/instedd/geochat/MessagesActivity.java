@@ -49,7 +49,7 @@ public class MessagesActivity extends ListActivity {
         setListAdapter(adapter);
     }
 	
-	private class MessageCursorAdapter extends SimpleCursorAdapter {
+	private static class MessageCursorAdapter extends SimpleCursorAdapter {
 
 		private Cursor c;
 		private Context context;
