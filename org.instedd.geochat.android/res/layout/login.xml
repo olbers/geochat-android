@@ -8,6 +8,7 @@
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
+    	style="@android:style/TextAppearance.Large"
     	android:text="User:"
     	/>
     <EditText 
@@ -18,6 +19,7 @@
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
+    	style="@android:style/TextAppearance.Large"
     	android:text="Password:"
     	/>
     <EditText 
@@ -35,6 +37,7 @@
     <TextView
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
+    	style="@android:style/TextAppearance.Large"
     	android:visibility="gone"
     	android:textColor="#F00"
     	android:id="@+id/feedback"
