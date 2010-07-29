@@ -19,12 +19,18 @@ import android.widget.TextView;
 
 public class LoginActivity extends Activity {
 	
+	public final static String EXTRA_WRONG_CREDENTIALS = "WrongCredentials";
+	
 	private final Handler handler = new Handler();
 	private ProgressDialog progressDialog;
+	private boolean wrongCredentials;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.login);
+	    
+	    Intent intent = getIntent();
+	    wrongCredentials = intent != null && intent.getBooleanExtra(EXTRA_WRONG_CREDENTIALS, false);
 	    
 	    final GeoChatSettings settings = new GeoChatSettings(this);
 	    final String existingUser = settings.getUser();
@@ -38,25 +44,15 @@ public class LoginActivity extends Activity {
 	    uiUser.setText(existingUser);
 	    uiPassword.setText(existingPassword);
 	    
-	    // Automatic login (no server authentication so that the user can view offline content)
-//	    if (!TextUtils.isEmpty(existingUser) && !TextUtils.isEmpty(existingPassword)) {
-//	    	uiLogin.setEnabled(false);
-//	    	uiFeedback.setTextColor(Color.GREEN);
-//			uiFeedback.setText(R.string.logging_in_to_geochat);
-//			enterGeoChat();
-//	    	return;
-//	    }
-	    
 	    uiLogin.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				showDialog(0);
-				
 				new Thread() {
 					public void run() {
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
+								showDialog(0);
 								uiFeedback.setVisibility(View.GONE);
 								uiLogin.setEnabled(false);
 							}
@@ -70,7 +66,7 @@ public class LoginActivity extends Activity {
 						boolean credentialsAreValid = true;
 						
 						try {
-							if (userChanged || passwordChanged) {
+							if (userChanged || passwordChanged || wrongCredentials) {
 								IGeoChatApi api = new GeoChatApi(new RestClient(), user, password);
 								credentialsAreValid = api.credentialsAreValid();
 							}
@@ -99,7 +95,7 @@ public class LoginActivity extends Activity {
 									dismissDialog(0);
 									uiLogin.setEnabled(true);
 									uiFeedback.setVisibility(View.VISIBLE);
-									uiFeedback.setText(R.string.unknown_error_maybe_no_connection);
+									uiFeedback.setText(R.string.cannott_login_maybe_no_connection);
 								}
 							});
 						}
@@ -111,9 +107,11 @@ public class LoginActivity extends Activity {
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		String message = getResources().getString(R.string.logging_in_to_geochat);
+		
 		progressDialog = new ProgressDialog(this);
-		progressDialog.setTitle("Logging into GeoChat...");
-		progressDialog.setMessage("Logging into GeoChat...");
+		progressDialog.setTitle(message);
+		progressDialog.setMessage(message);
 		progressDialog.setCancelable(false);
 		return progressDialog;
 	}
@@ -122,7 +120,7 @@ public class LoginActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				progressDialog.setMessage("First time login.\nThis might take several minutes.\nFetching groups...");
+				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_groups));
 			}
 		});
 		
@@ -134,7 +132,7 @@ public class LoginActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				progressDialog.setMessage("First time login.\nThis might take several minutes.\nFetching users...");
+				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_users));
 			}
 		});
 		
@@ -143,7 +141,7 @@ public class LoginActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				progressDialog.setMessage("First time login.\nThis might take several minutes.\nFetching messages...");
+				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_messages));
 			}
 		});
 		
@@ -154,7 +152,7 @@ public class LoginActivity extends Activity {
 	
 	private void enterGeoChat() {
 		startActivity(new Intent()
-			.setClass(LoginActivity.this, GeoChatTabsActivity.class));
+			.setClass(LoginActivity.this, HomeActivity.class));
 	}
 
 }

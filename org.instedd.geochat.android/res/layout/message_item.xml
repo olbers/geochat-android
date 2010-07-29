@@ -24,12 +24,15 @@
 			   android:layout_height="wrap_content"
 			   style="@android:style/TextAppearance.Small"
 			   android:textStyle="bold"
+			   android:drawablePadding="1dp"
 			   android:id="@+id/from" />
 			<TextView
 			   android:layout_width="wrap_content"
 			   android:layout_height="wrap_content"
 			   style="@android:style/TextAppearance.Small"
-			   android:text=" to " />
+			   android:paddingLeft="4dp"
+			   android:paddingRight="4dp"
+			   android:text="@string/to" />
 			<TextView
 			   android:layout_width="wrap_content"
 			   android:layout_height="wrap_content"

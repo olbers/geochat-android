@@ -4,6 +4,8 @@ public class User implements Comparable<User> {
 	
 	public String login;
 	public String displayName;
+	public double lat;
+	public double lng;
 	
 	public User() {
 	}

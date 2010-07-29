@@ -11,4 +11,8 @@ public interface IGeoChatApi {
 	
 	Message[] getMessages(String groupAlias, int page) throws Exception;
 
+	void sendMessage(String message) throws Exception ;
+
+	void sendMessage(String groupAlias, String message) throws Exception ;
+
 }

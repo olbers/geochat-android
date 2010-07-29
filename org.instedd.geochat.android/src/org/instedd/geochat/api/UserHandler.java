@@ -11,6 +11,8 @@ public class UserHandler extends DefaultHandler {
 	private final static int NONE = 0;
 	private final static int TITLE = 1;
 	private final static int LOGIN = 2;
+	private final static int LAT = 3;
+	private final static int LNG = 4;
 	
 	private boolean inItem;
 	private int tagName;
@@ -50,6 +52,10 @@ public class UserHandler extends DefaultHandler {
 			tagName = TITLE;
 		} else if ("Login".equals(localName)) {
 			tagName = LOGIN;
+		} else if ("lat".equals(localName)) {
+			tagName = LAT;
+		} else if ("long".equals(localName)) {
+			tagName = LNG;
 		} else {
 			tagName = NONE;
 		}
@@ -67,6 +73,12 @@ public class UserHandler extends DefaultHandler {
 			break;
 		case LOGIN:
 			user.login = new String(ch, start, length);
+			break;
+		case LAT:
+			user.lat = Double.parseDouble(new String(ch, start, length));
+			break;
+		case LNG:
+			user.lng = Double.parseDouble(new String(ch, start, length));
 			break;
 		}
 	}

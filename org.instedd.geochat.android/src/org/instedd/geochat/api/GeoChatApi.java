@@ -1,7 +1,11 @@
 package org.instedd.geochat.api;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.instedd.geochat.IRestClient;
 
 import android.util.Xml;
@@ -52,6 +56,20 @@ public class GeoChatApi implements IGeoChatApi {
 		UserHandler handler = new UserHandler();
 		Xml.parse(is, Encoding.UTF_8, handler);
 		return handler.getUsers();
+	}
+
+	@Override
+	public void sendMessage(String message) throws Exception {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("message", message));
+		this.client.post("http://geochat.instedd.org/api/messages", params);
+	}
+
+	@Override
+	public void sendMessage(String groupAlias, String message) throws Exception {
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("message", message));
+		this.client.post("http://geochat.instedd.org/api/groups/" + groupAlias + "/messages", params);
 	}
 
 }

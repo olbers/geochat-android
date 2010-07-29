@@ -1,5 +1,9 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.api.GeoChatApi;
+import org.instedd.geochat.api.IGeoChatApi;
+import org.instedd.geochat.api.RestClient;
+
 import android.content.Context;
 import android.content.SharedPreferences.Editor;
 
@@ -30,6 +34,10 @@ public class GeoChatSettings {
 		editor.putString(USER, user);
 		editor.putString(PASSWORD, password);
 		editor.commit();
+	}
+	
+	public IGeoChatApi newApi() {
+		return new GeoChatApi(new RestClient(), getUser(), getPassword());
 	}
 
 }

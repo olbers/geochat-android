@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,6 @@ import android.widget.TextView;
 
 public class MessagesActivity extends ListActivity {
 	
-	/**
-     * The columns we are interested in from the database
-     */
     private static final String[] PROJECTION = new String[] {
             Messages._ID,
             Messages.MESSAGE,
@@ -30,19 +28,18 @@ public class MessagesActivity extends ListActivity {
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Clear new messages count, since we are viewing them
+        Notifier.clearNewMessagesCount(this);
 
-     // If no data was given in the intent, then use our default content provider.
         Intent intent = getIntent();
         if (intent.getData() == null) {
             intent.setData(Messages.CONTENT_URI);
         }
 		
-		// Perform a managed query. The Activity will handle closing and requerying the cursor
-        // when needed.
-        Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
         		Messages.DEFAULT_SORT_ORDER);
 
-        // Used to map notes entries from the database to views
         SimpleCursorAdapter adapter = new MessageCursorAdapter(this, R.layout.message_item, cursor,
                 new String[] { }, new int[] { });
         
@@ -71,10 +68,20 @@ public class MessagesActivity extends ListActivity {
 			}
 			this.c.moveToPosition(pos);
 			
+			String location = c.getString(c.getColumnIndex(Messages.LOCATION_NAME));
+			TextView uiLocation = (TextView) v.findViewById(R.id.location);
+			
+			if (TextUtils.isEmpty(location)) {
+				uiLocation.setVisibility(View.GONE);
+				uiLocation.setText(location);
+			} else {
+				uiLocation.setVisibility(View.VISIBLE);
+				uiLocation.setText(location);
+			}
+			
 			((TextView) v.findViewById(R.id.message)).setText(c.getString(c.getColumnIndex(Messages.MESSAGE)));
 			((TextView) v.findViewById(R.id.from)).setText(c.getString(c.getColumnIndex(Messages.FROM_USER)));
 			((TextView) v.findViewById(R.id.group)).setText(c.getString(c.getColumnIndex(Messages.TO_GROUP)));
-			((TextView) v.findViewById(R.id.location)).setText(c.getString(c.getColumnIndex(Messages.LOCATION_NAME)));
 			
 			CharSequence date = DateUtils.getRelativeDateTimeString(context, c.getLong(c.getColumnIndex(Messages.CREATED_DATE)), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
 			((TextView) v.findViewById(R.id.date)).setText(date);

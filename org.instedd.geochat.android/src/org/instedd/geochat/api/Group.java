@@ -25,5 +25,13 @@ public class Group implements Comparable<Group> {
 	public int compareTo(Group another) {
 		return alias.toLowerCase().compareTo(another.alias.toLowerCase());
 	}
+	
+	@Override
+	public String toString() {
+		if (alias == null) {
+			return name;
+		}
+		return name + " (" + alias + ")";
+	}
 
 }

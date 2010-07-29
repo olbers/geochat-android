@@ -338,9 +338,27 @@ public class GeoChatProvider extends ContentProvider {
 	}
 
 	@Override
-	public int update(Uri uri, ContentValues values, String selection,
-			String[] selectionArgs) {
-		return 0;
+	public int update(Uri uri, ContentValues values, String where,
+			String[] whereArgs) {
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int count;
+        switch (sUriMatcher.match(uri)) {
+        case USER_ID:
+            String userId = uri.getPathSegments().get(1);
+            count = db.update(USERS_TABLE_NAME, values, Users._ID + "=" + userId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+        case GROUP_ID:
+            String groupId = uri.getPathSegments().get(1);
+            count = db.update(GROUPS_TABLE_NAME, values, Groups._ID + "=" + groupId
+                    + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
+            break;
+        default:
+            throw new IllegalArgumentException("Unknown URI " + uri);
+        }
+
+        getContext().getContentResolver().notifyChange(uri, null);
+        return count;
 	}
 	
 	static {

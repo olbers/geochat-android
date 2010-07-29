@@ -24,7 +24,8 @@
 		   android:layout_width="wrap_content"
 		   android:layout_height="wrap_content"
 		   style="@android:style/TextAppearance.Small"
-		   android:text="Alias: " />
+		   android:paddingRight="4dp"
+		   android:text="@string/alias_colon" />
 		<TextView
 		   android:layout_width="fill_parent"
 		   android:layout_height="fill_parent"

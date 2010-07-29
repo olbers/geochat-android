@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
     
-        <activity android:name=".GeoChatTabsActivity"
+        <activity android:name=".HomeActivity"
                   android:label="@string/app_name" />
         <activity android:name=".GroupsActivity"
         		  android:label="@string/groups"
@@ -34,7 +34,11 @@
         		  android:label="@string/messages"
         		  android:theme="@android:style/Theme.NoTitleBar" />
         		  
+       	<activity android:name=".ComposeActivity"
+                  android:label="@string/compose" />
+        		  
        	<service android:name=".GeoChatService"
             android:exported="true"/>
     </application>
+<uses-permission android:name="android.permission.VIBRATE"></uses-permission>
 </manifest> 

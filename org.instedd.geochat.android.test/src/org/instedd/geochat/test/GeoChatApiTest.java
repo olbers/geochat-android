@@ -93,7 +93,9 @@ public class GeoChatApiTest extends TestCase {
 	
 	public void testUsers() throws Exception {
 		MockRestClient restClient = new MockRestClient("<?xml version=\"1.0\"?>\n" + 
-				"<rss version=\"2.0\" xmlns:geochat=\"http://geochat.instedd.org/api/1.0\">\n" + 
+				"<rss version=\"2.0\" " +
+				"  xmlns:geo=\"http://www.w3.org/2003/01/geo/wgs84_pos#\"\n" + 
+				"  xmlns:geochat=\"http://geochat.instedd.org/api/1.0\">\n" + 
 				"  <channel>\n" + 
 				"    <title>GeoChat - Group Members</title>\n" + 
 				"    <lastBuildDate>Tue, 10 Jun 2003 04:00:00 GMT</lastBuildDate>\n" + 
@@ -104,6 +106,8 @@ public class GeoChatApiTest extends TestCase {
 				"      <pubDate>Tue, 10 Jan 2009 04:00:00 GMT</pubDate>\n" + 
 				"      <guid>http://geochat.instedd.org/api/users/{login1}</guid>\n" + 
 				"      <geochat:Login>login1</geochat:Login>\n" + 
+				"      <geo:lat>16.23</geo:lat>\n" + 
+				"      <geo:long>-47.15</geo:long> \n" + 
 				"    </item>\n" + 
 				"    <item>\n" + 
 				"      <title>Member 2</title>\n" + 
@@ -111,6 +115,8 @@ public class GeoChatApiTest extends TestCase {
 				"      <pubDate>Tue, 10 Jan 2009 04:00:00 GMT</pubDate>\n" + 
 				"      <guid>http://geochat.instedd.org/api/users/{login2}</guid>\n" + 
 				"      <geochat:Login>login2</geochat:Login>\n" + 
+				"      <geo:lat>16.23</geo:lat>\n" + 
+				"      <geo:long>-47.15</geo:long> \n" + 
 				"    </item>\n" + 
 				"  </channel>\n" + 
 				"</rss>");
@@ -125,6 +131,8 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("Member 1", users[0].displayName);
 		assertEquals("login1", users[0].login);
+		assertEquals(Double.valueOf("16.23"), users[0].lat);
+		assertEquals(Double.valueOf("-47.15"), users[0].lng);
 	}
 	
 	public void testMessages() throws Exception {
