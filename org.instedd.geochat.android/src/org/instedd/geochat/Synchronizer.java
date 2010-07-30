@@ -294,7 +294,7 @@ public class Synchronizer {
 			while(running) {
 				if (api != null) {
 					boolean hasConnectivity = hasConnectivity();
-					boolean credentialsAreValid = false;
+					boolean credentialsAreValid = true;
 					if (hasConnectivity) {
 						try {
 							credentialsAreValid = api.credentialsAreValid();
@@ -304,11 +304,8 @@ public class Synchronizer {
 					}
 					
 					if (resync) {
-						// Delete everything if credentials changed
 						if (!connectivityChanged) {
-							if (credentialsAreValid) {
-								clearExistingData();
-							} else {
+							if (!credentialsAreValid) {
 								notifier.notifyWrongCredentials();
 							}
 						}

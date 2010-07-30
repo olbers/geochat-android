@@ -68,7 +68,8 @@ public class HomeActivity extends TabActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 		case MENU_COMPOSE:
-			startActivity(new Intent().setClass(this, ComposeActivity.class));
+			startActivity(new Intent()
+				.setClass(this, ComposeActivity.class));
 			break;
 		}
 		return true;

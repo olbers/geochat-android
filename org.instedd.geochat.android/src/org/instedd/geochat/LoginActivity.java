@@ -152,7 +152,8 @@ public class LoginActivity extends Activity {
 	
 	private void enterGeoChat() {
 		startActivity(new Intent()
-			.setClass(LoginActivity.this, HomeActivity.class));
+			.setClass(LoginActivity.this, HomeActivity.class)
+			);
 	}
 
 }

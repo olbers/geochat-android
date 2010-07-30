@@ -38,6 +38,7 @@ public class Notifier {
 		String content = r.getString(R.string.invalid_credentials);
 		
 		Intent intent = new Intent().setClass(context, LoginActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(LoginActivity.EXTRA_WRONG_CREDENTIALS, true);
 		notification.setLatestEventInfo(context, title, content, PendingIntent.getActivity(context, 0, intent, 0));
 		man.notify(TAG, WRONG_CREDENTIALS, notification);
@@ -56,6 +57,7 @@ public class Notifier {
 		String content = count == 1 ? r.getString(R.string.one_new_messages) : r.getString(R.string.d_new_messages, count);
 		
 		Intent intent = new Intent().setClass(context, HomeActivity.class).setAction(Actions.VIEW_MESSAGES);
+		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		notification.setLatestEventInfo(context, title, content, PendingIntent.getActivity(context, 0, intent, 0));
 		man.notify(TAG, NEW_MESSAGES, notification);
 	}

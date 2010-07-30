@@ -94,7 +94,7 @@ public class ComposeActivity extends Activity {
 			} else {
 				api.sendMessage(group.alias, message);
 			}
-			startActivity(new Intent().setClass(ComposeActivity.this, HomeActivity.class));
+			goHome();
 		} catch (Exception e) {
 			handler.post(new Runnable() {
 				@Override
@@ -135,10 +135,15 @@ public class ComposeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 		case MENU_HOME:
-			startActivity(new Intent().setClass(this, HomeActivity.class));
+			goHome();
 			break;
 		}
 		return true;
+	}
+	
+	private void goHome() {
+		startActivity(new Intent().setClass(this, HomeActivity.class)
+				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
 	}
 
 }
