@@ -1,12 +1,12 @@
 package org.instedd.geochat.data;
 
-import org.instedd.geochat.LocationResolver;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.Message;
 import org.instedd.geochat.api.User;
 import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
+import org.instedd.geochat.map.LocationResolver;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -54,6 +54,10 @@ public class GeoChatData {
 		context.getContentResolver().insert(Messages.CONTENT_URI, getContentValues(message));
 	}
 	
+	public void deleteOldMessages(String groupAlias) {
+		//context.getContentResolver().delete(Uri.withAppendedPath(Messages.CONTENT_URI, "old"), null, null);
+	}
+	
 	private ContentValues getContentValues(Group group) {
 		ContentValues values = new ContentValues();
 		values.put(Groups.ALIAS, group.alias);
@@ -71,6 +75,7 @@ public class GeoChatData {
 		values.put(Users.LAT, user.lat);
 		values.put(Users.LNG, user.lng);
 		values.put(Users.LOCATION_NAME, locationResolver.getLocationName(user.lat, user.lng));
+		values.put(Users.GROUPS, Users.getGroups(user.groups));
 		return values;
 	}
 	

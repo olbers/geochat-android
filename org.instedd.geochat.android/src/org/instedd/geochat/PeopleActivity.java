@@ -4,19 +4,30 @@ import org.instedd.geochat.data.GeoChat.Users;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class PeopleActivity extends ListActivity {
+public class PeopleActivity extends ListActivity implements OnItemClickListener {
+	
+	private Cursor cursor;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        Intent intent = getIntent();
+		if (intent.getData() == null) {
+			intent.setData(Users.CONTENT_URI);
+		}
 
         String[] PROJECTION = new String[] {
                 Users._ID,
@@ -24,14 +35,24 @@ public class PeopleActivity extends ListActivity {
                 Users.DISPLAY_NAME,
                 Users.LOCATION_NAME,
         };
-        Cursor cursor = managedQuery(Users.CONTENT_URI, PROJECTION, null, null,
+        cursor = managedQuery(intent.getData(), PROJECTION, null, null,
         		Users.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new PeopleCursorAdapter(this, R.layout.user_item, cursor,
                 new String[] { }, new int[] { });
         
         setListAdapter(adapter);
+        
+        getListView().setOnItemClickListener(this);
     }
+	
+	@Override
+	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+		cursor.moveToPosition(position);
+		String userLogin = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
+		Uri uri = Uri.withAppendedPath(Uri.withAppendedPath(Users.CONTENT_URI, String.valueOf(userLogin)), "messages");
+		startActivity(new Intent().setClass(this, MessagesActivityWithTitleBar.class).setData(uri));
+	}
 	
 	private static class PeopleCursorAdapter extends SimpleCursorAdapter {
 

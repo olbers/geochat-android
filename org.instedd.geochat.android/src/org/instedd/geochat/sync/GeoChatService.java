@@ -10,11 +10,13 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.os.IBinder;
 
 public class GeoChatService extends Service implements OnSharedPreferenceChangeListener {
 	
 	private Synchronizer synchronizer;
+	final Handler handler = new Handler();
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
 		@Override
@@ -30,7 +32,7 @@ public class GeoChatService extends Service implements OnSharedPreferenceChangeL
 	public void onCreate() {
 		super.onCreate();
 		
-		this.synchronizer = new Synchronizer(this);
+		this.synchronizer = new Synchronizer(this, handler);
 		
 		// Listen for preference changes to resync when that happens
 		this.getSharedPreferences(GeoChatSettings.SHARED_PREFS_NAME, 0)

@@ -2,13 +2,13 @@ package org.instedd.geochat;
 
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
+import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Groups;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,8 +31,6 @@ public class ComposeActivity extends Activity {
             Groups.ALIAS,
     };
     
-    private final static int MENU_HOME = 1;
-    
     private final static int DIALOG_SENDING_MESSAGE = 1;
     private final static int DIALOG_CANNOT_SEND_MESSAGE = 2;
     
@@ -43,7 +41,22 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 	    setContentView(R.layout.compose);
 	    
-	    String composeGroup = new GeoChatSettings(this).getComposeGroup();
+	    String composeGroup;	    
+	    if (GeoChatProvider.URI_MATCHER.match(getIntent().getData()) == GeoChatProvider.GROUP_ID) {
+	    	String[] PROJECTION = new String[] {
+	                Groups._ID,
+	                Groups.ALIAS,
+	        };
+		    Cursor c = getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
+		    if (c.moveToNext()) {
+		    	composeGroup = c.getString(1);
+		    } else {
+		    	composeGroup = new GeoChatSettings(this).getComposeGroup();
+		    }
+		    c.close();
+	    } else {
+	    	composeGroup = new GeoChatSettings(this).getComposeGroup();
+	    }
 	    int composeGroupIndex = 0;
 	    
 	    Cursor c = getContentResolver().query(Groups.CONTENT_URI, PROJECTION, null, null, "lower(" + Groups.NAME + ")");
@@ -108,7 +121,7 @@ public class ComposeActivity extends Activity {
 				api.sendMessage(group.alias, message);
 			}
 			settings.setComposeGroup(group == null ? null : group.alias);
-			goHome();
+			Actions.home(this);
 		} catch (Exception e) {
 			handler.post(new Runnable() {
 				@Override
@@ -143,7 +156,7 @@ public class ComposeActivity extends Activity {
 			builder.setMessage(R.string.message_could_not_be_sent_maybe_no_connection)
 				.setTitle(R.string.message_not_sent)
 				.setCancelable(true)
-				.setNeutralButton(R.string.ok, null);
+				.setNeutralButton(android.R.string.ok, null);
 			return builder.create();
 		default:
 			return null;
@@ -152,24 +165,14 @@ public class ComposeActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_HOME, 0, R.string.home)
-			.setIcon(R.drawable.ic_menu_home);
+		Menues.home(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case MENU_HOME:
-			goHome();
-			break;
-		}
+		Menues.executeAction(this, item.getItemId());
 		return true;
-	}
-	
-	private void goHome() {
-		startActivity(new Intent().setClass(this, HomeActivity.class)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
 	}
 
 }

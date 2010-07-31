@@ -123,7 +123,7 @@ public class LoginActivity extends Activity {
 			builder.setMessage(messageResourceId)
 				.setTitle(R.string.cannot_login_to_geochat)
 				.setCancelable(true)
-				.setNeutralButton(R.string.ok, null);
+				.setNeutralButton(android.R.string.ok, null);
 			return builder.create();
 		}
 	}
@@ -136,7 +136,7 @@ public class LoginActivity extends Activity {
 			}
 		});
 		
-		Synchronizer synchronizer = new Synchronizer(LoginActivity.this);
+		Synchronizer synchronizer = new Synchronizer(LoginActivity.this, handler);
 		synchronizer.clearExistingData();
 		
 		final Group[] groups = synchronizer.syncGroups();

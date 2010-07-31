@@ -49,7 +49,7 @@ public class Notifier {
 		String title = r.getString(R.string.new_geochat_messages);
 		String content = count == 1 ? r.getString(R.string.one_new_messages) : r.getString(R.string.d_new_messages, count);
 		
-		Intent intent = new Intent().setClass(context, HomeActivity.class).setAction(IActions.VIEW_MESSAGES);
+		Intent intent = new Intent().setClass(context, HomeActivity.class).setAction(Actions.VIEW_MESSAGES);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		notification.setLatestEventInfo(context, title, content, PendingIntent.getActivity(context, 0, intent, 0));
 		man.notify(TAG, NEW_MESSAGES, notification);

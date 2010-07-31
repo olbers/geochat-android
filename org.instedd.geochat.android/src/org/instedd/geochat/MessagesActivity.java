@@ -1,14 +1,20 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Messages;
+import org.instedd.geochat.data.GeoChat.Users;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SimpleCursorAdapter;
@@ -19,8 +25,27 @@ public class MessagesActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Clear new messages count, since we are viewing them
-        new GeoChatSettings(this).clearNewMessagesCount();
+        Intent intent = getIntent();
+		if (intent.getData() == null) {
+			intent.setData(Messages.CONTENT_URI);
+			
+			// Clear new messages count, since we are viewing them
+	        new GeoChatSettings(this).clearNewMessagesCount();
+		}
+		
+		if (GeoChatProvider.URI_MATCHER.match(intent.getData()) == GeoChatProvider.USER_MESSAGES) {
+			String[] PROJECTION = new String[] {
+	                Users._ID,
+	                Users.DISPLAY_NAME,
+	        };
+	        Cursor cursor = getContentResolver().query(Uri.withAppendedPath(Users.CONTENT_URI, intent.getData().getPathSegments().get(1)), PROJECTION, null, null,
+	        		Users.DEFAULT_SORT_ORDER);
+	        if (cursor.moveToNext()) {
+	        	String displayName = cursor.getString(1);
+	        	setTitle(getResources().getString(R.string.app_name) + " - " + displayName);
+	        }
+	        cursor.close();
+		}
 
         String[] PROJECTION = new String[] {
                 Messages._ID,
@@ -30,7 +55,7 @@ public class MessagesActivity extends ListActivity {
                 Messages.LOCATION_NAME,
                 Messages.CREATED_DATE,
         };
-		Cursor cursor = managedQuery(Messages.CONTENT_URI, PROJECTION, null, null,
+		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
         		Messages.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new MessageCursorAdapter(this, R.layout.message_item, cursor,
@@ -82,5 +107,19 @@ public class MessagesActivity extends ListActivity {
 			return v;
 		}
 
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Menues.home(menu);
+		Menues.map(menu);
+		Menues.compose(menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Menues.executeAction(this, item.getItemId());
+		return true;
 	}
 }

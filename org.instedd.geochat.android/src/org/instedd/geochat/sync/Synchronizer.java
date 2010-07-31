@@ -1,11 +1,13 @@
 package org.instedd.geochat.sync;
 
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.instedd.geochat.GeoChatSettings;
-import org.instedd.geochat.LocationResolver;
 import org.instedd.geochat.Notifier;
+import org.instedd.geochat.R;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.Message;
@@ -15,14 +17,19 @@ import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.data.GeoChat.Locations;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
+import org.instedd.geochat.map.LocationResolver;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
 
 public class Synchronizer {
+	
+	final Handler handler;
 	
 	final Context context;
 	IGeoChatApi api;
@@ -34,8 +41,9 @@ public class Synchronizer {
 	boolean connectivityChanged;
 	SyncThread syncThread;
 
-	public Synchronizer(Context context) {
+	public Synchronizer(Context context, Handler handler) {
 		this.context = context;
+		this.handler = handler;
 		this.data = new GeoChatData(context);
 		this.locationResolver = new LocationResolver(context);
 		this.notifier = new Notifier(context);
@@ -99,7 +107,7 @@ public class Synchronizer {
 		if (resync) return null;
 		
 		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, Groups.ALIAS);
+		Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS, Groups.NAME, Groups.LAT, Groups.LNG }, null, null, Groups.ALIAS);
 		
 		try {
 			int serverIndex = 0;
@@ -134,8 +142,13 @@ public class Synchronizer {
 					cachedIndex++;
 					c.moveToNext();
 				} else {
-					// Server and cached match, update and advance both
-					data.updateGroup(c.getInt(0), serverGroups[serverIndex]);
+					// Server and cached match, update (if changed) and advance both
+					Group serverGroup = serverGroups[serverIndex];
+					if (!serverGroup.name.equals(c.getString(c.getColumnIndex(Groups.NAME))) ||
+						serverGroup.lat != c.getDouble(c.getColumnIndex(Groups.LAT)) ||
+						serverGroup.lng != c.getDouble(c.getColumnIndex(Groups.LNG))) {
+							data.updateGroup(c.getInt(0), serverGroup);
+					}
 					serverIndex++;
 					cachedIndex++;
 					c.moveToNext();
@@ -148,7 +161,7 @@ public class Synchronizer {
 	}
 	
 	public void syncUsers(Group[] groups) {
-		Set<User> serverUsersSet = new TreeSet<User>();
+		Map<User, User> serverUsersMap = new TreeMap<User, User>();
 		for(Group group : groups) {
 			if (resync) return;
 			
@@ -162,7 +175,15 @@ public class Synchronizer {
 						break;
 					}
 					for(User user : users) {
-						serverUsersSet.add(user);
+						User existing = serverUsersMap.get(user);
+						if (existing == null) {
+							existing = user;
+							serverUsersMap.put(user, user);
+						}
+						if (existing.groups == null) {
+							existing.groups = new TreeSet<String>();
+						}
+						existing.groups.add(group.alias);
 					}
 					
 					if (users.length == IGeoChatApi.MAX_PER_PAGE)
@@ -175,11 +196,11 @@ public class Synchronizer {
 			}
 		}
 		
-		User[] serverUsers = serverUsersSet.toArray(new User[serverUsersSet.size()]);
+		User[] serverUsers = serverUsersMap.values().toArray(new User[serverUsersMap.size()]);
 		if (resync) return;
 		
 		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN }, null, null, Users.LOGIN);
+		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG }, null, null, Users.LOGIN);
 		
 		try {
 			int serverIndex = 0;
@@ -214,8 +235,15 @@ public class Synchronizer {
 					cachedIndex++;
 					c.moveToNext();
 				} else {
-					// Server and cached match, update and advance both
-					data.updateUser(c.getInt(0), serverUsers[serverIndex]);
+					// Server and cached match, update (if changed) and advance both
+					User serverUser = serverUsers[serverIndex];
+					TreeSet<String> existingUserGroups = Users.getGroups(c.getString(c.getColumnIndex(Users.GROUPS)));
+					if (!serverUser.displayName.equals(c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
+						serverUser.lat != c.getDouble(c.getColumnIndex(Users.LAT)) ||
+						serverUser.lng != c.getDouble(c.getColumnIndex(Users.LNG)) ||
+						!serverUser.groups.equals(existingUserGroups)) {
+						data.updateUser(c.getInt(0), serverUser);
+					}
 					serverIndex++;
 					cachedIndex++;
 					c.moveToNext();
@@ -230,7 +258,7 @@ public class Synchronizer {
 		int newMessagesCount = 0;
 		
 		for(Group group : groups) {
-			if (resync) return 0;
+			if (resync) return newMessagesCount;
 			
 			// Get guid of last cached message
 			Uri uri = Groups.CONTENT_URI;
@@ -244,10 +272,10 @@ public class Synchronizer {
 			// Get just one page of messages
 			try {
 				Message[] messages = api.getMessages(group.alias, 1);
-				if (resync) return 0;
+				if (resync) return newMessagesCount;
 				
 				for(Message message : messages) {
-					if (resync) return 0;
+					if (resync) return newMessagesCount;
 					
 					if (message.guid != null && message.guid.equals(lastGuid)) {
 						break;
@@ -264,7 +292,15 @@ public class Synchronizer {
 			}
 		}
 		
+		if (resync) return newMessagesCount;
+		
 		return newMessagesCount;
+	}
+	
+	public void deleteOldMessages(Group[] groups) {
+//		for(Group group : groups) {
+//			data.deleteOldMessages(group.alias);
+//		}
 	}
 	
 	public void clearExistingData() {
@@ -288,58 +324,76 @@ public class Synchronizer {
 	private class SyncThread extends Thread {
 		@Override
 		public void run() {
-			while(running) {
-				boolean hasConnectivity = hasConnectivity();
-				boolean credentialsAreValid = true;
-				if (hasConnectivity) {
+			try {
+				while(running) {
+					boolean hasConnectivity = hasConnectivity();
+					boolean credentialsAreValid = true;
+					if (hasConnectivity) {
+						try {
+							credentialsAreValid = api.credentialsAreValid();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+					if (resync) {
+						if (!connectivityChanged) {
+							if (!credentialsAreValid) {
+								notifier.notifyWrongCredentials();
+							}
+						}
+						connectivityChanged = false;
+						
+						resyncFinished();
+					}
+					
 					try {
-						credentialsAreValid = api.credentialsAreValid();
+						if (hasConnectivity && credentialsAreValid) {
+							Group[] groups = syncGroups();
+							if (resync) continue;
+							
+							syncUsers(groups);
+							if (resync) continue;
+							
+							int newMessagesCount = syncMessages(groups);
+							if (newMessagesCount > 0) {
+								notifier.notifyNewMessages(newMessagesCount);
+							}
+							if (resync) continue;
+							
+							deleteOldMessages(groups);
+							if (resync) continue;
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}
-				
-				if (resync) {
-					if (!connectivityChanged) {
-						if (!credentialsAreValid) {
-							notifier.notifyWrongCredentials();
-						}
-					}
-					connectivityChanged = false;
 					
-					resyncFinished();
-				}
-				
-				try {
-					if (hasConnectivity && credentialsAreValid) {
-						Group[] groups = syncGroups();
-						if (resync) continue;
-						
-						syncUsers(groups);
-						if (resync) continue;
-						
-						int newMessagesCount = syncMessages(groups);
-						if (newMessagesCount > 0) {
-							notifier.notifyNewMessages(newMessagesCount);
+					// Wait 15 minutes in intervals of 5 seconds,
+					// so wait
+					try {
+						for(int i = 0; i < 3 * 60 * 1000; i++) {
+							sleep(5);
+							if (resync) break;
 						}
-						if (resync) continue;
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
-				
-				// Wait 15 minutes in intervals of 5 seconds,
-				// so wait
-				try {
-					for(int i = 0; i < 3 * 60 * 6000; i++) {
-						sleep(5);
-						if (resync) break;
+			} catch (final Exception e) {
+				handler.post(new Runnable() {
+					@Override
+					public void run() {
+						AlertDialog.Builder builder = new AlertDialog.Builder(context);
+						builder
+							.setTitle(context.getResources().getString(R.string.something_went_wrong))
+							.setMessage(e.getMessage())
+							.setNegativeButton(android.R.string.ok, null)
+							.setCancelable(true)
+							.create().show();
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				});
 			}
-		}
+		}		
 		
 	}
 

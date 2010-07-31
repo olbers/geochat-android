@@ -29,7 +29,7 @@ public class GeoChatProvider extends ContentProvider {
 	private static final String TAG = "GeoChatProvider";
 	
 	private static final String DATABASE_NAME = "geochat.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     
     private static final String USERS_TABLE_NAME = "users";
     private static final String GROUPS_TABLE_NAME = "groups";
@@ -41,19 +41,25 @@ public class GeoChatProvider extends ContentProvider {
     private static HashMap<String, String> sMessagesProjectionMap;
     private static HashMap<String, String> sLocationsProjectionMap;
     
-    private final static int USERS = 1;
-    private final static int GROUPS = 2;
-    private final static int MESSAGES = 3;
-    private final static int LOCATIONS = 4;
-    private final static int LOCATION_LAT_LNG = 5;
-    private final static int USER_MESSAGES = 6;
-    private final static int GROUP_MESSAGES = 7;
-    private final static int MESSAGE_ID = 8;
-    private final static int GROUP_LAST_MESSAGE = 9;
-    private final static int GROUP_ID = 10;
-    private final static int USER_ID = 11;
+    public final static int USERS = 1;
+    public final static int GROUPS = 2;
+    public final static int MESSAGES = 3;
+    public final static int LOCATIONS = 4;
+    public final static int LOCATION_LAT_LNG = 5;
+    public final static int USER_MESSAGES = 6;
+    public final static int GROUP_MESSAGES = 7;
+    public final static int MESSAGE_ID = 8;
+    public final static int GROUP_LAST_MESSAGE = 9;
+    public final static int GROUP_ID = 10;
+    public final static int USER_ID = 11;
+    public final static int MESSAGES_OLD = 12;
+    public final static int GROUP_USERS = 13;
+    public final static int USER_LOGIN = 14;
     
-    private static final UriMatcher sUriMatcher;
+    private final static int MAX_MESSAGES_COUNT = 10;
+    private final static String MAX_MESSAGES_COUNT_PLUS_ONE_STRING = String.valueOf(MAX_MESSAGES_COUNT + 1);
+    
+    public static final UriMatcher URI_MATCHER;
     
     /**
      * This class helps open, create, and upgrade the database file.
@@ -72,7 +78,8 @@ public class GeoChatProvider extends ContentProvider {
                     + Users.DISPLAY_NAME + " TEXT,"
                     + Users.LAT + " REAL,"
                     + Users.LNG + " REAL,"
-                    + Users.LOCATION_NAME + " TEXT"
+                    + Users.LOCATION_NAME + " TEXT,"
+                    + Users.GROUPS + " TEXT"
                     + ");");
             
             db.execSQL("CREATE TABLE " + GROUPS_TABLE_NAME + " ("
@@ -122,7 +129,7 @@ public class GeoChatProvider extends ContentProvider {
 	public int delete(Uri uri, String where, String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int count;
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
         case GROUPS:
         	count = db.delete(GROUPS_TABLE_NAME, where, whereArgs);
             break;
@@ -145,17 +152,28 @@ public class GeoChatProvider extends ContentProvider {
             count = db.delete(USERS_TABLE_NAME, Groups._ID + "=" + userId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
+        case MESSAGES_OLD:
+        	Cursor c = db.query(MESSAGES_TABLE_NAME, new String[] { Messages._ID }, null, null, null, null, Messages.CREATED_DATE + " DESC", MAX_MESSAGES_COUNT_PLUS_ONE_STRING);
+        	if (c.getCount() > MAX_MESSAGES_COUNT) {
+        		c.moveToPosition(MAX_MESSAGES_COUNT - 1);
+        		int id = c.getInt(0);
+        		count = db.delete(MESSAGES_TABLE_NAME, Users._ID + " < " + id, null);
+        	} else {
+        		count = 0;
+        	}
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        getContext().getContentResolver().notifyChange(uri, null);
+        if (count > 0) {
+        	getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
 	}
 
 	@Override
 	public String getType(Uri uri) {
-		switch (sUriMatcher.match(uri)) {
+		switch (URI_MATCHER.match(uri)) {
         case USERS:
         case USER_ID:
             return Users.CONTENT_TYPE;
@@ -186,7 +204,7 @@ public class GeoChatProvider extends ContentProvider {
         SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         long rowId;
 		
-		switch(sUriMatcher.match(uri)) {
+		switch(URI_MATCHER.match(uri)) {
 		case USERS:
 			rowId = db.insert(USERS_TABLE_NAME, Users.LOGIN, values);
 			if (rowId > 0) {
@@ -239,7 +257,7 @@ public class GeoChatProvider extends ContentProvider {
 		String orderBy = sortOrder;
 		boolean onlyOne = false;
 
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
         case USERS:
         	qb.setTables(USERS_TABLE_NAME);
         	if (TextUtils.isEmpty(sortOrder)) {
@@ -275,7 +293,8 @@ public class GeoChatProvider extends ContentProvider {
         case USER_MESSAGES:
         	qb.setTables(MESSAGES_TABLE_NAME);
         	qb.appendWhere(Messages.FROM_USER + " = ");
-        	qb.appendWhereEscapeString(uri.getPathSegments().get(1));        	if (TextUtils.isEmpty(sortOrder)) {
+        	qb.appendWhereEscapeString(uri.getPathSegments().get(1));        	
+        	if (TextUtils.isEmpty(sortOrder)) {
                 orderBy = GeoChat.Messages.DEFAULT_SORT_ORDER;
             }
         	break;
@@ -285,6 +304,13 @@ public class GeoChatProvider extends ContentProvider {
         	qb.appendWhereEscapeString(uri.getPathSegments().get(1));
         	if (TextUtils.isEmpty(sortOrder)) {
                 orderBy = GeoChat.Messages.DEFAULT_SORT_ORDER;
+            }
+        	break;
+        case GROUP_USERS:
+        	qb.setTables(USERS_TABLE_NAME);
+        	qb.appendWhere(Users.GROUPS + " LIKE '%" + uri.getPathSegments().get(1) + "%'");
+        	if (TextUtils.isEmpty(sortOrder)) {
+                orderBy = GeoChat.Users.DEFAULT_SORT_ORDER;
             }
         	break;
         case MESSAGE_ID:
@@ -312,7 +338,14 @@ public class GeoChatProvider extends ContentProvider {
         	break;
         case USER_ID:
         	qb.setTables(USERS_TABLE_NAME);
-        	qb.appendWhere(Users._ID + " = ");
+        	qb.appendWhere(Users._ID + " = " + uri.getPathSegments().get(1));
+        	if (TextUtils.isEmpty(sortOrder)) {
+                orderBy = GeoChat.Users.DEFAULT_SORT_ORDER;
+            }
+        	break;
+        case USER_LOGIN:
+        	qb.setTables(USERS_TABLE_NAME);
+        	qb.appendWhere(Users.LOGIN + " = ");
         	qb.appendWhereEscapeString(uri.getPathSegments().get(1));
         	if (TextUtils.isEmpty(sortOrder)) {
                 orderBy = GeoChat.Users.DEFAULT_SORT_ORDER;
@@ -342,7 +375,7 @@ public class GeoChatProvider extends ContentProvider {
 			String[] whereArgs) {
 		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         int count;
-        switch (sUriMatcher.match(uri)) {
+        switch (URI_MATCHER.match(uri)) {
         case USER_ID:
             String userId = uri.getPathSegments().get(1);
             count = db.update(USERS_TABLE_NAME, values, Users._ID + "=" + userId
@@ -362,18 +395,21 @@ public class GeoChatProvider extends ContentProvider {
 	}
 	
 	static {
-		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "users", USERS);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "users/#", USER_ID);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "users/*/messages", USER_MESSAGES);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "groups", GROUPS);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "groups/#", GROUP_ID);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "groups/*/messages", GROUP_MESSAGES);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "groups/*/messages/last", GROUP_LAST_MESSAGE);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "messages", MESSAGES);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "messages/#", MESSAGE_ID);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "locations", LOCATIONS);
-        sUriMatcher.addURI(GeoChat.AUTHORITY, "location/#/#", LOCATION_LAT_LNG);
+		URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "users", USERS);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/#", USER_ID);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/*", USER_LOGIN);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/*/messages", USER_MESSAGES);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups", GROUPS);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/#", GROUP_ID);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages", GROUP_MESSAGES);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/users", GROUP_USERS);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages/last", GROUP_LAST_MESSAGE);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages", MESSAGES);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages/#", MESSAGE_ID);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages/old", MESSAGES_OLD);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "locations", LOCATIONS);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "location/#/#", LOCATION_LAT_LNG);
 
         sUsersProjectionMap = new HashMap<String, String>();
         sUsersProjectionMap.put(Users._ID, Users._ID);

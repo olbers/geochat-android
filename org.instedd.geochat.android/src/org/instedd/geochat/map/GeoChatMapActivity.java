@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.instedd.geochat.Menues;
 import org.instedd.geochat.R;
 import org.instedd.geochat.api.User;
 import org.instedd.geochat.data.GeoChat.Users;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -77,6 +80,19 @@ public class GeoChatMapActivity extends MapActivity {
 	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		Menues.home(menu);
+		Menues.compose(menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Menues.executeAction(this, item.getItemId());
+		return true;
 	}
 
 }

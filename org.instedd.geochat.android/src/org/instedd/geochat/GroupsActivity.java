@@ -4,19 +4,30 @@ import org.instedd.geochat.data.GeoChat.Groups;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
-public class GroupsActivity extends ListActivity {
+public class GroupsActivity extends ListActivity implements OnItemClickListener {
+	
+	private Cursor cursor;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		Intent intent = getIntent();
+		if (intent.getData() == null) {
+			intent.setData(Groups.CONTENT_URI);
+		}
 		
         String[] PROJECTION = new String[] {
                 Groups._ID,
@@ -24,13 +35,23 @@ public class GroupsActivity extends ListActivity {
                 Groups.ALIAS,
                 Groups.LOCATION_NAME,
         };
-        Cursor cursor = managedQuery(Groups.CONTENT_URI, PROJECTION, null, null,
+        cursor = managedQuery(intent.getData(), PROJECTION, null, null,
                 Groups.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new GroupCursorAdapter(this, R.layout.group_item, cursor,
                 new String[] { }, new int[] { });
         
         setListAdapter(adapter);
+        
+        getListView().setOnItemClickListener(this);
+	}
+	
+	@Override
+	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+		cursor.moveToPosition(position);
+		int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
+		Uri uri = Uri.withAppendedPath(Groups.CONTENT_URI, String.valueOf(groupId));
+		startActivity(new Intent().setClass(this, GroupActivity.class).setData(uri));
 	}
 	
 	private static class GroupCursorAdapter extends SimpleCursorAdapter {
@@ -73,4 +94,5 @@ public class GroupsActivity extends ListActivity {
 		}
 
 	}
+	
 }

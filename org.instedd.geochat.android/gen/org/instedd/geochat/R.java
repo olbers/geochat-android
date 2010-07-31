@@ -41,13 +41,14 @@ public final class R {
     }
     public static final class layout {
         public static final int compose=0x7f030000;
-        public static final int group_item=0x7f030001;
-        public static final int groups=0x7f030002;
-        public static final int login=0x7f030003;
-        public static final int main=0x7f030004;
-        public static final int map=0x7f030005;
-        public static final int message_item=0x7f030006;
-        public static final int user_item=0x7f030007;
+        public static final int group=0x7f030001;
+        public static final int group_item=0x7f030002;
+        public static final int groups=0x7f030003;
+        public static final int login=0x7f030004;
+        public static final int main=0x7f030005;
+        public static final int map=0x7f030006;
+        public static final int message_item=0x7f030007;
+        public static final int user_item=0x7f030008;
     }
     public static final class string {
         public static final int alias_colon=0x7f04001b;
@@ -69,13 +70,13 @@ public final class R {
         public static final int logging_into_geochat=0x7f040014;
         public static final int login=0x7f04001d;
         public static final int login_colon=0x7f04001c;
-        public static final int map=0x7f040028;
+        public static final int map=0x7f040027;
+        public static final int members=0x7f040029;
         public static final int message_could_not_be_sent_maybe_no_connection=0x7f040023;
-        public static final int message_not_sent=0x7f040027;
+        public static final int message_not_sent=0x7f040026;
         public static final int message_sent=0x7f040022;
         public static final int messages=0x7f040004;
         public static final int new_geochat_messages=0x7f040010;
-        public static final int ok=0x7f040026;
         public static final int one_new_messages=0x7f040011;
         public static final int password=0x7f040009;
         public static final int password_colon=0x7f04001a;
@@ -86,6 +87,7 @@ public final class R {
         public static final int sending_elipsis=0x7f040021;
         public static final int sending_message=0x7f040020;
         public static final int settings=0x7f04000c;
+        public static final int something_went_wrong=0x7f040028;
         public static final int to=0x7f04001e;
         public static final int user=0x7f040006;
         public static final int user_colon=0x7f040019;

@@ -1,19 +1,14 @@
 package org.instedd.geochat.api;
 
+import java.util.TreeSet;
+
 public class User implements Comparable<User> {
 	
 	public String login;
 	public String displayName;
 	public double lat;
 	public double lng;
-	
-	public User() {
-	}
-	
-	public User(String login, String displayName) {
-		this.login = login;
-		this.displayName = displayName;
-	}
+	public TreeSet<String> groups;
 	
 	@Override
 	public int hashCode() {

@@ -16,7 +16,8 @@
         
         <activity android:name=".LoginActivity"
                   android:label="@string/app_name"
-                  android:noHistory="true">
+                  android:noHistory="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,9 +37,14 @@
         <activity android:name=".MessagesActivity"
         		  android:label="@string/messages"
         		  android:theme="@android:style/Theme.NoTitleBar" />
+       	<activity android:name=".MessagesActivityWithTitleBar"
+        		  android:label="@string/messages" />
+       	<activity android:name=".GroupActivity"
+        		  android:label="@string/app_name" />
         		  
        	<activity android:name=".ComposeActivity"
                   android:label="@string/compose"
+                  android:noHistory="true"
                   />
                   
         <activity android:name=".map.GeoChatMapActivity"

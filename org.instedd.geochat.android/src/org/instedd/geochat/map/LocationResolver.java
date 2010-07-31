@@ -1,4 +1,4 @@
-package org.instedd.geochat;
+package org.instedd.geochat.map;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,16 +16,6 @@ import android.location.Geocoder;
 
 public class LocationResolver {
 	
-	/**
-     * The columns we are interested in from the database
-     */
-    private static final String[] PROJECTION = new String[] {
-            Locations._ID,
-            Locations.LAT,
-            Locations.LNG,
-            Locations.NAME,
-    };
-
     // lat,lng -> name
     private Map<String, String> locationsMap;
     private ContentResolver contentResolver;
@@ -36,6 +26,12 @@ public class LocationResolver {
 		this.geocoder = new Geocoder(context);
 		this.contentResolver = context.getContentResolver();
 		
+		String[] PROJECTION = new String[] {
+	            Locations._ID,
+	            Locations.LAT,
+	            Locations.LNG,
+	            Locations.NAME,
+	    };
 		Cursor c = contentResolver.query(Locations.CONTENT_URI, PROJECTION, null, null, null);
 		try {
 			while(c.moveToNext()) {

@@ -1,5 +1,7 @@
 package org.instedd.geochat.data;
 
+import java.util.TreeSet;
+
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -71,6 +73,34 @@ public class GeoChat {
          * <P>Type: TEXT</P>
          */
         public static final String LOCATION_NAME = "location_name";
+        
+        /**
+         * The groups this user belongs to
+         * <P>Type: TEXT</P>
+         */
+        public static final String GROUPS = "groups";
+        
+        public static TreeSet<String> getGroups(String groups) {
+        	String[] split = groups.split(",");
+        	int splitLength = split.length;
+        	TreeSet<String> tree = new TreeSet<String>();
+        	for (int i = 0; i < splitLength; i++) {
+				tree.add(split[i]);
+			}
+        	return tree;
+        }
+        
+        public static String getGroups(TreeSet<String> groups) {
+        	StringBuilder sb = new StringBuilder();
+        	int i = 0;
+        	for(String group : groups) {
+        		if (i != 0)
+        			sb.append(',');
+				sb.append(group);
+				i++;
+			}
+        	return sb.toString();
+        }
     }
     
     /**

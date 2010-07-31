@@ -1,6 +1,5 @@
 package org.instedd.geochat;
 
-import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.sync.GeoChatService;
 
 import android.app.TabActivity;
@@ -13,38 +12,31 @@ import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
 	
-	private final static int MENU_COMPOSE = 1;
-	private final static int MENU_MAP = 2;
-
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
 	    startService(new Intent().setClass(this, GeoChatService.class));
 	    
-	    Resources res = getResources(); // Resource object to get Drawables
-	    TabHost tabHost = getTabHost();  // The activity TabHost
-	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-	    Intent intent;  // Reusable Intent for each tab
+	    Resources res = getResources();
+	    TabHost tabHost = getTabHost();
+	    TabHost.TabSpec spec;
+	    Intent intent;
 
-	    // Create an Intent to launch an Activity for the tab (to be reused)
 	    intent = new Intent().setClass(this, GroupsActivity.class);
-
-	    // Initialize a TabSpec for each tab and add it to the TabHost
-	    spec = tabHost.newTabSpec("groups").setIndicator("Groups",
+	    spec = tabHost.newTabSpec("groups").setIndicator(res.getString(R.string.groups),
 	                      res.getDrawable(R.drawable.ic_tab_artists))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    // Do the same for the other tabs
 	    intent = new Intent().setClass(this, PeopleActivity.class);
-	    spec = tabHost.newTabSpec("people").setIndicator("People",
+	    spec = tabHost.newTabSpec("people").setIndicator(res.getString(R.string.people),
 	                      res.getDrawable(R.drawable.ic_tab_artists))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
 	    intent = new Intent().setClass(this, MessagesActivity.class);
-	    spec = tabHost.newTabSpec("messages").setIndicator("Messages",
+	    spec = tabHost.newTabSpec("messages").setIndicator(res.getString(R.string.messages),
 	                      res.getDrawable(R.drawable.ic_tab_artists))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
@@ -52,7 +44,7 @@ public class HomeActivity extends TabActivity {
 	    intent = getIntent();
 	    if (intent != null) {
 	    	String action = intent.getAction();
-	    	if (IActions.VIEW_MESSAGES.equals(action)) {
+	    	if (Actions.VIEW_MESSAGES.equals(action)) {
 	    		tabHost.setCurrentTab(2);
 	    		return;
 	    	}
@@ -63,21 +55,14 @@ public class HomeActivity extends TabActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_COMPOSE, 0, R.string.compose).setIcon(R.drawable.ic_menu_compose);
-		menu.add(0, MENU_MAP, 0, R.string.map).setIcon(R.drawable.ic_menu_mapmode);
+		Menues.compose(menu);
+		Menues.map(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()) {
-		case MENU_COMPOSE:
-			startActivity(new Intent().setClass(this, ComposeActivity.class));
-			break;
-		case MENU_MAP:
-			startActivity(new Intent().setClass(this, GeoChatMapActivity.class));
-			break;
-		}
+		Menues.executeAction(this, item.getItemId());
 		return true;
 	}
 }
