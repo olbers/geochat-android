@@ -40,4 +40,5 @@
     <string name="cannot_login_to_geochat">Cannot login to GeoChat</string>
     <string name="ok">OK</string>
     <string name="message_not_sent">Message not sent</string>
+    <string name="map">Map</string>
 </resources>

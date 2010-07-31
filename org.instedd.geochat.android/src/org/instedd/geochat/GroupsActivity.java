@@ -4,7 +4,6 @@ import org.instedd.geochat.data.GeoChat.Groups;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,22 +15,16 @@ import android.widget.TextView;
 
 public class GroupsActivity extends ListActivity {
 	
-    private static final String[] PROJECTION = new String[] {
-            Groups._ID,
-            Groups.NAME,
-            Groups.ALIAS,
-            Groups.LOCATION_NAME,
-    };
-	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-        Intent intent = getIntent();
-        if (intent.getData() == null) {
-            intent.setData(Groups.CONTENT_URI);
-        }
-		
-        Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+        String[] PROJECTION = new String[] {
+                Groups._ID,
+                Groups.NAME,
+                Groups.ALIAS,
+                Groups.LOCATION_NAME,
+        };
+        Cursor cursor = managedQuery(Groups.CONTENT_URI, PROJECTION, null, null,
                 Groups.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new GroupCursorAdapter(this, R.layout.group_item, cursor,

@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <application android:icon="@drawable/icon" android:label="@string/app_name">
+    	<uses-library android:name="com.google.android.maps" />
+    
     	<provider android:name=".data.GeoChatProvider"
             android:authorities="org.instedd.geochat.provider.GeoChat"
         />
@@ -37,6 +39,10 @@
         		  
        	<activity android:name=".ComposeActivity"
                   android:label="@string/compose"
+                  />
+                  
+        <activity android:name=".map.GeoChatMapActivity"
+                  android:label="@string/map"
                   />
         		  
        	<service android:name=".sync.GeoChatService"

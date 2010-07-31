@@ -1,5 +1,6 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.sync.GeoChatService;
 
 import android.app.TabActivity;
@@ -13,6 +14,7 @@ import android.widget.TabHost;
 public class HomeActivity extends TabActivity {
 	
 	private final static int MENU_COMPOSE = 1;
+	private final static int MENU_MAP = 2;
 
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -61,8 +63,8 @@ public class HomeActivity extends TabActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_COMPOSE, 0, R.string.compose)
-			.setIcon(R.drawable.ic_menu_compose);
+		menu.add(0, MENU_COMPOSE, 0, R.string.compose).setIcon(R.drawable.ic_menu_compose);
+		menu.add(0, MENU_MAP, 0, R.string.map).setIcon(R.drawable.ic_menu_mapmode);
 		return true;
 	}
 	
@@ -70,8 +72,10 @@ public class HomeActivity extends TabActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 		case MENU_COMPOSE:
-			startActivity(new Intent()
-				.setClass(this, ComposeActivity.class));
+			startActivity(new Intent().setClass(this, ComposeActivity.class));
+			break;
+		case MENU_MAP:
+			startActivity(new Intent().setClass(this, GeoChatMapActivity.class));
 			break;
 		}
 		return true;

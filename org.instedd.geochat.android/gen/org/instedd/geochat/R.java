@@ -13,23 +13,26 @@ public final class R {
     public static final class drawable {
         public static final int ic_menu_compose=0x7f020000;
         public static final int ic_menu_home=0x7f020001;
-        public static final int ic_stat_geochat=0x7f020002;
-        public static final int ic_tab_artists=0x7f020003;
-        public static final int ic_tab_artists_grey=0x7f020004;
-        public static final int ic_tab_artists_white=0x7f020005;
-        public static final int icon=0x7f020006;
-        public static final int stat_sys_warning=0x7f020007;
+        public static final int ic_menu_mapmode=0x7f020002;
+        public static final int ic_stat_geochat=0x7f020003;
+        public static final int ic_tab_artists=0x7f020004;
+        public static final int ic_tab_artists_grey=0x7f020005;
+        public static final int ic_tab_artists_white=0x7f020006;
+        public static final int icon=0x7f020007;
+        public static final int stat_sys_warning=0x7f020008;
     }
     public static final class id {
         public static final int alias=0x7f050005;
-        public static final int date=0x7f05000b;
-        public static final int display_name=0x7f05000c;
-        public static final int from=0x7f05000a;
+        public static final int date=0x7f05000d;
+        public static final int display_name=0x7f05000e;
+        public static final int from=0x7f05000c;
         public static final int group=0x7f050000;
         public static final int groups=0x7f050006;
         public static final int location=0x7f050004;
-        public static final int login=0x7f05000d;
+        public static final int login=0x7f05000f;
         public static final int login_button=0x7f050009;
+        public static final int mainlayout=0x7f05000a;
+        public static final int mapview=0x7f05000b;
         public static final int message=0x7f050001;
         public static final int name=0x7f050003;
         public static final int password=0x7f050008;
@@ -42,8 +45,9 @@ public final class R {
         public static final int groups=0x7f030002;
         public static final int login=0x7f030003;
         public static final int main=0x7f030004;
-        public static final int message_item=0x7f030005;
-        public static final int user_item=0x7f030006;
+        public static final int map=0x7f030005;
+        public static final int message_item=0x7f030006;
+        public static final int user_item=0x7f030007;
     }
     public static final class string {
         public static final int alias_colon=0x7f04001b;
@@ -65,6 +69,7 @@ public final class R {
         public static final int logging_into_geochat=0x7f040014;
         public static final int login=0x7f04001d;
         public static final int login_colon=0x7f04001c;
+        public static final int map=0x7f040028;
         public static final int message_could_not_be_sent_maybe_no_connection=0x7f040023;
         public static final int message_not_sent=0x7f040027;
         public static final int message_sent=0x7f040022;

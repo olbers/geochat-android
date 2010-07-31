@@ -4,7 +4,6 @@ import org.instedd.geochat.data.GeoChat.Messages;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,27 +16,21 @@ import android.widget.TextView;
 
 public class MessagesActivity extends ListActivity {
 	
-    private static final String[] PROJECTION = new String[] {
-            Messages._ID,
-            Messages.MESSAGE,
-            Messages.FROM_USER,
-            Messages.TO_GROUP,
-            Messages.LOCATION_NAME,
-            Messages.CREATED_DATE,
-    };
-	
-	public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         // Clear new messages count, since we are viewing them
         new GeoChatSettings(this).clearNewMessagesCount();
 
-        Intent intent = getIntent();
-        if (intent.getData() == null) {
-            intent.setData(Messages.CONTENT_URI);
-        }
-		
-		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+        String[] PROJECTION = new String[] {
+                Messages._ID,
+                Messages.MESSAGE,
+                Messages.FROM_USER,
+                Messages.TO_GROUP,
+                Messages.LOCATION_NAME,
+                Messages.CREATED_DATE,
+        };
+		Cursor cursor = managedQuery(Messages.CONTENT_URI, PROJECTION, null, null,
         		Messages.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new MessageCursorAdapter(this, R.layout.message_item, cursor,
