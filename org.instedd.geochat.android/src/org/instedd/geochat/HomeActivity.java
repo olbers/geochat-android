@@ -1,5 +1,7 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.sync.GeoChatService;
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -48,7 +50,7 @@ public class HomeActivity extends TabActivity {
 	    intent = getIntent();
 	    if (intent != null) {
 	    	String action = intent.getAction();
-	    	if (Actions.VIEW_MESSAGES.equals(action)) {
+	    	if (IActions.VIEW_MESSAGES.equals(action)) {
 	    		tabHost.setCurrentTab(2);
 	    		return;
 	    	}

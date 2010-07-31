@@ -1,4 +1,6 @@
-package org.instedd.geochat;
+package org.instedd.geochat.sync;
+
+import org.instedd.geochat.GeoChatSettings;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

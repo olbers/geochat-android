@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-import org.instedd.geochat.IRestClient;
+import org.instedd.geochat.api.IRestClient;
 
 public class MockRestClient implements IRestClient {
 	

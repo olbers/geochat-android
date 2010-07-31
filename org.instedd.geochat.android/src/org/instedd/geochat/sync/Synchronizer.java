@@ -1,16 +1,20 @@
-package org.instedd.geochat;
+package org.instedd.geochat.sync;
 
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.instedd.geochat.GeoChat.Groups;
-import org.instedd.geochat.GeoChat.Locations;
-import org.instedd.geochat.GeoChat.Messages;
-import org.instedd.geochat.GeoChat.Users;
+import org.instedd.geochat.GeoChatSettings;
+import org.instedd.geochat.LocationResolver;
+import org.instedd.geochat.Notifier;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.Message;
 import org.instedd.geochat.api.User;
+import org.instedd.geochat.data.GeoChatData;
+import org.instedd.geochat.data.GeoChat.Groups;
+import org.instedd.geochat.data.GeoChat.Locations;
+import org.instedd.geochat.data.GeoChat.Messages;
+import org.instedd.geochat.data.GeoChat.Users;
 
 import android.content.Context;
 import android.database.Cursor;

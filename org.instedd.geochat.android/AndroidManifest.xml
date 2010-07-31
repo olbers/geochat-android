@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-    	<provider android:name="GeoChatProvider"
+    	<provider android:name=".data.GeoChatProvider"
             android:authorities="org.instedd.geochat.provider.GeoChat"
         />
         
@@ -39,7 +39,7 @@
                   android:label="@string/compose"
                   />
         		  
-       	<service android:name=".GeoChatService"
+       	<service android:name=".sync.GeoChatService"
             android:exported="true"/>
     </application>
 <uses-permission android:name="android.permission.VIBRATE"></uses-permission>

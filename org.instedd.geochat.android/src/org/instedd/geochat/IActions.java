@@ -1,6 +1,6 @@
 package org.instedd.geochat;
 
-public interface Actions {
+public interface IActions {
 	
 	String PREFIX = "org.instedd.geochat.";
 	

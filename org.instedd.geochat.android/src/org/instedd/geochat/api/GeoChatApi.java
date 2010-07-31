@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.instedd.geochat.IRestClient;
 
 import android.util.Xml;
 import android.util.Xml.Encoding;

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.instedd.geochat.GeoChat.Locations;
+import org.instedd.geochat.data.GeoChat.Locations;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;

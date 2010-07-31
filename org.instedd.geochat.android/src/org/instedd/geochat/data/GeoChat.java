@@ -1,4 +1,4 @@
-package org.instedd.geochat;
+package org.instedd.geochat.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;

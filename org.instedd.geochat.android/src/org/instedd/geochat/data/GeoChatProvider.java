@@ -1,11 +1,11 @@
-package org.instedd.geochat;
+package org.instedd.geochat.data;
 
 import java.util.HashMap;
 
-import org.instedd.geochat.GeoChat.Groups;
-import org.instedd.geochat.GeoChat.Locations;
-import org.instedd.geochat.GeoChat.Messages;
-import org.instedd.geochat.GeoChat.Users;
+import org.instedd.geochat.data.GeoChat.Groups;
+import org.instedd.geochat.data.GeoChat.Locations;
+import org.instedd.geochat.data.GeoChat.Messages;
+import org.instedd.geochat.data.GeoChat.Users;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;

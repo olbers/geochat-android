@@ -1,4 +1,4 @@
-package org.instedd.geochat;
+package org.instedd.geochat.api;
 
 import java.io.IOException;
 import java.io.InputStream;

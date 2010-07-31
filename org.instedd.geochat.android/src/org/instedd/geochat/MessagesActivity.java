@@ -1,6 +1,6 @@
 package org.instedd.geochat;
 
-import org.instedd.geochat.GeoChat.Messages;
+import org.instedd.geochat.data.GeoChat.Messages;
 
 import android.app.ListActivity;
 import android.content.Context;

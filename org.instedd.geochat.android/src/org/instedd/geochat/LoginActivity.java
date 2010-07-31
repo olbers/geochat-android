@@ -4,6 +4,7 @@ import org.instedd.geochat.api.GeoChatApi;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.RestClient;
+import org.instedd.geochat.sync.Synchronizer;
 
 import android.app.Activity;
 import android.app.AlertDialog;

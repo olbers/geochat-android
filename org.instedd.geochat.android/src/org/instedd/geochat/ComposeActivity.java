@@ -1,8 +1,8 @@
 package org.instedd.geochat;
 
-import org.instedd.geochat.GeoChat.Groups;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
+import org.instedd.geochat.data.GeoChat.Groups;
 
 import android.app.Activity;
 import android.app.AlertDialog;
