@@ -3,6 +3,8 @@ package org.instedd.geochat.api;
 
 public interface IGeoChatApi {
 	
+	int MAX_PER_PAGE = 10;
+
 	boolean credentialsAreValid() throws Exception;
 	
 	Group[] getGroups(int page) throws Exception;

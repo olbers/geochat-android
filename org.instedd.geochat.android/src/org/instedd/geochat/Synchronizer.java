@@ -81,6 +81,8 @@ public class Synchronizer {
 				for(Group serverGroup : serverGroups) {
 					serverGroupsList.add(serverGroup);
 				}
+				if (serverGroups.length == IGeoChatApi.MAX_PER_PAGE)
+					break;
 			} catch (Exception e) {
 				e.printStackTrace();
 				break;
@@ -158,6 +160,9 @@ public class Synchronizer {
 					for(User user : users) {
 						serverUsersSet.add(user);
 					}
+					
+					if (users.length == IGeoChatApi.MAX_PER_PAGE)
+						break;
 				} catch (Exception e) {
 					e.printStackTrace();
 					break;

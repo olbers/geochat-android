@@ -24,7 +24,7 @@ public class UserHandler extends DefaultHandler {
 		if (users == null)
 			return NO_USERS;
 		
-		if (usersCount == 10)
+		if (usersCount == IGeoChatApi.MAX_PER_PAGE)
 			return users;
 		
 		User[] finalUsers = new User[usersCount];

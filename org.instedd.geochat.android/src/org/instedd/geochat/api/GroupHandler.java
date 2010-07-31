@@ -24,7 +24,7 @@ public class GroupHandler extends DefaultHandler {
 		if (groups == null)
 			return NO_GROUPS;
 		
-		if (groupsCount == 10)
+		if (groupsCount == IGeoChatApi.MAX_PER_PAGE)
 			return groups;
 		
 		Group[] finalGroups = new Group[groupsCount];

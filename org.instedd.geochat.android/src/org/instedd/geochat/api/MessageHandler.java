@@ -28,7 +28,7 @@ public class MessageHandler extends DefaultHandler {
 		if (messages == null)
 			return NO_MESSAGES;
 		
-		if (messagesCount == 10)
+		if (messagesCount == IGeoChatApi.MAX_PER_PAGE)
 			return messages;
 		
 		Message[] finalMessages = new Message[messagesCount];
