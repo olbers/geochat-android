@@ -6,6 +6,7 @@ import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.RestClient;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,11 +16,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class LoginActivity extends Activity {
 	
 	public final static String EXTRA_WRONG_CREDENTIALS = "WrongCredentials";
+	
+	private final static int DIALOG_LOGGING_IN = 1;
+	private final static int DIALOG_WRONG_CREDENTIALS = 2;
+	private final static int DIALOG_UNKNOWN_ERROR = 3;
 	
 	private final Handler handler = new Handler();
 	private ProgressDialog progressDialog;
@@ -38,7 +42,6 @@ public class LoginActivity extends Activity {
 	    
 	    final EditText uiUser = (EditText) findViewById(R.id.user);
 	    final EditText uiPassword = (EditText) findViewById(R.id.password);
-	    final TextView uiFeedback = (TextView) findViewById(R.id.feedback);
 	    final Button uiLogin = (Button) findViewById(R.id.login_button); 
 	    
 	    uiUser.setText(existingUser);
@@ -52,8 +55,7 @@ public class LoginActivity extends Activity {
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
-								showDialog(0);
-								uiFeedback.setVisibility(View.GONE);
+								showDialog(DIALOG_LOGGING_IN);
 								uiLogin.setEnabled(false);
 							}
 						});
@@ -81,21 +83,19 @@ public class LoginActivity extends Activity {
 								handler.post(new Runnable() {
 									@Override
 									public void run() {
-										dismissDialog(0);
 										uiLogin.setEnabled(true);
-										uiFeedback.setVisibility(View.VISIBLE);
-										uiFeedback.setText(R.string.invalid_credentials);
-									}
+										dismissDialog(DIALOG_LOGGING_IN);
+										showDialog(DIALOG_WRONG_CREDENTIALS);
+									}									
 								});
 							}
 						} catch (Exception e) {
 							handler.post(new Runnable() {
 								@Override
 								public void run() {
-									dismissDialog(0);
 									uiLogin.setEnabled(true);
-									uiFeedback.setVisibility(View.VISIBLE);
-									uiFeedback.setText(R.string.cannott_login_maybe_no_connection);
+									dismissDialog(DIALOG_LOGGING_IN);
+									showDialog(DIALOG_UNKNOWN_ERROR);
 								}
 							});
 						}
@@ -107,13 +107,24 @@ public class LoginActivity extends Activity {
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		String message = getResources().getString(R.string.logging_in_to_geochat);
-		
-		progressDialog = new ProgressDialog(this);
-		progressDialog.setTitle(message);
-		progressDialog.setMessage(message);
-		progressDialog.setCancelable(false);
-		return progressDialog;
+		if (id == DIALOG_LOGGING_IN) {
+			String message = getResources().getString(R.string.logging_in_to_geochat);
+			
+			progressDialog = new ProgressDialog(this);
+			progressDialog.setTitle(message);
+			progressDialog.setMessage(message);
+			progressDialog.setCancelable(false);
+			return progressDialog;	
+		} else {
+			int messageResourceId = id == DIALOG_WRONG_CREDENTIALS ? R.string.invalid_credentials : R.string.cannott_login_maybe_no_connection; 
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(messageResourceId)
+				.setTitle(R.string.cannot_login_to_geochat)
+				.setCancelable(true)
+				.setNeutralButton(R.string.ok, null);
+			return builder.create();
+		}
 	}
 	
 	private void resync() {

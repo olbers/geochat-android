@@ -37,4 +37,7 @@
     <string name="message_sent">Message sent</string>
     <string name="message_could_not_be_sent_maybe_no_connection">Message could not be sent, maybe no connection?</string>
     <string name="home">Home</string>
+    <string name="cannot_login_to_geochat">Cannot login to GeoChat</string>
+    <string name="ok">OK</string>
+    <string name="message_not_sent">Message not sent</string>
 </resources>

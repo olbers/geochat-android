@@ -5,6 +5,7 @@ import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -21,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
 	
@@ -33,6 +33,9 @@ public class ComposeActivity extends Activity {
     
     private final static int MENU_HOME = 1;
     
+    private final static int DIALOG_SENDING_MESSAGE = 1;
+    private final static int DIALOG_CANNOT_SEND_MESSAGE = 2;
+    
     private final Handler handler = new Handler();
     
 	@Override
@@ -40,7 +43,11 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 	    setContentView(R.layout.compose);
 	    
+	    String composeGroup = new GeoChatSettings(this).getComposeGroup();
+	    int composeGroupIndex = 0;
+	    
 	    Cursor c = getContentResolver().query(Groups.CONTENT_URI, PROJECTION, null, null, "lower(" + Groups.NAME + ")");
+	    
 	    Group[] groups = new Group[c.getCount() + 1];
 	    groups[0] = new Group();
 	    groups[0].name = "(No group)";
@@ -48,6 +55,10 @@ public class ComposeActivity extends Activity {
 			groups[i + 1] = new Group();
 			groups[i + 1].name = c.getString(c.getColumnIndex(Groups.NAME));
 			groups[i + 1].alias = c.getString(c.getColumnIndex(Groups.ALIAS));
+			
+			if (composeGroup != null && composeGroup.equals(groups[i + 1].alias)) {
+				composeGroupIndex = i + 1;
+			}
 		}
 	    c.close();
 	    
@@ -59,6 +70,7 @@ public class ComposeActivity extends Activity {
 	    final Button uiSend = (Button) findViewById(R.id.send);
 	    
 	    uiGroup.setAdapter(adapter);
+	    uiGroup.setSelection(composeGroupIndex);
 	    
 	    uiSend.setOnClickListener(new OnClickListener() {
 			@Override
@@ -83,30 +95,32 @@ public class ComposeActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
-				showDialog(0);
+				showDialog(DIALOG_SENDING_MESSAGE);
 			}
 		});
 		
 		try {
-			IGeoChatApi api = new GeoChatSettings(ComposeActivity.this).newApi();
+			GeoChatSettings settings = new GeoChatSettings(ComposeActivity.this);
+			IGeoChatApi api = settings.newApi();
 			if (group.alias == null) {
 				api.sendMessage(message);
 			} else {
 				api.sendMessage(group.alias, message);
 			}
+			settings.setComposeGroup(group == null ? null : group.alias);
 			goHome();
 		} catch (Exception e) {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					Toast.makeText(ComposeActivity.this, getResources().getString(R.string.message_could_not_be_sent_maybe_no_connection), Toast.LENGTH_LONG);
+					showDialog(DIALOG_CANNOT_SEND_MESSAGE);
 				}
 			});
 		} finally {
 			handler.post(new Runnable() {
 				@Override
 				public void run() {
-					dismissDialog(0);
+					dismissDialog(DIALOG_SENDING_MESSAGE);
 				}
 			});
 		}
@@ -114,14 +128,26 @@ public class ComposeActivity extends Activity {
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		String title = getResources().getString(R.string.sending_message);
-		String message = getResources().getString(R.string.sending_elipsis);
-		
-		ProgressDialog progressDialog = new ProgressDialog(this);
-		progressDialog.setTitle(title);
-		progressDialog.setMessage(message);
-		progressDialog.setCancelable(false);
-		return progressDialog;
+		switch(id) {
+		case DIALOG_SENDING_MESSAGE:
+			String title = getResources().getString(R.string.sending_message);
+			String message = getResources().getString(R.string.sending_elipsis);
+			
+			ProgressDialog progressDialog = new ProgressDialog(this);
+			progressDialog.setTitle(title);
+			progressDialog.setMessage(message);
+			progressDialog.setCancelable(false);
+			return progressDialog;
+		case DIALOG_CANNOT_SEND_MESSAGE:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage(R.string.message_could_not_be_sent_maybe_no_connection)
+				.setTitle(R.string.message_not_sent)
+				.setCancelable(true)
+				.setNeutralButton(R.string.ok, null);
+			return builder.create();
+		default:
+			return null;
+		}
 	}
 	
 	@Override

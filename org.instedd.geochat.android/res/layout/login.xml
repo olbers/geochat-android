@@ -34,12 +34,4 @@
     	android:id="@+id/login_button"
     	android:text="@string/login"
     	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	style="@android:style/TextAppearance.Large"
-    	android:visibility="gone"
-    	android:textColor="#F00"
-    	android:id="@+id/feedback"
-    	/>
 </LinearLayout>

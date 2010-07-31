@@ -7,20 +7,16 @@ import org.instedd.geochat.GeoChat.Groups;
 import org.instedd.geochat.GeoChat.Locations;
 import org.instedd.geochat.GeoChat.Messages;
 import org.instedd.geochat.GeoChat.Users;
-import org.instedd.geochat.api.GeoChatApi;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.Message;
-import org.instedd.geochat.api.RestClient;
 import org.instedd.geochat.api.User;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.text.TextUtils;
 
 public class Synchronizer {
 	
@@ -267,19 +263,11 @@ public class Synchronizer {
 		context.getContentResolver().delete(Users.CONTENT_URI, null, null);
 		context.getContentResolver().delete(Messages.CONTENT_URI, null, null);
 		context.getContentResolver().delete(Locations.CONTENT_URI, null, null);
+		new GeoChatSettings(context).clearUserData();
 	}
 	
 	private void recreateApi() {
-		SharedPreferences prefs = context.getSharedPreferences(GeoChatSettings.SHARED_PREFS_NAME, 0);
-		String user = prefs.getString(GeoChatSettings.USER, null);
-		if (TextUtils.isEmpty(user)) {
-			api = null;
-			return;
-		}
-		
-		String password = prefs.getString(GeoChatSettings.PASSWORD, null);
-		
-		api = new GeoChatApi(new RestClient(), user, password);	
+		api = new GeoChatSettings(context).newApi();
 	}
 	
 	private boolean hasConnectivity() {
@@ -292,45 +280,43 @@ public class Synchronizer {
 		@Override
 		public void run() {
 			while(running) {
-				if (api != null) {
-					boolean hasConnectivity = hasConnectivity();
-					boolean credentialsAreValid = true;
-					if (hasConnectivity) {
-						try {
-							credentialsAreValid = api.credentialsAreValid();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if (resync) {
-						if (!connectivityChanged) {
-							if (!credentialsAreValid) {
-								notifier.notifyWrongCredentials();
-							}
-						}
-						connectivityChanged = false;
-						
-						resyncFinished();
-					}
-					
+				boolean hasConnectivity = hasConnectivity();
+				boolean credentialsAreValid = true;
+				if (hasConnectivity) {
 					try {
-						if (hasConnectivity && credentialsAreValid) {
-							Group[] groups = syncGroups();
-							if (resync) continue;
-							
-							syncUsers(groups);
-							if (resync) continue;
-							
-							int newMessagesCount = syncMessages(groups);
-							if (newMessagesCount > 0) {
-								notifier.notifyNewMessages(newMessagesCount);
-							}
-							if (resync) continue;
-						}
+						credentialsAreValid = api.credentialsAreValid();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+				}
+				
+				if (resync) {
+					if (!connectivityChanged) {
+						if (!credentialsAreValid) {
+							notifier.notifyWrongCredentials();
+						}
+					}
+					connectivityChanged = false;
+					
+					resyncFinished();
+				}
+				
+				try {
+					if (hasConnectivity && credentialsAreValid) {
+						Group[] groups = syncGroups();
+						if (resync) continue;
+						
+						syncUsers(groups);
+						if (resync) continue;
+						
+						int newMessagesCount = syncMessages(groups);
+						if (newMessagesCount > 0) {
+							notifier.notifyNewMessages(newMessagesCount);
+						}
+						if (resync) continue;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				
 				// Wait 15 minutes in intervals of 5 seconds,

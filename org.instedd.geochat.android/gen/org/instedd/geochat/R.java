@@ -22,14 +22,13 @@ public final class R {
     }
     public static final class id {
         public static final int alias=0x7f050005;
-        public static final int date=0x7f05000c;
-        public static final int display_name=0x7f05000d;
-        public static final int feedback=0x7f05000a;
-        public static final int from=0x7f05000b;
+        public static final int date=0x7f05000b;
+        public static final int display_name=0x7f05000c;
+        public static final int from=0x7f05000a;
         public static final int group=0x7f050000;
         public static final int groups=0x7f050006;
         public static final int location=0x7f050004;
-        public static final int login=0x7f05000e;
+        public static final int login=0x7f05000d;
         public static final int login_button=0x7f050009;
         public static final int message=0x7f050001;
         public static final int name=0x7f050003;
@@ -49,6 +48,7 @@ public final class R {
     public static final class string {
         public static final int alias_colon=0x7f04001b;
         public static final int app_name=0x7f040001;
+        public static final int cannot_login_to_geochat=0x7f040025;
         public static final int cannott_login_maybe_no_connection=0x7f04000e;
         public static final int compose=0x7f040018;
         public static final int d_new_messages=0x7f040012;
@@ -66,9 +66,11 @@ public final class R {
         public static final int login=0x7f04001d;
         public static final int login_colon=0x7f04001c;
         public static final int message_could_not_be_sent_maybe_no_connection=0x7f040023;
+        public static final int message_not_sent=0x7f040027;
         public static final int message_sent=0x7f040022;
         public static final int messages=0x7f040004;
         public static final int new_geochat_messages=0x7f040010;
+        public static final int ok=0x7f040026;
         public static final int one_new_messages=0x7f040011;
         public static final int password=0x7f040009;
         public static final int password_colon=0x7f04001a;

@@ -30,7 +30,7 @@ public class MessagesActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         
         // Clear new messages count, since we are viewing them
-        Notifier.clearNewMessagesCount(this);
+        new GeoChatSettings(this).clearNewMessagesCount();
 
         Intent intent = getIntent();
         if (intent.getData() == null) {
