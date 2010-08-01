@@ -16,7 +16,7 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
-		assertEquals("http://geochat.instedd.org/api/users/foo/verify.rss?password=bar", restClient.getGetUrl());
+		assertEquals("https://geochat.instedd.org/api/users/foo/verify.rss?password=bar", restClient.getGetUrl());
 	}
 	
 	public void testCredentialsTrue() throws Exception {
@@ -26,7 +26,7 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
-		assertEquals("http://geochat.instedd.org/api/users/foo/verify.rss?password=bar", restClient.getGetUrl());
+		assertEquals("https://geochat.instedd.org/api/users/foo/verify.rss?password=bar", restClient.getGetUrl());
 	}
 	
 	public void testGroups() throws Exception {
@@ -82,7 +82,7 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
-		assertEquals("http://geochat.instedd.org/api/users/foo/groups.rss?page=1", restClient.getGetUrl());
+		assertEquals("https://geochat.instedd.org/api/users/foo/groups.rss?page=1", restClient.getGetUrl());
 		assertEquals(2, groups.length);
 		
 		assertEquals("Group 1", groups[0].name);
@@ -126,7 +126,7 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
-		assertEquals("http://geochat.instedd.org/api/groups/group/members.rss?page=1", restClient.getGetUrl());
+		assertEquals("https://geochat.instedd.org/api/groups/group/members.rss?page=1", restClient.getGetUrl());
 		assertEquals(2, users.length);
 		
 		assertEquals("Member 1", users[0].displayName);
@@ -189,7 +189,7 @@ public class GeoChatApiTest extends TestCase {
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
-		assertEquals("http://geochat.instedd.org/api/groups/group/messages.rss?page=1", restClient.getGetUrl());
+		assertEquals("https://geochat.instedd.org/api/groups/group/messages.rss?page=1", restClient.getGetUrl());
 		assertEquals(2, messages.length);
 		
 		assertEquals("http://geochat.instedd.org/api/messages/{messageId}", messages[0].guid);

@@ -29,7 +29,7 @@ public class GeoChatProvider extends ContentProvider {
 	private static final String TAG = "GeoChatProvider";
 	
 	private static final String DATABASE_NAME = "geochat.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 5;
     
     private static final String USERS_TABLE_NAME = "users";
     private static final String GROUPS_TABLE_NAME = "groups";
@@ -52,7 +52,7 @@ public class GeoChatProvider extends ContentProvider {
     public final static int GROUP_LAST_MESSAGE = 9;
     public final static int GROUP_ID = 10;
     public final static int USER_ID = 11;
-    public final static int MESSAGES_OLD = 12;
+    public final static int GROUP_MESSAGES_OLD = 12;
     public final static int GROUP_USERS = 13;
     public final static int USER_LOGIN = 14;
     
@@ -152,19 +152,22 @@ public class GeoChatProvider extends ContentProvider {
             count = db.delete(USERS_TABLE_NAME, Groups._ID + "=" + userId
                     + (!TextUtils.isEmpty(where) ? " AND (" + where + ')' : ""), whereArgs);
             break;
-        case MESSAGES_OLD:
-        	Cursor c = db.query(MESSAGES_TABLE_NAME, new String[] { Messages._ID }, null, null, null, null, Messages.CREATED_DATE + " DESC", MAX_MESSAGES_COUNT_PLUS_ONE_STRING);
+        case GROUP_MESSAGES_OLD:
+        	String groupAlias = uri.getPathSegments().get(1);
+        	Cursor c = db.query(MESSAGES_TABLE_NAME, new String[] { Messages._ID }, Messages.TO_GROUP + " = '" + groupAlias + "'", null, null, null, Messages.CREATED_DATE + " DESC", MAX_MESSAGES_COUNT_PLUS_ONE_STRING);
         	if (c.getCount() > MAX_MESSAGES_COUNT) {
         		c.moveToPosition(MAX_MESSAGES_COUNT - 1);
         		int id = c.getInt(0);
-        		count = db.delete(MESSAGES_TABLE_NAME, Users._ID + " < " + id, null);
+        		count = db.delete(MESSAGES_TABLE_NAME, Messages.TO_GROUP + " = '" + groupAlias + "' AND " + Messages._ID + " <= " + id, null);
         	} else {
         		count = 0;
         	}
+        	c.close();
+        	break;
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
-
+        
         if (count > 0) {
         	getContext().getContentResolver().notifyChange(uri, null);
         }
@@ -405,9 +408,9 @@ public class GeoChatProvider extends ContentProvider {
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages", GROUP_MESSAGES);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/users", GROUP_USERS);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages/last", GROUP_LAST_MESSAGE);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages/old", GROUP_MESSAGES_OLD);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages", MESSAGES);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages/#", MESSAGE_ID);
-        URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages/old", MESSAGES_OLD);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "locations", LOCATIONS);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "location/#/#", LOCATION_LAT_LNG);
 

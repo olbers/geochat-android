@@ -9,5 +9,10 @@ public class Message {
 	public double lat;
 	public double lng;
 	public long createdDate;
+	
+	@Override
+	public String toString() {
+		return message + " (from " + fromUser + " to " + toGroup + ")";
+	}
 
 }

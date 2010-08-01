@@ -93,7 +93,7 @@ public class Synchronizer {
 				for(Group serverGroup : serverGroups) {
 					serverGroupsList.add(serverGroup);
 				}
-				if (serverGroups.length == IGeoChatApi.MAX_PER_PAGE)
+				if (serverGroups.length != IGeoChatApi.MAX_PER_PAGE)
 					break;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -107,7 +107,7 @@ public class Synchronizer {
 		if (resync) return null;
 		
 		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS, Groups.NAME, Groups.LAT, Groups.LNG }, null, null, Groups.ALIAS);
+		Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS, Groups.NAME, Groups.LAT, Groups.LNG }, null, null, "lower(" + Groups.ALIAS + ")");
 		
 		try {
 			int serverIndex = 0;
@@ -186,7 +186,7 @@ public class Synchronizer {
 						existing.groups.add(group.alias);
 					}
 					
-					if (users.length == IGeoChatApi.MAX_PER_PAGE)
+					if (users.length != IGeoChatApi.MAX_PER_PAGE)
 						break;
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -200,7 +200,7 @@ public class Synchronizer {
 		if (resync) return;
 		
 		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG }, null, null, Users.LOGIN);
+		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG }, null, null, "lower(" + Users.LOGIN + ")");
 		
 		try {
 			int serverIndex = 0;
@@ -298,9 +298,9 @@ public class Synchronizer {
 	}
 	
 	public void deleteOldMessages(Group[] groups) {
-//		for(Group group : groups) {
-//			data.deleteOldMessages(group.alias);
-//		}
+		for(Group group : groups) {
+			data.deleteOldMessages(group.alias);
+		}
 	}
 	
 	public void clearExistingData() {

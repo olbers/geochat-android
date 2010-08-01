@@ -55,7 +55,7 @@ public class GeoChatData {
 	}
 	
 	public void deleteOldMessages(String groupAlias) {
-		//context.getContentResolver().delete(Uri.withAppendedPath(Messages.CONTENT_URI, "old"), null, null);
+		context.getContentResolver().delete(Uri.withAppendedPath(Uri.withAppendedPath(Uri.withAppendedPath(Groups.CONTENT_URI, groupAlias), "messages"), "old"), null, null);
 	}
 	
 	private ContentValues getContentValues(Group group) {
