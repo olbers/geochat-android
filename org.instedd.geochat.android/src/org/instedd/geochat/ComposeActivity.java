@@ -42,7 +42,7 @@ public class ComposeActivity extends Activity {
 	    setContentView(R.layout.compose);
 	    
 	    String composeGroup;	    
-	    if (GeoChatProvider.URI_MATCHER.match(getIntent().getData()) == GeoChatProvider.GROUP_ID) {
+	    if (getIntent().getData() != null && GeoChatProvider.URI_MATCHER.match(getIntent().getData()) == GeoChatProvider.GROUP_ID) {
 	    	String[] PROJECTION = new String[] {
 	                Groups._ID,
 	                Groups.ALIAS,

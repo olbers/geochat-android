@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 public class MessagesActivity extends ListActivity {
 	
+	private boolean mainActivity;
+	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -45,6 +47,9 @@ public class MessagesActivity extends ListActivity {
 	        	setTitle(getResources().getString(R.string.app_name) + " - " + displayName);
 	        }
 	        cursor.close();
+	        mainActivity = true;
+		} else {
+			mainActivity = false;
 		}
 
         String[] PROJECTION = new String[] {
@@ -111,6 +116,7 @@ public class MessagesActivity extends ListActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		if (!mainActivity) return super.onCreateOptionsMenu(menu);
 		Menues.home(menu);
 		Menues.map(menu);
 		Menues.compose(menu);
@@ -119,6 +125,7 @@ public class MessagesActivity extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		if (!mainActivity) return super.onOptionsItemSelected(item);
 		Menues.executeAction(this, item.getItemId());
 		return true;
 	}

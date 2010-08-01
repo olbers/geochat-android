@@ -100,7 +100,6 @@ public class UserGroupsOverlay extends Overlay {
 				direction++;
 			}
 		}
-		
 	}
 	
 	private static Point getPoint(User user, Projection projection) {
