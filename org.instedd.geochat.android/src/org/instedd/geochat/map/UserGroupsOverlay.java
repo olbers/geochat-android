@@ -94,7 +94,7 @@ public class UserGroupsOverlay extends Overlay {
 				for (int i = start, j = 0; i != end; i += increment, j++) {
 					User user = users.get(i);
 					String text = user.displayName;
-					canvas.drawText(text, targetX, targetY + upOrDown * (4 - (j + 1) * 12), textPaint);	
+					canvas.drawText(text, targetX, targetY + upOrDown * (4 - (j + 1) * 14), textPaint);	
 				}
 				
 				direction++;
