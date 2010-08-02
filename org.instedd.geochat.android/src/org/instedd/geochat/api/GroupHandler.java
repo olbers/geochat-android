@@ -76,9 +76,15 @@ public class GroupHandler extends DefaultHandler {
 			break;
 		case LAT:
 			group.lat = Double.parseDouble(new String(ch, start, length));
+			if (!(-90 <= group.lat && group.lat <= 90)) {
+				group.lat = 0;
+			}
 			break;
 		case LNG:
 			group.lng = Double.parseDouble(new String(ch, start, length));
+			if (!(-180 <= group.lng && group.lng <= 180)) {
+				group.lng = 0;
+			}
 			break;
 		}
 	}

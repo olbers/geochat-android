@@ -102,9 +102,15 @@ public class MessageHandler extends DefaultHandler {
 			break;
 		case LAT:
 			message.lat = Double.parseDouble(new String(ch, start, length));
+			if (!(-90 <= message.lat && message.lat <= 90)) {
+				message.lat = 0;
+			}
 			break;
 		case LNG:
 			message.lng = Double.parseDouble(new String(ch, start, length));
+			if (!(-180 <= message.lng && message.lng <= 180)) {
+				message.lng = 0;
+			}
 			break;
 		}
 	}

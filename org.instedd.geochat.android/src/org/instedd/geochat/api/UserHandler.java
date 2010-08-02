@@ -76,9 +76,15 @@ public class UserHandler extends DefaultHandler {
 			break;
 		case LAT:
 			user.lat = Double.parseDouble(new String(ch, start, length));
+			if (!(-90 <= user.lat && user.lat <= 90)) {
+				user.lat = 0;
+			}
 			break;
 		case LNG:
 			user.lng = Double.parseDouble(new String(ch, start, length));
+			if (!(-180 <= user.lng && user.lng <= 180)) {
+				user.lng = 0;
+			}
 			break;
 		}
 	}
