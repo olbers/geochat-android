@@ -61,6 +61,7 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	
 	@Override
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+		this.position = position;
 		viewMessages();
 	}
 	
