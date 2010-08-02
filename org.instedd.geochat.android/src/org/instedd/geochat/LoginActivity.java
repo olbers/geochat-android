@@ -80,7 +80,7 @@ public class LoginActivity extends Activity {
 								if (userChanged) {
 									resync();
 								}
-								enterGeoChat();
+								Actions.home(LoginActivity.this);
 							} else {
 								handler.post(new Runnable() {
 									@Override
@@ -159,14 +159,6 @@ public class LoginActivity extends Activity {
 		});
 		
 		synchronizer.syncMessages(groups);
-		
-		return;
-	}
-	
-	private void enterGeoChat() {
-		startActivity(new Intent()
-			.setClass(LoginActivity.this, HomeActivity.class)
-			);
 	}
 
 }
