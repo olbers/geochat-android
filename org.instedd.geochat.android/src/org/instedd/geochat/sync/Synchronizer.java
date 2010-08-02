@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import org.instedd.geochat.GeoChatSettings;
 import org.instedd.geochat.Notifier;
 import org.instedd.geochat.R;
+import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.Message;
@@ -78,27 +79,22 @@ public class Synchronizer {
 		this.resync = false;
 	}
 	
-	public Group[] syncGroups() {
+	public Group[] syncGroups() throws GeoChatApiException {
 		// Get groups from server and sort them by alias
 		Set<Group> serverGroupsList = new TreeSet<Group>();
 		int page = 1;
 		while(true) {
 			if (resync) return null;
 			
-			try {
-				Group[] serverGroups = api.getGroups(page);
-				if (serverGroups.length == 0) {
-					break;
-				}
-				for(Group serverGroup : serverGroups) {
-					serverGroupsList.add(serverGroup);
-				}
-				if (serverGroups.length != IGeoChatApi.MAX_PER_PAGE)
-					break;
-			} catch (Exception e) {
-				e.printStackTrace();
+			Group[] serverGroups = api.getGroups(page);
+			if (serverGroups.length == 0) {
 				break;
 			}
+			for(Group serverGroup : serverGroups) {
+				serverGroupsList.add(serverGroup);
+			}
+			if (serverGroups.length != IGeoChatApi.MAX_PER_PAGE)
+				break;
 			page++;
 		}
 		if (resync) return null;
@@ -160,38 +156,33 @@ public class Synchronizer {
 		}
 	}
 	
-	public void syncUsers(Group[] groups) {
+	public void syncUsers(Group[] groups) throws GeoChatApiException {
 		Map<User, User> serverUsersMap = new TreeMap<User, User>();
 		for(Group group : groups) {
 			if (resync) return;
 			
 			int page = 1;
 			while(true) {
-				try {
-					User[] users = api.getUsers(group.alias, page);
-					if (resync) return;
-					
-					if (users.length == 0) {
-						break;
-					}
-					for(User user : users) {
-						User existing = serverUsersMap.get(user);
-						if (existing == null) {
-							existing = user;
-							serverUsersMap.put(user, user);
-						}
-						if (existing.groups == null) {
-							existing.groups = new TreeSet<String>();
-						}
-						existing.groups.add(group.alias);
-					}
-					
-					if (users.length != IGeoChatApi.MAX_PER_PAGE)
-						break;
-				} catch (Exception e) {
-					e.printStackTrace();
+				User[] users = api.getUsers(group.alias, page);
+				if (resync) return;
+				
+				if (users.length == 0) {
 					break;
 				}
+				for(User user : users) {
+					User existing = serverUsersMap.get(user);
+					if (existing == null) {
+						existing = user;
+						serverUsersMap.put(user, user);
+					}
+					if (existing.groups == null) {
+						existing.groups = new TreeSet<String>();
+					}
+					existing.groups.add(group.alias);
+				}
+				
+				if (users.length != IGeoChatApi.MAX_PER_PAGE)
+					break;
 				page++;
 			}
 		}
@@ -200,7 +191,7 @@ public class Synchronizer {
 		if (resync) return;
 		
 		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG }, null, null, "lower(" + Users.LOGIN + ")");
+		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG, Users.GROUPS }, null, null, "lower(" + Users.LOGIN + ")");
 		
 		try {
 			int serverIndex = 0;
@@ -254,7 +245,7 @@ public class Synchronizer {
 		}
 	}
 	
-	public int syncMessages(Group[] groups) {
+	public int syncMessages(Group[] groups) throws GeoChatApiException {
 		int newMessagesCount = 0;
 		
 		for(Group group : groups) {
@@ -284,9 +275,6 @@ public class Synchronizer {
 					data.createMessage(message);
 					newMessagesCount++;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
 			} finally {
 				c.close();
 			}
@@ -326,28 +314,24 @@ public class Synchronizer {
 		public void run() {
 			try {
 				while(running) {
-					boolean hasConnectivity = hasConnectivity();
-					boolean credentialsAreValid = true;
-					if (hasConnectivity) {
-						try {
-							credentialsAreValid = api.credentialsAreValid();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if (resync) {
-						if (!connectivityChanged) {
-							if (!credentialsAreValid) {
-								notifier.notifyWrongCredentials();
-							}
-						}
-						connectivityChanged = false;
-						
-						resyncFinished();
-					}
-					
 					try {
+						boolean hasConnectivity = hasConnectivity();
+						boolean credentialsAreValid = true;
+						if (hasConnectivity) {
+							credentialsAreValid = api.credentialsAreValid();
+						}
+						
+						if (resync) {
+							if (!connectivityChanged) {
+								if (!credentialsAreValid) {
+									notifier.notifyWrongCredentials();
+								}
+							}
+							connectivityChanged = false;
+							
+							resyncFinished();
+						}
+						
 						if (hasConnectivity && credentialsAreValid) {
 							Group[] groups = syncGroups();
 							if (resync) continue;
@@ -364,15 +348,16 @@ public class Synchronizer {
 							deleteOldMessages(groups);
 							if (resync) continue;
 						}
-					} catch (Exception e) {
+					} catch (GeoChatApiException e) {
+						// TODO handle this exception
 						e.printStackTrace();
 					}
-					
+						
 					// Wait 15 minutes in intervals of 5 seconds,
 					// so wait
 					try {
-						for(int i = 0; i < 3 * 60 * 1000; i++) {
-							sleep(5);
+						for(int i = 0; i < 3 * 60; i++) {
+							sleep(5000);
 							if (resync) break;
 						}
 					} catch (InterruptedException e) {

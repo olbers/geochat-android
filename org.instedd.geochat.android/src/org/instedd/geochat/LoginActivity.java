@@ -1,6 +1,7 @@
 package org.instedd.geochat;
 
 import org.instedd.geochat.api.GeoChatApi;
+import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.RestClient;
@@ -90,7 +91,7 @@ public class LoginActivity extends Activity {
 									}									
 								});
 							}
-						} catch (Exception e) {
+						} catch (GeoChatApiException e) {
 							handler.post(new Runnable() {
 								@Override
 								public void run() {
@@ -128,7 +129,7 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
-	private void resync() {
+	private void resync() throws GeoChatApiException {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {

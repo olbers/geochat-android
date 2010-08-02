@@ -55,8 +55,8 @@ public class HomeActivity extends TabActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		Menues.compose(menu);
 		Menues.map(menu);
+		Menues.compose(menu);
 		return true;
 	}
 	
