@@ -160,6 +160,10 @@ public class Synchronizer {
 	}
 	
 	public void syncUsers(Group[] groups) throws GeoChatApiException {
+		syncUsers(groups, true);
+	}
+	
+	public void syncUsers(Group[] groups, boolean fetchIcons) throws GeoChatApiException {
 		Map<User, User> serverUsersMap = new TreeMap<User, User>();
 		for(Group group : groups) {
 			if (resync) return;
@@ -244,6 +248,14 @@ public class Synchronizer {
 						!serverUser.groups.equals(existingUserGroups)) {
 						data.updateUser(c.getInt(0), serverUser);
 					}
+					if (fetchIcons) {
+						InputStream icon = api.getUserIcon(serverUser.login, ICON_SIZE);
+						if (icon == null) {
+							data.deleteUserIcon(serverUser.login);
+						} else {
+							data.saveUserIcon(serverUser.login, icon);
+						}
+					}
 					serverIndex++;
 					cachedIndex++;
 					c.moveToNext();
@@ -315,6 +327,10 @@ public class Synchronizer {
 	}
 	
 	private class SyncThread extends Thread {
+		
+		// Fetch icons the first time
+		private boolean fetchIcons = true;
+		
 		@Override
 		public void run() {
 			try {
@@ -341,7 +357,11 @@ public class Synchronizer {
 							Group[] groups = syncGroups();
 							if (resync) continue;
 							
-							syncUsers(groups);
+							syncUsers(groups, fetchIcons);
+							
+							// Don't fetch icons the next times
+							fetchIcons = false;
+							
 							if (resync) continue;
 							
 							int newMessagesCount = syncMessages(groups);
