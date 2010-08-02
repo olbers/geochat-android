@@ -39,9 +39,6 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
         Intent intent = getIntent();
 		if (intent.getData() == null) {
 			intent.setData(Messages.CONTENT_URI);
-			
-			// Clear new messages count, since we are viewing them
-	        new GeoChatSettings(this).clearNewMessagesCount();
 		}
 		
 		if (GeoChatProvider.URI_MATCHER.match(intent.getData()) == GeoChatProvider.USER_MESSAGES) {
@@ -78,6 +75,14 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
         setListAdapter(adapter);
         
         getListView().setOnItemLongClickListener(this);
+    }
+    
+    @Override
+    protected void onResume() {
+    	// Clear new messages count, since we are viewing them
+        new GeoChatSettings(this).clearNewMessagesCount();
+        
+    	super.onResume();
     }
     
     @Override
