@@ -41,18 +41,14 @@ public class GroupActivity extends TabActivity {
 	    Intent intent;
 	    
 	    setTitle(res.getString(R.string.app_name) + " - " + name);
-	    
-	    Uri groupAliasUri = Uri.withAppendedPath(Groups.CONTENT_URI, alias);
-		Uri usersUri = Uri.withAppendedPath(groupAliasUri, "users");
-		Uri messagesUri = Uri.withAppendedPath(groupAliasUri, "messages");
 
-	    intent = new Intent().setClass(this, PeopleActivity.class).setData(usersUri);
+	    intent = new Intent().setClass(this, PeopleActivity.class).setData(Uris.groupUsers(alias));
 	    spec = tabHost.newTabSpec("people").setIndicator(res.getString(R.string.members),
 	                      res.getDrawable(R.drawable.ic_tab_users))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    intent = new Intent().setClass(this, MessagesActivity.class).setData(messagesUri);
+	    intent = new Intent().setClass(this, MessagesActivity.class).setData(Uris.groupMessages(alias));
 	    spec = tabHost.newTabSpec("messages").setIndicator(res.getString(R.string.messages),
 	                      res.getDrawable(R.drawable.ic_tab_messages))
 	                  .setContent(intent);

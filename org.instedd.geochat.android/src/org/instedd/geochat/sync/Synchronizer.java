@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import org.instedd.geochat.GeoChatSettings;
 import org.instedd.geochat.Notifier;
 import org.instedd.geochat.R;
+import org.instedd.geochat.Uris;
 import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
@@ -251,10 +252,7 @@ public class Synchronizer {
 			if (resync) return newMessagesCount;
 			
 			// Get guid of last cached message
-			Uri uri = Groups.CONTENT_URI;
-			uri = Uri.withAppendedPath(uri, group.alias);
-			uri = Uri.withAppendedPath(uri, "messages");
-			uri = Uri.withAppendedPath(uri, "last");
+			Uri uri = Uris.groupLastMessage(group.alias);
 			
 			Cursor c = context.getContentResolver().query(uri, new String[] { Messages.GUID }, null, null, null);
 			String lastGuid = c.moveToNext() ? c.getString(0) : null;

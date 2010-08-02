@@ -2,11 +2,14 @@ package org.instedd.geochat;
 
 import org.instedd.geochat.data.GeoChat.Groups;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -16,10 +19,12 @@ import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
-public class GroupsActivity extends ListActivity implements OnItemClickListener {
+public class GroupsActivity extends ListActivity implements OnItemClickListener, OnItemLongClickListener {
 	
 	private Cursor cursor;
+	private int position;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,14 +49,50 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener 
         setListAdapter(adapter);
         
         getListView().setOnItemClickListener(this);
+        getListView().setOnItemLongClickListener(this);
 	}
 	
 	@Override
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 		cursor.moveToPosition(position);
 		int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
-		Uri uri = Uri.withAppendedPath(Groups.CONTENT_URI, String.valueOf(groupId));
-		startActivity(new Intent().setClass(this, GroupActivity.class).setData(uri));
+		Actions.openGroup(this, groupId);
+	}
+	
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
+		this.position = position;
+		showDialog(0);
+		return true;
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		final CharSequence[] items = { 
+				getResources().getString(R.string.view_members_and_messages),
+				getResources().getString(R.string.compose)
+				};
+		
+		cursor.moveToPosition(position);
+		String name = cursor.getString(cursor.getColumnIndex(Groups.NAME));
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(name);
+		builder.setItems(items, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
+				switch(which) {
+				case 0:
+					Actions.openGroup(GroupsActivity.this, groupId);
+					break;
+				case 1:
+					Actions.compose(GroupsActivity.this, groupId);
+					break;
+				}
+			}
+		});
+		return builder.create();
 	}
 	
 	private static class GroupCursorAdapter extends SimpleCursorAdapter {

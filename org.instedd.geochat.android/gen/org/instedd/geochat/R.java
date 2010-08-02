@@ -93,13 +93,14 @@ public final class R {
         public static final int sending_elipsis=0x7f040021;
         public static final int sending_message=0x7f040020;
         public static final int settings=0x7f04000c;
-        public static final int show_in_map=0x7f04002b;
+        public static final int show_in_map=0x7f04002c;
         public static final int something_went_wrong=0x7f040028;
         public static final int to=0x7f04001e;
         public static final int user=0x7f040006;
         public static final int user_colon=0x7f040019;
         public static final int user_dialogTitle=0x7f040008;
         public static final int user_summary=0x7f040007;
+        public static final int view_members_and_messages=0x7f04002b;
         public static final int view_messages=0x7f04002a;
     }
 }

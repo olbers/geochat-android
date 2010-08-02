@@ -3,7 +3,6 @@ package org.instedd.geochat;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
-import org.instedd.geochat.map.GeoChatMapActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,7 +12,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -46,7 +44,7 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 	                Users._ID,
 	                Users.DISPLAY_NAME,
 	        };
-	        Cursor cursor = getContentResolver().query(Uri.withAppendedPath(Users.CONTENT_URI, intent.getData().getPathSegments().get(1)), PROJECTION, null, null,
+	        Cursor cursor = getContentResolver().query(Uris.userLogin(intent.getData().getPathSegments().get(1)), PROJECTION, null, null,
 	        		Users.DEFAULT_SORT_ORDER);
 	        if (cursor.moveToNext()) {
 	        	String displayName = cursor.getString(1);
@@ -112,9 +110,8 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     
     private void showInMap() {
 		cursor.moveToPosition(position);
-		String userLogin = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
-		Uri uri = Uri.withAppendedPath(Users.CONTENT_URI, userLogin);
-		startActivity(new Intent().setClass(this, GeoChatMapActivity.class).setData(uri));
+		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
+		Actions.showUserInMap(this, login);
 	}
 	
 	private static class MessageCursorAdapter extends SimpleCursorAdapter {

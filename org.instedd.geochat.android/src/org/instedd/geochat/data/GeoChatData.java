@@ -1,5 +1,6 @@
 package org.instedd.geochat.data;
 
+import org.instedd.geochat.Uris;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.Message;
 import org.instedd.geochat.api.User;
@@ -10,7 +11,6 @@ import org.instedd.geochat.map.LocationResolver;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
 
 public class GeoChatData {
 	
@@ -29,11 +29,11 @@ public class GeoChatData {
 	public void updateGroup(int id, Group group) {
 		ContentValues values = getContentValues(group);
 		values.put(Groups._ID, id);
-		context.getContentResolver().update(Uri.withAppendedPath(Groups.CONTENT_URI, String.valueOf(id)), values, null, null);
+ 		context.getContentResolver().update(Uris.groupId(id), values, null, null);
 	}
 	
 	public void deleteGroup(int id) {
-		context.getContentResolver().delete(Uri.withAppendedPath(Groups.CONTENT_URI, String.valueOf(id)), null, null);
+		context.getContentResolver().delete(Uris.groupId(id), null, null);
 	}
 	
 	public void createUser(User user) {
@@ -43,11 +43,11 @@ public class GeoChatData {
 	public void updateUser(int id, User user) {
 		ContentValues values = getContentValues(user);
 		values.put(Users._ID, id);
-		context.getContentResolver().update(Uri.withAppendedPath(Users.CONTENT_URI, String.valueOf(id)), values, null, null);
+		context.getContentResolver().update(Uris.userId(id), values, null, null);
 	}
 	
 	public void deleteUser(int id) {
-		context.getContentResolver().delete(Uri.withAppendedPath(Users.CONTENT_URI, String.valueOf(id)), null, null);
+		context.getContentResolver().delete(Uris.userId(id), null, null);
 	}
 	
 	public void createMessage(Message message) {
@@ -55,7 +55,7 @@ public class GeoChatData {
 	}
 	
 	public void deleteOldMessages(String groupAlias) {
-		context.getContentResolver().delete(Uri.withAppendedPath(Uri.withAppendedPath(Uri.withAppendedPath(Groups.CONTENT_URI, groupAlias), "messages"), "old"), null, null);
+		context.getContentResolver().delete(Uris.groupOldMessages(groupAlias), null, null);
 	}
 	
 	private ContentValues getContentValues(Group group) {

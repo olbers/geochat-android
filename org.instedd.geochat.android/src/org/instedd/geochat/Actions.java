@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-public class Actions {
+public final class Actions {
 	
 	private final static String PREFIX = "org.instedd.geochat.";
 	
@@ -22,11 +22,37 @@ public class Actions {
 	}
 	
 	public static void compose(Context context, Uri data) {
-		context.startActivity(new Intent().setClass(context, ComposeActivity.class).setData(data));
+		startActivity(context, ComposeActivity.class, data);
+	}
+	
+	public static void compose(Context context, int groupId) {
+		compose(context, Uris.groupId(groupId));
 	}
 	
 	public static void map(Context context) {
-		context.startActivity(new Intent().setClass(context, GeoChatMapActivity.class));
+		startActivity(context, GeoChatMapActivity.class);
 	}
+	
+	public static void showUserInMap(Context context, String login) {
+		startActivity(context, GeoChatMapActivity.class, Uris.userLogin(login));
+	}
+	
+	public static void viewUserMessages(Context context, String login) {
+		startActivity(context, MessagesActivityWithTitleBar.class, Uris.userMessages(login));
+	}
+	
+	public static void openGroup(Context context, int groupId) {
+		startActivity(context, GroupActivity.class, Uris.groupId(groupId));
+	}
+	
+	private static void startActivity(Context context, Class<?> clazz) {
+		context.startActivity(new Intent().setClass(context, clazz));
+	}
+	
+	private static void startActivity(Context context, Class<?> clazz, Uri data) {
+		context.startActivity(new Intent().setClass(context, clazz).setData(data));
+	}
+	
+	private Actions() { }
 
 }

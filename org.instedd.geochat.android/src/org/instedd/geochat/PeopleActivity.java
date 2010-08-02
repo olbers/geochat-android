@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.instedd.geochat.data.GeoChat.Users;
-import org.instedd.geochat.map.GeoChatMapActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -14,7 +13,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -104,16 +102,14 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	
 	private void viewMessages() {
 		cursor.moveToPosition(position);
-		String userLogin = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
-		Uri uri = Uri.withAppendedPath(Uri.withAppendedPath(Users.CONTENT_URI, String.valueOf(userLogin)), "messages");
-		startActivity(new Intent().setClass(this, MessagesActivityWithTitleBar.class).setData(uri));
+		String login = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
+		Actions.viewUserMessages(this, login);
 	}
 	
 	private void showInMap() {
 		cursor.moveToPosition(position);
-		String userLogin = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
-		Uri uri = Uri.withAppendedPath(Users.CONTENT_URI, userLogin);
-		startActivity(new Intent().setClass(this, GeoChatMapActivity.class).setData(uri));
+		String login = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
+		Actions.showUserInMap(this, login);
 	}
 	
 	private static class PeopleCursorAdapter extends SimpleCursorAdapter {
