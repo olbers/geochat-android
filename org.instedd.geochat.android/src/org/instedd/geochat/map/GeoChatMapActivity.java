@@ -44,8 +44,11 @@ public class GeoChatMapActivity extends MapActivity {
 		String targetLogin =  null;
 		double targetLat = 0;
 		double targetLng = 0;
-		if (getIntent().getData() != null && GeoChatProvider.URI_MATCHER.match(getIntent().getData()) == GeoChatProvider.USER_LOGIN) {
-			targetLogin = getIntent().getData().getPathSegments().get(1);
+		if (getIntent().getData() != null) {
+			int match = GeoChatProvider.URI_MATCHER.match(getIntent().getData());
+			if (match == GeoChatProvider.USER_LOGIN || match == GeoChatProvider.USER_ID) {
+				targetLogin = getIntent().getData().getPathSegments().get(1);
+			}
 		}
 		
 		Map<String, Map<String, List<User>>> mapByLocation = new HashMap<String, Map<String, List<User>>>();  
