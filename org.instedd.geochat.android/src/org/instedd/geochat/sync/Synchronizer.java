@@ -357,17 +357,17 @@ public class Synchronizer {
 							Group[] groups = syncGroups();
 							if (resync) continue;
 							
+							int newMessagesCount = syncMessages(groups);
+							if (newMessagesCount > 0) {
+								notifier.notifyNewMessages(newMessagesCount);
+							}
+							if (resync) continue;
+							
 							syncUsers(groups, fetchIcons);
 							
 							// Don't fetch icons the next times
 							fetchIcons = false;
 							
-							if (resync) continue;
-							
-							int newMessagesCount = syncMessages(groups);
-							if (newMessagesCount > 0) {
-								notifier.notifyNewMessages(newMessagesCount);
-							}
 							if (resync) continue;
 							
 							deleteOldMessages(groups);
