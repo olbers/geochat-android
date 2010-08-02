@@ -31,7 +31,7 @@ import android.os.Handler;
 
 public class Synchronizer {
 	
-	private final static int ICON_SIZE = 25;
+	private final static int ICON_SIZE = 50;
 	
 	final Handler handler;
 	
