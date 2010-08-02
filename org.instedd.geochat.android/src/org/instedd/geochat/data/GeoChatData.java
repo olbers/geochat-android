@@ -1,5 +1,11 @@
 package org.instedd.geochat.data;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.instedd.geochat.Uris;
 import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.Message;
@@ -11,6 +17,7 @@ import org.instedd.geochat.map.LocationResolver;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
 
 public class GeoChatData {
 	
@@ -44,6 +51,39 @@ public class GeoChatData {
 		ContentValues values = getContentValues(user);
 		values.put(Users._ID, id);
 		context.getContentResolver().update(Uris.userId(id), values, null, null);
+	}
+	
+	public void saveUserIcon(String login, InputStream icon) {
+		try {
+			FileOutputStream out = context.openFileOutput(getUserIconFilename(login), Context.MODE_WORLD_WRITEABLE);
+			BufferedOutputStream bout = new BufferedOutputStream(out);
+			
+			BufferedInputStream bin = new BufferedInputStream(icon);
+			byte[] buffer = new byte[4096];
+			int length;
+			while((length = bin.read(buffer, 0, 4096)) > 0) {
+				bout.write(buffer, 0, length);
+			}
+			
+			bout.close();
+			out.close();
+			bin.close();
+			icon.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean hasUserIconFor(String login) {
+		return context.getFileStreamPath(getUserIconFilename(login)).exists();
+	}
+	
+	public Uri getUserIconUri(String login) {
+		return Uri.parse(context.getFileStreamPath(getUserIconFilename(login)).toString());
+	}
+
+	public void deleteUserIcon(String login) {
+		context.deleteFile(getUserIconFilename(login));
 	}
 	
 	public void deleteUser(int id) {
@@ -91,5 +131,9 @@ public class GeoChatData {
 		values.put(Messages.CREATED_DATE, message.createdDate);
 		return values;
 	}
+	
+	private static String getUserIconFilename(String login) {
+		return "user_" + login + ".png";
+	}	
 
 }

@@ -7,5 +7,9 @@ public class GeoChatApiException extends Exception {
 	public GeoChatApiException(Exception e) {
 		super(e);
 	}
+	
+	public GeoChatApiException(String message) {
+		super(message);
+	}
 
 }

@@ -1,5 +1,6 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -116,14 +118,16 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 	
 	private static class MessageCursorAdapter extends SimpleCursorAdapter {
 
-		private Cursor c;
-		private Context context;
+		private final Cursor c;
+		private final Context context;
+		private final GeoChatData data;
 
 		public MessageCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
 			super(context, layout, c, from, to);
 			this.c = c;
 			this.context = context;
+			this.data = new GeoChatData(context);
 		}
 		
 		@Override
@@ -147,12 +151,19 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 				uiLocation.setText(location);
 			}
 			
+			String login = c.getString(c.getColumnIndex(Messages.FROM_USER)); 
+			
 			((TextView) v.findViewById(R.id.message)).setText(c.getString(c.getColumnIndex(Messages.MESSAGE)));
-			((TextView) v.findViewById(R.id.from)).setText(c.getString(c.getColumnIndex(Messages.FROM_USER)));
+			((TextView) v.findViewById(R.id.from)).setText(login);
 			((TextView) v.findViewById(R.id.group)).setText(c.getString(c.getColumnIndex(Messages.TO_GROUP)));
 			
 			CharSequence date = DateUtils.getRelativeDateTimeString(context, c.getLong(c.getColumnIndex(Messages.CREATED_DATE)), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
 			((TextView) v.findViewById(R.id.date)).setText(date);
+			
+			if (data.hasUserIconFor(login)) {
+				ImageView view = (ImageView) v.findViewById(R.id.icon);
+				view.setImageURI(data.getUserIconUri(login));
+			}
 			
 			return v;
 		}

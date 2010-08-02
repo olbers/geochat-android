@@ -3,6 +3,7 @@ package org.instedd.geochat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChat.Users;
 
 import android.app.AlertDialog;
@@ -19,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -112,16 +114,18 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 		Actions.showUserInMap(this, login);
 	}
 	
-	private static class PeopleCursorAdapter extends SimpleCursorAdapter {
+	private class PeopleCursorAdapter extends SimpleCursorAdapter {
 
-		private Cursor c;
-		private Context context;
-
+		private final Cursor c;
+		private final Context context;
+		private final GeoChatData data;
+		
 		public PeopleCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {
 			super(context, layout, c, from, to);
 			this.c = c;
 			this.context = context;
+			this.data = new GeoChatData(context);
 		}
 		
 		@Override
@@ -145,8 +149,15 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 				uiLocation.setText(location);
 			}
 			
+			String login = c.getString(c.getColumnIndex(Users.LOGIN));
+			
 			((TextView) v.findViewById(R.id.display_name)).setText(c.getString(c.getColumnIndex(Users.DISPLAY_NAME)));
-			((TextView) v.findViewById(R.id.login)).setText(c.getString(c.getColumnIndex(Users.LOGIN)));
+			((TextView) v.findViewById(R.id.login)).setText(login);
+			
+			if (data.hasUserIconFor(login)) {
+				ImageView view = (ImageView) v.findViewById(R.id.icon);
+				view.setImageURI(data.getUserIconUri(login));
+			}
 			
 			return v;
 		}

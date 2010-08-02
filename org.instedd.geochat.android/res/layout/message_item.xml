@@ -1,53 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingTop="5dp"
     android:paddingBottom="5dp"
     >
+    <ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:paddingRight="5dp"
+		android:layout_marginTop="5dp"
+		android:src="@drawable/default_user_icon"
+		android:id="@+id/icon" />
 	<TextView
-	   android:layout_width="fill_parent"
-	   android:layout_height="fill_parent"
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_toRightOf="@+id/icon"
 	   style="@android:style/TextAppearance.Large"
 	   android:id="@+id/message" />
-	<LinearLayout android:orientation="vertical"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		>
-		<LinearLayout android:orientation="horizontal"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
-			>
-			<TextView
-			   android:layout_width="wrap_content"
-			   android:layout_height="wrap_content"
-			   style="@android:style/TextAppearance.Small"
-			   android:textStyle="bold"
-			   android:drawablePadding="1dp"
-			   android:id="@+id/from" />
-			<TextView
-			   android:layout_width="wrap_content"
-			   android:layout_height="wrap_content"
-			   style="@android:style/TextAppearance.Small"
-			   android:paddingLeft="4dp"
-			   android:paddingRight="4dp"
-			   android:text="@string/to" />
-			<TextView
-			   android:layout_width="wrap_content"
-			   android:layout_height="wrap_content"
-			   style="@android:style/TextAppearance.Small"
-			   android:id="@+id/group" />
-		</LinearLayout>
-		<TextView
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   style="@android:style/TextAppearance.Small"
-		   android:id="@+id/location" />
-		<TextView
-		   android:layout_width="wrap_content"
-		   android:layout_height="wrap_content"
-		   style="@android:style/TextAppearance.Small"
-		   android:id="@+id/date" />
-	</LinearLayout>
-</LinearLayout>
+	<TextView
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/message"
+	   android:layout_alignLeft="@+id/message"
+	   style="@android:style/TextAppearance.Small"
+	   android:textStyle="bold"
+	   android:drawablePadding="1dp"
+	   android:id="@+id/from" />
+	<TextView
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_toRightOf="@+id/from"
+	   android:layout_alignBaseline="@+id/from"
+	   style="@android:style/TextAppearance.Small"
+	   android:paddingLeft="4dp"
+	   android:paddingRight="4dp"
+	   android:text="@string/to" 
+	   android:id="@+id/to" />
+	<TextView
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_toRightOf="@+id/to"
+	   android:layout_alignBaseline="@+id/to"
+	   style="@android:style/TextAppearance.Small"
+	   android:id="@+id/group" />
+	<TextView
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/from"
+	   android:layout_alignLeft="@+id/from"
+	   style="@android:style/TextAppearance.Small"
+	   android:id="@+id/location" />
+	<TextView
+	   android:layout_width="wrap_content"
+	   android:layout_height="wrap_content"
+	   android:layout_below="@+id/location"
+	   android:layout_alignLeft="@+id/location"
+	   style="@android:style/TextAppearance.Small"
+	   android:id="@+id/date" />
+</RelativeLayout>

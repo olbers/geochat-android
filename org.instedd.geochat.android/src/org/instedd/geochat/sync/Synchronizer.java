@@ -1,5 +1,6 @@
 package org.instedd.geochat.sync;
 
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -29,6 +30,8 @@ import android.net.Uri;
 import android.os.Handler;
 
 public class Synchronizer {
+	
+	private final static int ICON_SIZE = 25;
 	
 	final Handler handler;
 	
@@ -218,11 +221,17 @@ public class Synchronizer {
 				
 				if (comparison < 0) {
 					// Found new user in server, must create it
-					data.createUser(serverUsers[serverIndex]);
+					User user = serverUsers[serverIndex];
+					data.createUser(user);
+					InputStream icon = api.getUserIcon(user.login, ICON_SIZE);
+					if (icon != null) {
+						data.saveUserIcon(user.login, icon);
+					}
 					serverIndex++;
 				} else if (comparison > 0) {
 					// Cached user not found, must delete it
 					data.deleteUser(c.getInt(0));
+					data.deleteUserIcon(c.getString(1));
 					cachedIndex++;
 					c.moveToNext();
 				} else {

@@ -97,8 +97,8 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 	
 	private static class GroupCursorAdapter extends SimpleCursorAdapter {
 
-		private Cursor c;
-		private Context context;
+		private final Cursor c;
+		private final Context context;
 
 		public GroupCursorAdapter(Context context, int layout, Cursor c,
 				String[] from, int[] to) {

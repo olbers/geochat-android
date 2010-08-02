@@ -26,7 +26,11 @@ public class RestClient implements IRestClient {
 	public InputStream get(String url) throws IOException {
 		HttpGet get = new HttpGet(url);
 		auth(get);
-		return this.client.execute(get).getEntity().getContent();
+		HttpResponse response = this.client.execute(get);
+		if (response.getStatusLine().getStatusCode() == 404) {
+			return null;
+		}
+		return response.getEntity().getContent();
 	}
 	
 	@Override
