@@ -160,9 +160,11 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 			CharSequence date = DateUtils.getRelativeDateTimeString(context, c.getLong(c.getColumnIndex(Messages.CREATED_DATE)), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
 			((TextView) v.findViewById(R.id.date)).setText(date);
 			
+			ImageView view = (ImageView) v.findViewById(R.id.icon);
 			if (data.hasUserIconFor(login)) {
-				ImageView view = (ImageView) v.findViewById(R.id.icon);
 				view.setImageURI(data.getUserIconUri(login));
+			} else {
+				view.setImageResource(R.drawable.default_user_icon);
 			}
 			
 			return v;

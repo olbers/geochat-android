@@ -154,9 +154,11 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 			((TextView) v.findViewById(R.id.display_name)).setText(c.getString(c.getColumnIndex(Users.DISPLAY_NAME)));
 			((TextView) v.findViewById(R.id.login)).setText(login);
 			
+			ImageView view = (ImageView) v.findViewById(R.id.icon);
 			if (data.hasUserIconFor(login)) {
-				ImageView view = (ImageView) v.findViewById(R.id.icon);
 				view.setImageURI(data.getUserIconUri(login));
+			} else {
+				view.setImageResource(R.drawable.default_user_icon);
 			}
 			
 			return v;
