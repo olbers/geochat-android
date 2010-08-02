@@ -41,7 +41,24 @@ public class HomeActivity extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    
-	    intent = getIntent();
+	    tabHost.setCurrentTab(2);
+	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+	}
+	
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+	}
+	
+	@Override
+	protected void onResume() {
+		Intent intent = getIntent();
 	    if (intent != null) {
 	    	String action = intent.getAction();
 	    	if (Actions.VIEW_MESSAGES.equals(action)) {
@@ -49,8 +66,8 @@ public class HomeActivity extends TabActivity {
 		        new GeoChatSettings(this).clearNewMessagesCount();
 	    	}
 	    }
-
-	    tabHost.setCurrentTab(2);
+	    
+		super.onResume();
 	}
 	
 	@Override
