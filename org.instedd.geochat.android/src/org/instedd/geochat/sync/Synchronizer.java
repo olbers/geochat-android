@@ -15,7 +15,6 @@ import org.instedd.geochat.api.Message;
 import org.instedd.geochat.api.User;
 import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChat.Groups;
-import org.instedd.geochat.data.GeoChat.Locations;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
 import org.instedd.geochat.map.LocationResolver;
@@ -295,7 +294,6 @@ public class Synchronizer {
 		context.getContentResolver().delete(Groups.CONTENT_URI, null, null);
 		context.getContentResolver().delete(Users.CONTENT_URI, null, null);
 		context.getContentResolver().delete(Messages.CONTENT_URI, null, null);
-		context.getContentResolver().delete(Locations.CONTENT_URI, null, null);
 		new GeoChatSettings(context).clearUserData();
 	}
 	

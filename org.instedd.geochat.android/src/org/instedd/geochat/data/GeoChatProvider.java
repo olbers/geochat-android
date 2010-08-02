@@ -3,7 +3,6 @@ package org.instedd.geochat.data;
 import java.util.HashMap;
 
 import org.instedd.geochat.data.GeoChat.Groups;
-import org.instedd.geochat.data.GeoChat.Locations;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
 
@@ -34,27 +33,23 @@ public class GeoChatProvider extends ContentProvider {
     private static final String USERS_TABLE_NAME = "users";
     private static final String GROUPS_TABLE_NAME = "groups";
     private static final String MESSAGES_TABLE_NAME = "messages";
-    private static final String LOCATIONS_TABLE_NAME = "locations";
     
     private static HashMap<String, String> sUsersProjectionMap;
     private static HashMap<String, String> sGroupsProjectionMap;
     private static HashMap<String, String> sMessagesProjectionMap;
-    private static HashMap<String, String> sLocationsProjectionMap;
     
     public final static int USERS = 1;
     public final static int GROUPS = 2;
     public final static int MESSAGES = 3;
-    public final static int LOCATIONS = 4;
-    public final static int LOCATION_LAT_LNG = 5;
-    public final static int USER_MESSAGES = 6;
-    public final static int GROUP_MESSAGES = 7;
-    public final static int MESSAGE_ID = 8;
-    public final static int GROUP_LAST_MESSAGE = 9;
-    public final static int GROUP_ID = 10;
-    public final static int USER_ID = 11;
-    public final static int GROUP_MESSAGES_OLD = 12;
-    public final static int GROUP_USERS = 13;
-    public final static int USER_LOGIN = 14;
+    public final static int USER_MESSAGES = 4;
+    public final static int GROUP_MESSAGES = 5;
+    public final static int MESSAGE_ID = 6;
+    public final static int GROUP_LAST_MESSAGE = 7;
+    public final static int GROUP_ID = 8;
+    public final static int USER_ID = 9;
+    public final static int GROUP_MESSAGES_OLD = 10;
+    public final static int GROUP_USERS = 11;
+    public final static int USER_LOGIN = 12;
     
     private final static int MAX_MESSAGES_COUNT = 10;
     private final static String MAX_MESSAGES_COUNT_PLUS_ONE_STRING = String.valueOf(MAX_MESSAGES_COUNT + 1);
@@ -102,13 +97,6 @@ public class GeoChatProvider extends ContentProvider {
                     + Users.LOCATION_NAME + " TEXT,"
                     + Messages.CREATED_DATE + " INTEGER"
                     + ");");
-            
-            db.execSQL("CREATE TABLE " + LOCATIONS_TABLE_NAME + " ("
-                    + Locations._ID + " INTEGER PRIMARY KEY,"
-                    + Locations.LAT + " TEXT,"
-                    + Locations.LNG + " TEXT,"
-                    + Locations.NAME + " TEXT"
-                    + ");");
         }
 
         @Override
@@ -118,7 +106,6 @@ public class GeoChatProvider extends ContentProvider {
             db.execSQL("DROP TABLE IF EXISTS users");
             db.execSQL("DROP TABLE IF EXISTS groups");
             db.execSQL("DROP TABLE IF EXISTS messages");
-            db.execSQL("DROP TABLE IF EXISTS locations");
             onCreate(db);
         }
     }
@@ -138,9 +125,6 @@ public class GeoChatProvider extends ContentProvider {
             break;
         case MESSAGES:
         	count = db.delete(MESSAGES_TABLE_NAME, where, whereArgs);
-            break;
-        case LOCATIONS:
-        	count = db.delete(LOCATIONS_TABLE_NAME, where, whereArgs);
             break;
         case GROUP_ID:
             String groupId = uri.getPathSegments().get(1);
@@ -187,9 +171,6 @@ public class GeoChatProvider extends ContentProvider {
         case MESSAGE_ID:
         case GROUP_LAST_MESSAGE:
         	return Messages.CONTENT_TYPE;
-        case LOCATIONS:
-        case LOCATION_LAT_LNG:
-        	return Locations.CONTENT_TYPE;
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -232,14 +213,6 @@ public class GeoChatProvider extends ContentProvider {
 	            return messageUri;
 			}
 			break;
-		case LOCATIONS:
-			rowId = db.insert(LOCATIONS_TABLE_NAME, Locations.NAME, values);
-			if (rowId > 0) {
-				Uri locationUri = ContentUris.withAppendedId(GeoChat.Locations.CONTENT_URI, rowId);
-	            getContext().getContentResolver().notifyChange(locationUri, null);
-	            return locationUri;
-			}
-			break;
 		default:
 			throw new IllegalArgumentException("Unknown URI " + uri);
 		}
@@ -277,20 +250,6 @@ public class GeoChatProvider extends ContentProvider {
         	qb.setTables(MESSAGES_TABLE_NAME);
         	if (TextUtils.isEmpty(sortOrder)) {
                 orderBy = GeoChat.Messages.DEFAULT_SORT_ORDER;
-            }
-        	break;
-        case LOCATIONS:
-        	qb.setTables(LOCATIONS_TABLE_NAME);
-        	if (TextUtils.isEmpty(sortOrder)) {
-                orderBy = GeoChat.Locations.DEFAULT_SORT_ORDER;
-            }
-        	break;
-        case LOCATION_LAT_LNG:
-        	qb.setTables(LOCATIONS_TABLE_NAME);
-        	qb.appendWhere(Locations.LAT + " = " + uri.getPathSegments().get(1));
-        	qb.appendWhere(Locations.LNG + " = " + uri.getPathSegments().get(2));
-        	if (TextUtils.isEmpty(sortOrder)) {
-                orderBy = GeoChat.Locations.DEFAULT_SORT_ORDER;
             }
         	break;
         case USER_MESSAGES:
@@ -411,8 +370,6 @@ public class GeoChatProvider extends ContentProvider {
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/*/messages/old", GROUP_MESSAGES_OLD);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages", MESSAGES);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "messages/#", MESSAGE_ID);
-        URI_MATCHER.addURI(GeoChat.AUTHORITY, "locations", LOCATIONS);
-        URI_MATCHER.addURI(GeoChat.AUTHORITY, "location/#/#", LOCATION_LAT_LNG);
 
         sUsersProjectionMap = new HashMap<String, String>();
         sUsersProjectionMap.put(Users._ID, Users._ID);
@@ -440,12 +397,6 @@ public class GeoChatProvider extends ContentProvider {
         sMessagesProjectionMap.put(Messages.LNG, Messages.LNG);
         sMessagesProjectionMap.put(Messages.LOCATION_NAME, Messages.LOCATION_NAME);
         sMessagesProjectionMap.put(Messages.CREATED_DATE, Messages.CREATED_DATE);
-        
-        sLocationsProjectionMap = new HashMap<String, String>();
-        sLocationsProjectionMap.put(Locations._ID, Locations._ID);
-        sLocationsProjectionMap.put(Locations.LAT, Locations.LAT);
-        sLocationsProjectionMap.put(Locations.LNG, Locations.LNG);
-        sLocationsProjectionMap.put(Locations.NAME, Locations.NAME);
 	}
 
 }

@@ -17,10 +17,30 @@ public class GeoChat {
     // This class cannot be instantiated
     private GeoChat() {}
     
+    public static interface Locatable {
+    	/**
+         * The latitude
+         * <P>Type: REAL</P>
+         */
+        String LAT = "lat";
+        
+        /**
+         * The longitude
+         * <P>Type: REAL</P>
+         */
+        String LNG = "lng";
+        
+        /**
+         * The name of the location
+         * <P>Type: TEXT</P>
+         */
+        String LOCATION_NAME = "location_name";
+    }
+    
     /**
      * The users table.
      */
-    public final static class Users implements BaseColumns {
+    public final static class Users implements Locatable, BaseColumns {
     	// This class cannot be instantiated
         private Users() {}
         
@@ -57,24 +77,6 @@ public class GeoChat {
         public static final String DISPLAY_NAME = "display_name";
         
         /**
-         * The latitude of the group
-         * <P>Type: REAL</P>
-         */
-        public static final String LAT = "lat";
-        
-        /**
-         * The longitude of the group
-         * <P>Type: REAL</P>
-         */
-        public static final String LNG = "lng";
-        
-        /**
-         * The name of the location
-         * <P>Type: TEXT</P>
-         */
-        public static final String LOCATION_NAME = "location_name";
-        
-        /**
          * The groups this user belongs to
          * <P>Type: TEXT</P>
          */
@@ -106,7 +108,7 @@ public class GeoChat {
     /**
      * The groups table.
      */
-    public final static class Groups implements BaseColumns {
+    public final static class Groups implements Locatable, BaseColumns {
     	// This class cannot be instantiated
         private Groups() {}
         
@@ -142,30 +144,12 @@ public class GeoChat {
          */
         public static final String ALIAS = "alias";
         
-        /**
-         * The latitude of the user
-         * <P>Type: REAL</P>
-         */
-        public static final String LAT = "lat";
-        
-        /**
-         * The longitude of the user
-         * <P>Type: REAL</P>
-         */
-        public static final String LNG = "lng";
-        
-        /**
-         * The name of the location
-         * <P>Type: TEXT</P>
-         */
-        public static final String LOCATION_NAME = "location_name";
-        
     }
     
     /**
      * The messages table.
      */
-    public final static class Messages implements BaseColumns {
+    public final static class Messages implements Locatable, BaseColumns {
     	// This class cannot be instantiated
         private Messages() {}
         
@@ -214,74 +198,10 @@ public class GeoChat {
         public static final String MESSAGE = "message";
         
         /**
-         * The latitude of the message's location
-         * <P>Type: REAL</P>
-         */
-        public static final String LAT = "lat";
-        
-        /**
-         * The longitude of the message's location
-         * <P>Type: REAL</P>
-         */
-        public static final String LNG = "lng";
-        
-        /**
-         * The name of the location
-         * <P>Type: TEXT</P>
-         */
-        public static final String LOCATION_NAME = "location_name";
-        
-        /**
          * The timestamp for when the message was created
          * <P>Type: INTEGER (long from System.curentTimeMillis())</P>
          */
         public static final String CREATED_DATE = "created";
-    }
-    
-    /**
-     * The locations table.
-     */
-    public final static class Locations implements BaseColumns {
-    	// This class cannot be instantiated
-        private Locations() {}
-        
-        /**
-         * The content:// style URL for this table
-         */
-        public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/locations");
-        
-        /**
-         * The MIME type of {@link #CONTENT_URI} providing a directory of locations.
-         */
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.geochat.location";
-        
-        /**
-         * The MIME type of a {@link #CONTENT_URI} sub-directory of a single location.
-         */
-        public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.geochat.location";
-        
-        /**
-         * The default sort order for this table
-         */
-        public static final String DEFAULT_SORT_ORDER = "name DESC";
-        
-        /**
-         * The latitude of this location
-         * <P>Type: TEXT</P>
-         */
-        public static final String LAT = "lat";
-        
-        /**
-         * The longitude of this location
-         * <P>Type: TEXT</P>
-         */
-        public static final String LNG = "lng";
-        
-        /**
-         * The name of this location
-         * <P>Type: TEXT</P>
-         */
-        public static final String NAME = "name";
     }
 
 }
