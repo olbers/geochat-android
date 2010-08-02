@@ -35,7 +35,7 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener 
                 Groups.ALIAS,
                 Groups.LOCATION_NAME,
         };
-        cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+        this.cursor = managedQuery(intent.getData(), PROJECTION, null, null,
                 Groups.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new GroupCursorAdapter(this, R.layout.group_item, cursor,

@@ -1,10 +1,18 @@
 package org.instedd.geochat;
 
-import org.instedd.geochat.data.GeoChat.Users;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.instedd.geochat.data.GeoChat.Users;
+import org.instedd.geochat.map.GeoChatMapActivity;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,10 +24,12 @@ import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
-public class PeopleActivity extends ListActivity implements OnItemClickListener {
+public class PeopleActivity extends ListActivity implements OnItemClickListener, OnItemLongClickListener {
 	
-	private Cursor cursor;
+	private Cursor cursor; 
+	private int position;
 	
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +43,11 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener 
                 Users._ID,
                 Users.LOGIN,
                 Users.DISPLAY_NAME,
+                Users.LAT,
+                Users.LNG,
                 Users.LOCATION_NAME,
         };
-        cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+        this.cursor = managedQuery(intent.getData(), PROJECTION, null, null,
         		Users.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new PeopleCursorAdapter(this, R.layout.user_item, cursor,
@@ -44,14 +56,64 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener 
         setListAdapter(adapter);
         
         getListView().setOnItemClickListener(this);
+        getListView().setOnItemLongClickListener(this);
     }
 	
 	@Override
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
+		viewMessages();
+	}
+	
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
+		this.position = position;
+		showDialog(0);
+		return true;
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		final List<String> items = new ArrayList<String>(2);
+		items.add(getResources().getString(R.string.view_messages));
+		
+		cursor.moveToPosition(position);
+		String displayName = cursor.getString(cursor.getColumnIndex(Users.DISPLAY_NAME));
+		double lat = cursor.getDouble(cursor.getColumnIndex(Users.LAT));
+		double lng = cursor.getDouble(cursor.getColumnIndex(Users.LNG));
+		if (lat != 0 || lng != 0) {
+			items.add(getResources().getString(R.string.show_in_map));
+		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(displayName);
+		builder.setItems(items.toArray(new String[items.size()]), new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch(which) {
+				case 0:
+					viewMessages();
+					break;
+				case 1:
+					showInMap();
+					break;
+				}
+			}
+		});
+		return builder.create();
+	}
+	
+	private void viewMessages() {
 		cursor.moveToPosition(position);
 		String userLogin = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
 		Uri uri = Uri.withAppendedPath(Uri.withAppendedPath(Users.CONTENT_URI, String.valueOf(userLogin)), "messages");
 		startActivity(new Intent().setClass(this, MessagesActivityWithTitleBar.class).setData(uri));
+	}
+	
+	private void showInMap() {
+		cursor.moveToPosition(position);
+		String userLogin = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
+		Uri uri = Uri.withAppendedPath(Users.CONTENT_URI, userLogin);
+		startActivity(new Intent().setClass(this, GeoChatMapActivity.class).setData(uri));
 	}
 	
 	private static class PeopleCursorAdapter extends SimpleCursorAdapter {

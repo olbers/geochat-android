@@ -45,8 +45,8 @@ public class HomeActivity extends TabActivity {
 	    if (intent != null) {
 	    	String action = intent.getAction();
 	    	if (Actions.VIEW_MESSAGES.equals(action)) {
-	    		tabHost.setCurrentTab(2);
-	    		return;
+	    		// Clear new messages count, since we are viewing them
+		        new GeoChatSettings(this).clearNewMessagesCount();
 	    	}
 	    }
 

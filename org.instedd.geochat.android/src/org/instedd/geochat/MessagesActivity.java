@@ -3,10 +3,15 @@ package org.instedd.geochat;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
+import org.instedd.geochat.map.GeoChatMapActivity;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,12 +22,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemLongClickListener;
 
-public class MessagesActivity extends ListActivity {
+public class MessagesActivity extends ListActivity implements OnItemLongClickListener {
 	
 	private boolean mainActivity;
+	private int position;
+	private Cursor cursor;
 	
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +69,48 @@ public class MessagesActivity extends ListActivity {
                 Messages.LOCATION_NAME,
                 Messages.CREATED_DATE,
         };
-		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null,
+		this.cursor = managedQuery(intent.getData(), PROJECTION, null, null,
         		Messages.DEFAULT_SORT_ORDER);
 
         SimpleCursorAdapter adapter = new MessageCursorAdapter(this, R.layout.message_item, cursor,
                 new String[] { }, new int[] { });
         
         setListAdapter(adapter);
+        
+        getListView().setOnItemLongClickListener(this);
     }
+    
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
+    	this.position = position;
+		showDialog(0);
+		return true;
+    }
+    
+    @Override
+	protected Dialog onCreateDialog(int id) {
+    	final CharSequence[] items = { getResources().getString(R.string.show_in_map) };
+    	
+		cursor.moveToPosition(position);
+		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle(login);
+		builder.setItems(items, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				showInMap();
+			}
+		});
+		return builder.create();
+	}
+    
+    private void showInMap() {
+		cursor.moveToPosition(position);
+		String userLogin = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
+		Uri uri = Uri.withAppendedPath(Users.CONTENT_URI, userLogin);
+		startActivity(new Intent().setClass(this, GeoChatMapActivity.class).setData(uri));
+	}
 	
 	private static class MessageCursorAdapter extends SimpleCursorAdapter {
 
