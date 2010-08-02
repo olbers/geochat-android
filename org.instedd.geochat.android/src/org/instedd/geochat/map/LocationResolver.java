@@ -58,14 +58,18 @@ public class LocationResolver {
 	
 	private void loadLocations(Uri uri, Context context) {
 		Cursor c = context.getContentResolver().query(uri, new String[] { Locatable.LAT, Groups.LNG, Groups.LOCATION_NAME }, null, null, null);
+		final int latIndex = c.getColumnIndex(Locatable.LAT);
+		final int lngIndex = c.getColumnIndex(Locatable.LNG);
+		final int locationNameIndex = c.getColumnIndex(Locatable.LOCATION_NAME);
+		
 		try {
 			while(c.moveToNext()) {
-				double lat = c.getDouble(c.getColumnIndex(Locatable.LAT));
-				double lng = c.getDouble(c.getColumnIndex(Locatable.LNG));
+				double lat = c.getDouble(latIndex);
+				double lng = c.getDouble(lngIndex);
 				if (lat == 0 && lng == 0) {
 					continue;
 				}
-				String locationName = c.getString(c.getColumnIndex(Locatable.LOCATION_NAME));
+				String locationName = c.getString(locationNameIndex);
 				locationsMap.put(lat + "," + lng, locationName);
 			}
 		} finally {

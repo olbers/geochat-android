@@ -25,19 +25,19 @@ public class HomeActivity extends TabActivity {
 
 	    intent = new Intent().setClass(this, GroupsActivity.class);
 	    spec = tabHost.newTabSpec("groups").setIndicator(res.getString(R.string.groups),
-	                      res.getDrawable(R.drawable.ic_tab_artists))
+	                      res.getDrawable(R.drawable.ic_tab_groups))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
 	    intent = new Intent().setClass(this, PeopleActivity.class);
 	    spec = tabHost.newTabSpec("people").setIndicator(res.getString(R.string.people),
-	                      res.getDrawable(R.drawable.ic_tab_artists))
+	                      res.getDrawable(R.drawable.ic_tab_users))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
 	    intent = new Intent().setClass(this, MessagesActivity.class);
 	    spec = tabHost.newTabSpec("messages").setIndicator(res.getString(R.string.messages),
-	                      res.getDrawable(R.drawable.ic_tab_artists))
+	                      res.getDrawable(R.drawable.ic_tab_messages))
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    

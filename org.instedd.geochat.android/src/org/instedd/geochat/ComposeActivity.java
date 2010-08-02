@@ -60,14 +60,16 @@ public class ComposeActivity extends Activity {
 	    int composeGroupIndex = 0;
 	    
 	    Cursor c = getContentResolver().query(Groups.CONTENT_URI, PROJECTION, null, null, "lower(" + Groups.NAME + ")");
+	    final int nameIndex = c.getColumnIndex(Groups.NAME);
+	    final int aliasIndex = c.getColumnIndex(Groups.ALIAS);
 	    
 	    Group[] groups = new Group[c.getCount() + 1];
 	    groups[0] = new Group();
 	    groups[0].name = "(No group)";
 	    for (int i = 0; c.moveToNext(); i++) {
 			groups[i + 1] = new Group();
-			groups[i + 1].name = c.getString(c.getColumnIndex(Groups.NAME));
-			groups[i + 1].alias = c.getString(c.getColumnIndex(Groups.ALIAS));
+			groups[i + 1].name = c.getString(nameIndex);
+			groups[i + 1].alias = c.getString(aliasIndex);
 			
 			if (composeGroup != null && composeGroup.equals(groups[i + 1].alias)) {
 				composeGroupIndex = i + 1;

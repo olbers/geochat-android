@@ -15,11 +15,17 @@ public final class R {
         public static final int ic_menu_home=0x7f020001;
         public static final int ic_menu_mapmode=0x7f020002;
         public static final int ic_stat_geochat=0x7f020003;
-        public static final int ic_tab_artists=0x7f020004;
-        public static final int ic_tab_artists_grey=0x7f020005;
-        public static final int ic_tab_artists_white=0x7f020006;
-        public static final int icon=0x7f020007;
-        public static final int stat_sys_warning=0x7f020008;
+        public static final int ic_tab_groups=0x7f020004;
+        public static final int ic_tab_groups_grey=0x7f020005;
+        public static final int ic_tab_groups_white=0x7f020006;
+        public static final int ic_tab_messages=0x7f020007;
+        public static final int ic_tab_messages_grey=0x7f020008;
+        public static final int ic_tab_messages_white=0x7f020009;
+        public static final int ic_tab_users=0x7f02000a;
+        public static final int ic_tab_users_grey=0x7f02000b;
+        public static final int ic_tab_users_white=0x7f02000c;
+        public static final int icon=0x7f02000d;
+        public static final int stat_sys_warning=0x7f02000e;
     }
     public static final class id {
         public static final int alias=0x7f050005;
