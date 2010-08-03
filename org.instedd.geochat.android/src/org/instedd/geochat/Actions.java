@@ -110,29 +110,38 @@ public final class Actions {
 		        		message = "at " + lat + ", " + lng;
 		        	}
 		        	
-		        	IGeoChatApi api = settings.newApi();
-		        	try {
-						api.sendMessage(message);
-						handler.post(new Runnable() {
-							@Override
-							public void run() {
-								Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
-							}
-						});
-					} catch (GeoChatApiException e) {
-						ClipboardManager clip = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-						clip.setText(message);
-						
-						handler.post(new Runnable() {
-							@Override
-							public void run() {
-								Toast.makeText(context, res.getString(R.string.could_not_send_your_location_message_copied_to_clipboard) + "\n" + message, Toast.LENGTH_LONG).show();
-							}
-						});
-					}
+		        	boolean hasConnectivity = Connectivity.hasConnectivity(context);
+		        	if (hasConnectivity) {
+			        	IGeoChatApi api = settings.newApi();
+			        	try {
+							api.sendMessage(message);
+							handler.post(new Runnable() {
+								@Override
+								public void run() {
+									Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
+								}
+							});
+						} catch (GeoChatApiException e) {
+							couldNotSendLocation(context, handler, message);
+						}
+		        	} else {
+		        		couldNotSendLocation(context, handler, message);
+		        	}
 		        }
 			};
 		}.start();
+	}
+	
+	private static void couldNotSendLocation(final Context context, final Handler handler, final String message) {
+		ClipboardManager clip = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+		clip.setText(message);
+		
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				Toast.makeText(context, context.getResources().getString(R.string.could_not_send_your_location_message_copied_to_clipboard) + "\n" + message, Toast.LENGTH_LONG).show();
+			}
+		});
 	}
 	
 	private static void startActivity(Context context, Class<?> clazz) {

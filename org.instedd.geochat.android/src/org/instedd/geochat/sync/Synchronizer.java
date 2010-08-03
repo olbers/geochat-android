@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.instedd.geochat.Connectivity;
 import org.instedd.geochat.GeoChatSettings;
 import org.instedd.geochat.Notifier;
 import org.instedd.geochat.R;
@@ -24,8 +25,6 @@ import org.instedd.geochat.map.LocationResolver;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Handler;
 
@@ -320,12 +319,6 @@ public class Synchronizer {
 		api = new GeoChatSettings(context).newApi();
 	}
 	
-	private boolean hasConnectivity() {
-		ConnectivityManager conn = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo info = conn.getActiveNetworkInfo();
-		return info != null && info.isConnected();
-	}
-	
 	private class SyncThread extends Thread {
 		
 		// Fetch icons the first time
@@ -336,7 +329,7 @@ public class Synchronizer {
 			try {
 				while(running) {
 					try {
-						boolean hasConnectivity = hasConnectivity();
+						boolean hasConnectivity = Connectivity.hasConnectivity(context);
 						boolean credentialsAreValid = true;
 						if (hasConnectivity) {
 							credentialsAreValid = api.credentialsAreValid();
