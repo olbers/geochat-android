@@ -54,6 +54,10 @@
         <activity android:name=".map.GeoChatMapActivity"
                   android:label="@string/map"
                   />
+                  
+        <activity android:name=".GeoChatPreferences"
+                  android:label="@string/geochat_settings"
+                  />
         		  
        	<service android:name=".sync.GeoChatService"
             android:exported="true"/>

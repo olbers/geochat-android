@@ -129,6 +129,7 @@ public class GeoChatMapActivity extends MapActivity {
 		Menues.home(menu);
 		Menues.compose(menu);
 		Menues.reportMyLocation(menu);
+		Menues.settings(menu);
 		return true;
 	}
 	

@@ -177,6 +177,7 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 		Menues.map(menu);
 		Menues.compose(menu);
 		Menues.reportMyLocation(menu);
+		Menues.settings(menu);
 		return true;
 	}
 	

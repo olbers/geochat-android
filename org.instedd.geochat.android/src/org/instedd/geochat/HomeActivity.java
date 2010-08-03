@@ -48,18 +48,6 @@ public class HomeActivity extends TabActivity {
 	}
 	
 	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
-	
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-	
-	@Override
 	protected void onResume() {
 		Intent intent = getIntent();
 	    if (intent != null) {
@@ -78,6 +66,7 @@ public class HomeActivity extends TabActivity {
 		Menues.map(menu);
 		Menues.compose(menu);
 		Menues.reportMyLocation(menu);
+		Menues.settings(menu);
 		return true;
 	}
 	

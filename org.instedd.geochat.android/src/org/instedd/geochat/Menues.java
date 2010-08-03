@@ -11,6 +11,7 @@ public class Menues {
 	public final static int COMPOSE = 2;
 	public final static int MAP = 3;
 	public final static int REPORT_MY_LOCATION = 4;
+	public final static int SETTINGS = 5;
 	
 	public static void executeAction(Context context, Handler handler, int menuItemId) {
 		executeAction(context, handler, menuItemId, null);
@@ -30,6 +31,9 @@ public class Menues {
 		case Menues.REPORT_MY_LOCATION:
 			Actions.reportMyLocation(context, handler);
 			break;
+		case Menues.SETTINGS:
+			Actions.settings(context);
+			break;
 		}
 	}
 	
@@ -47,6 +51,10 @@ public class Menues {
 	
 	public static void reportMyLocation(Menu menu) {
 		menu.add(0, REPORT_MY_LOCATION, 0, R.string.report_my_location).setIcon(R.drawable.ic_menu_mylocation);
+	}
+	
+	public static void settings(Menu menu) {
+		menu.add(0, SETTINGS, 0, R.string.settings).setIcon(R.drawable.ic_menu_preferences);
 	}
 
 }

@@ -51,4 +51,6 @@
     <string name="could_not_retrieve_your_location">Could not retrieve your location</string>
     <string name="sent">Sent</string>
     <string name="could_not_send_your_location_message_copied_to_clipboard">Could not send your location, message was copied to clipboard:</string>
+    <string name="silent_report_locations">Silent report locations</string>
+    <string name="silent_report_locations_summary">When checked, reported locations will not be broadcasted to group members</string>
 </resources>

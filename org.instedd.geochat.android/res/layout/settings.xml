@@ -1,0 +1,10 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+        android:title="@string/geochat_settings">
+        
+	<CheckBoxPreference
+	    android:title="@string/silent_report_locations"
+	    android:defaultValue="true"
+	    android:summary="@string/silent_report_locations_summary"
+	    android:key="silent_report_locations" />
+
+</PreferenceScreen>

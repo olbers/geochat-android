@@ -43,6 +43,10 @@ public final class Actions {
 		startActivity(context, GeoChatMapActivity.class);
 	}
 	
+	public static void settings(Context context) {
+		startActivity(context, GeoChatPreferences.class);
+	}
+	
 	public static void showUserInMap(Context context, String login) {
 		startActivity(context, GeoChatMapActivity.class, Uris.userLogin(login));
 	}
@@ -97,8 +101,16 @@ public final class Actions {
 						}
 					});
 		        } else {
-		        	final String message = "#my location " + lat + ", " + lng;
-		        	IGeoChatApi api = new GeoChatSettings(context).newApi();
+		        	GeoChatSettings settings = new GeoChatSettings(context);
+		        	
+		        	final String message;
+		        	if (settings.isSilentReportLocationsEnabled()) {
+		        		message = "#my location " + lat + ", " + lng;	
+		        	} else {
+		        		message = "at " + lat + ", " + lng;
+		        	}
+		        	
+		        	IGeoChatApi api = settings.newApi();
 		        	try {
 						api.sendMessage(message);
 						handler.post(new Runnable() {
