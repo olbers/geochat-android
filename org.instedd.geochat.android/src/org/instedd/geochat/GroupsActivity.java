@@ -95,6 +95,13 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 		return builder.create();
 	}
 	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		cursor.moveToPosition(position);
+		String name = cursor.getString(cursor.getColumnIndex(Groups.NAME));
+		dialog.setTitle(name);
+	}
+	
 	private static class GroupCursorAdapter extends SimpleCursorAdapter {
 
 		private final Cursor c;

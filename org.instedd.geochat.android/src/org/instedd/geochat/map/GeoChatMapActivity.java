@@ -9,6 +9,7 @@ import org.instedd.geochat.Menues;
 import org.instedd.geochat.R;
 import org.instedd.geochat.api.User;
 import org.instedd.geochat.data.GeoChatProvider;
+import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
 
 import android.database.Cursor;
@@ -41,6 +42,7 @@ public class GeoChatMapActivity extends MapActivity {
 	}
 	
 	private void loadUsers() {
+		boolean targetIsMessage = false;
 		String targetLogin =  null;
 		double targetLat = 0;
 		double targetLng = 0;
@@ -48,6 +50,14 @@ public class GeoChatMapActivity extends MapActivity {
 			int match = GeoChatProvider.URI_MATCHER.match(getIntent().getData());
 			if (match == GeoChatProvider.USER_LOGIN || match == GeoChatProvider.USER_ID) {
 				targetLogin = getIntent().getData().getPathSegments().get(1);
+			} else if (match == GeoChatProvider.MESSAGE_ID) {
+				Cursor c = getContentResolver().query(getIntent().getData(), new String[] { Messages._ID, Messages.LAT, Messages.LNG }, null, null, null);
+				if (c.moveToNext()) {
+					targetLat = c.getDouble(1);
+					targetLng = c.getDouble(2);
+					targetIsMessage = true;
+				}
+				c.close();
 			}
 		}
 		
@@ -85,7 +95,7 @@ public class GeoChatMapActivity extends MapActivity {
         	}
         	users.add(user);
         	
-        	if (targetLogin != null && targetLogin.equals(user.login)) {
+        	if (!targetIsMessage && targetLogin != null && targetLogin.equals(user.login)) {
         		targetLat = user.lat;
         		targetLng = user.lng;
         	}
@@ -94,6 +104,10 @@ public class GeoChatMapActivity extends MapActivity {
         
         for(Map.Entry<String, Map<String, List<User>>> entry : mapByLocation.entrySet()) {
         	mapView.getOverlays().add(new UserGroupsOverlay(entry.getValue()));	
+        }
+        
+        if (targetIsMessage) {
+        	mapView.getOverlays().add(new GreenDotOverlay(new GeoPoint((int)(targetLat * 1E6), (int)(targetLng * 1E6))));
         }
         
         if (targetLat != 0 || targetLng != 0) {

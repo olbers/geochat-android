@@ -1,6 +1,7 @@
 package org.instedd.geochat;
 
 import org.instedd.geochat.data.GeoChat.Groups;
+import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
 
 import android.net.Uri;
@@ -41,6 +42,10 @@ public final class Uris {
 	
 	public static Uri groupLastMessage(String groupAlias) {
 		return Uri.withAppendedPath(groupMessages(groupAlias), "last");
+	}
+	
+	public static Uri messageId(int messageId) {
+		return Uri.withAppendedPath(Messages.CONTENT_URI, String.valueOf(messageId));
 	}
 	
 	private Uris() { }

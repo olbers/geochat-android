@@ -82,6 +82,7 @@ public final class R {
         public static final int login_colon=0x7f04001c;
         public static final int map=0x7f040027;
         public static final int members=0x7f040029;
+        public static final int message=0x7f04002d;
         public static final int message_could_not_be_sent_maybe_no_connection=0x7f040023;
         public static final int message_not_sent=0x7f040026;
         public static final int message_sent=0x7f040022;

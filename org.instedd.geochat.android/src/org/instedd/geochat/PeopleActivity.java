@@ -1,8 +1,5 @@
 package org.instedd.geochat;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChat.Users;
 
@@ -74,20 +71,17 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		final List<String> items = new ArrayList<String>(2);
-		items.add(getResources().getString(R.string.view_messages));
+		final CharSequence[] items = { 
+				getResources().getString(R.string.view_messages),
+				getResources().getString(R.string.show_in_map)
+				};
 		
 		cursor.moveToPosition(position);
 		String displayName = cursor.getString(cursor.getColumnIndex(Users.DISPLAY_NAME));
-		double lat = cursor.getDouble(cursor.getColumnIndex(Users.LAT));
-		double lng = cursor.getDouble(cursor.getColumnIndex(Users.LNG));
-		if (lat != 0 || lng != 0) {
-			items.add(getResources().getString(R.string.show_in_map));
-		}
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(displayName);
-		builder.setItems(items.toArray(new String[items.size()]), new OnClickListener() {
+		builder.setItems(items, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				switch(which) {
@@ -101,6 +95,13 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 			}
 		});
 		return builder.create();
+	}
+	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		cursor.moveToPosition(position);
+		String displayName = cursor.getString(cursor.getColumnIndex(Users.DISPLAY_NAME));
+		dialog.setTitle(displayName);
 	}
 	
 	private void viewMessages() {

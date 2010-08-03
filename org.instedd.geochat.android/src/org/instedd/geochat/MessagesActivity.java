@@ -95,12 +95,8 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     @Override
 	protected Dialog onCreateDialog(int id) {
     	final CharSequence[] items = { getResources().getString(R.string.show_in_map) };
-    	
-		cursor.moveToPosition(position);
-		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
-		
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(login);
+		builder.setTitle(getResources().getString(R.string.message));
 		builder.setItems(items, new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -112,8 +108,8 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     
     private void showInMap() {
 		cursor.moveToPosition(position);
-		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
-		Actions.showUserInMap(this, login);
+		int id = cursor.getInt(cursor.getColumnIndex(Messages._ID));
+		Actions.showMessageInMap(this, id);
 	}
 	
 	private static class MessageCursorAdapter extends SimpleCursorAdapter {

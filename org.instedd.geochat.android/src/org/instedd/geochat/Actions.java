@@ -37,6 +37,10 @@ public final class Actions {
 		startActivity(context, GeoChatMapActivity.class, Uris.userLogin(login));
 	}
 	
+	public static void showMessageInMap(Context context, int id) {
+		startActivity(context, GeoChatMapActivity.class, Uris.messageId(id));
+	}
+	
 	public static void viewUserMessages(Context context, String login) {
 		startActivity(context, MessagesActivityWithTitleBar.class, Uris.userMessages(login));
 	}
