@@ -20,7 +20,6 @@
     <string name="one_new_messages">1 new messages</string>
     <string name="d_new_messages">%d new messages</string>
     <string name="disconnected_from_geochat">Disconnected from GeoChat</string>
-    <string name="logging_into_geochat">Logging into GeoChat...</string>
     <string name="first_time_logging_fetching_groups">First time login.\nThis might take several minutes.\nFetching groups...</string>
     <string name="first_time_logging_fetching_users">First time login.\nThis might take several minutes.\nFetching users...</string>
     <string name="first_time_logging_fetching_messages">First time login.\nThis might take several minutes.\nFetching messages...</string>

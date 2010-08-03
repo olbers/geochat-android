@@ -27,6 +27,13 @@ public class LoginActivity extends Activity {
 	private final static int DIALOG_WRONG_CREDENTIALS = 2;
 	private final static int DIALOG_UNKNOWN_ERROR = 3;
 	
+	private final static int STATE_DIALOG_LOGGING_IN_NORMAL = 1;
+	private final static int STATE_DIALOG_LOGGING_IN_GROUPS = 2;
+	private final static int STATE_DIALOG_LOGGING_IN_USERS = 3;
+	private final static int STATE_DIALOG_LOGGING_IN_MESSAGES = 4;
+	
+	private int stateDialogLoggingIn;
+	
 	private final Handler handler = new Handler();
 	private ProgressDialog progressDialog;
 	private boolean wrongCredentials;
@@ -54,6 +61,8 @@ public class LoginActivity extends Activity {
 			public void onClick(View v) {
 				new Thread() {
 					public void run() {
+						stateDialogLoggingIn = STATE_DIALOG_LOGGING_IN_NORMAL;
+						
 						handler.post(new Runnable() {
 							@Override
 							public void run() {
@@ -129,10 +138,31 @@ public class LoginActivity extends Activity {
 		}
 	}
 	
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog) {
+		if (id == DIALOG_LOGGING_IN) {
+			switch(stateDialogLoggingIn) {
+			case STATE_DIALOG_LOGGING_IN_NORMAL:
+				dialog.setTitle(R.string.logging_in_to_geochat);
+				break;
+			case STATE_DIALOG_LOGGING_IN_GROUPS:
+				dialog.setTitle(R.string.first_time_logging_fetching_groups);
+				break;
+			case STATE_DIALOG_LOGGING_IN_USERS:
+				dialog.setTitle(R.string.first_time_logging_fetching_users);
+				break;
+			case STATE_DIALOG_LOGGING_IN_MESSAGES:
+				dialog.setTitle(R.string.first_time_logging_fetching_messages);
+				break;
+			}
+		}
+	}
+	
 	private void resync() throws GeoChatApiException {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				stateDialogLoggingIn = STATE_DIALOG_LOGGING_IN_GROUPS;
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_groups));
 			}
 		});
@@ -145,6 +175,7 @@ public class LoginActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				stateDialogLoggingIn = STATE_DIALOG_LOGGING_IN_USERS;
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_users));
 			}
 		});
@@ -154,6 +185,7 @@ public class LoginActivity extends Activity {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
+				stateDialogLoggingIn = STATE_DIALOG_LOGGING_IN_MESSAGES;
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_messages));
 			}
 		});
