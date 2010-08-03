@@ -15,18 +15,19 @@ public final class R {
         public static final int ic_menu_compose=0x7f020001;
         public static final int ic_menu_home=0x7f020002;
         public static final int ic_menu_mapmode=0x7f020003;
-        public static final int ic_stat_geochat=0x7f020004;
-        public static final int ic_tab_groups=0x7f020005;
-        public static final int ic_tab_groups_grey=0x7f020006;
-        public static final int ic_tab_groups_white=0x7f020007;
-        public static final int ic_tab_messages=0x7f020008;
-        public static final int ic_tab_messages_grey=0x7f020009;
-        public static final int ic_tab_messages_white=0x7f02000a;
-        public static final int ic_tab_users=0x7f02000b;
-        public static final int ic_tab_users_grey=0x7f02000c;
-        public static final int ic_tab_users_white=0x7f02000d;
-        public static final int icon=0x7f02000e;
-        public static final int stat_sys_warning=0x7f02000f;
+        public static final int ic_menu_mylocation=0x7f020004;
+        public static final int ic_stat_geochat=0x7f020005;
+        public static final int ic_tab_groups=0x7f020006;
+        public static final int ic_tab_groups_grey=0x7f020007;
+        public static final int ic_tab_groups_white=0x7f020008;
+        public static final int ic_tab_messages=0x7f020009;
+        public static final int ic_tab_messages_grey=0x7f02000a;
+        public static final int ic_tab_messages_white=0x7f02000b;
+        public static final int ic_tab_users=0x7f02000c;
+        public static final int ic_tab_users_grey=0x7f02000d;
+        public static final int ic_tab_users_white=0x7f02000e;
+        public static final int icon=0x7f02000f;
+        public static final int stat_sys_warning=0x7f020010;
     }
     public static final class id {
         public static final int alias=0x7f050005;
@@ -66,6 +67,8 @@ public final class R {
         public static final int cannot_login_to_geochat=0x7f040025;
         public static final int cannott_login_maybe_no_connection=0x7f04000e;
         public static final int compose=0x7f040018;
+        public static final int could_not_retrieve_your_location=0x7f040030;
+        public static final int could_not_send_your_location_message_copied_to_clipboard=0x7f040032;
         public static final int d_new_messages=0x7f040012;
         public static final int disconnected_from_geochat=0x7f040013;
         public static final int first_time_logging_fetching_groups=0x7f040015;
@@ -94,9 +97,12 @@ public final class R {
         public static final int password_dialogTitle=0x7f04000b;
         public static final int password_summary=0x7f04000a;
         public static final int people=0x7f040003;
+        public static final int report_my_location=0x7f04002e;
+        public static final int retreiving_your_location=0x7f04002f;
         public static final int send=0x7f04001f;
         public static final int sending_elipsis=0x7f040021;
         public static final int sending_message=0x7f040020;
+        public static final int sent=0x7f040031;
         public static final int settings=0x7f04000c;
         public static final int show_in_map=0x7f04002c;
         public static final int something_went_wrong=0x7f040028;

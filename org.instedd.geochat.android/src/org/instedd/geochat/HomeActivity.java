@@ -6,11 +6,14 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
 
 public class HomeActivity extends TabActivity {
+	
+	private final Handler handler = new Handler();
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -74,12 +77,13 @@ public class HomeActivity extends TabActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Menues.map(menu);
 		Menues.compose(menu);
+		Menues.reportMyLocation(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Menues.executeAction(this, item.getItemId());
+		Menues.executeAction(this, handler, item.getItemId());
 		return true;
 	}
 }

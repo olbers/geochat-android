@@ -1,10 +1,20 @@
 package org.instedd.geochat;
 
+import java.util.List;
+
+import org.instedd.geochat.api.GeoChatApiException;
+import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.map.GeoChatMapActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Handler;
+import android.text.ClipboardManager;
+import android.widget.Toast;
 
 public final class Actions {
 	
@@ -47,6 +57,70 @@ public final class Actions {
 	
 	public static void openGroup(Context context, int groupId) {
 		startActivity(context, GroupActivity.class, Uris.groupId(groupId));
+	}
+	
+	public static void reportMyLocation(final Context context, final Handler handler) {
+		final Resources res = context.getResources();
+		
+		Toast.makeText(context, res.getString(R.string.retreiving_your_location), Toast.LENGTH_LONG).show();
+		
+		new Thread() {
+			public void run() {
+				LocationManager man = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+				
+				List<String> providerNames = man.getAllProviders();
+				
+				double bestTime = 0;
+				double lat = 0;
+				double lng = 0;
+		        
+				// TODO this just checks the most recent location,
+				// without taking into account the provider's accuracy
+		        for(String providerName : providerNames) {
+		        	Location location = man.getLastKnownLocation(providerName);
+		        	if (location != null) {
+		        		double time = location.getTime();
+		        		if (time <= bestTime)
+		        			continue;
+		        		
+		        		bestTime = time;
+			        	lat = location.getLatitude();
+			        	lng = location.getLongitude();
+		        	}
+		        }
+		        
+		        if (bestTime == 0) {
+		        	handler.post(new Runnable() {
+						@Override
+						public void run() {
+							Toast.makeText(context, res.getString(R.string.could_not_retrieve_your_location), Toast.LENGTH_LONG).show();
+						}
+					});
+		        } else {
+		        	final String message = "#my location " + lat + ", " + lng;
+		        	IGeoChatApi api = new GeoChatSettings(context).newApi();
+		        	try {
+						api.sendMessage(message);
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
+							}
+						});
+					} catch (GeoChatApiException e) {
+						ClipboardManager clip = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+						clip.setText(message);
+						
+						handler.post(new Runnable() {
+							@Override
+							public void run() {
+								Toast.makeText(context, res.getString(R.string.could_not_send_your_location_message_copied_to_clipboard) + "\n" + message, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+		        }
+			};
+		}.start();
 	}
 	
 	private static void startActivity(Context context, Class<?> clazz) {

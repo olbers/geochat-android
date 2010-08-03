@@ -78,7 +78,7 @@ public class LoginActivity extends Activity {
 							if (credentialsAreValid) {
 								settings.setUserAndPassword(user, password);
 								if (userChanged) {
-									resync();
+									//resync();
 								}
 								Actions.home(LoginActivity.this);
 							} else {

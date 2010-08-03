@@ -14,6 +14,7 @@ import org.instedd.geochat.data.GeoChat.Users;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -24,6 +25,7 @@ import com.google.android.maps.MapView;
 
 public class GeoChatMapActivity extends MapActivity {
 	
+	private final Handler handler = new Handler();
 	private MapView mapView;
 	
 	@Override
@@ -126,12 +128,13 @@ public class GeoChatMapActivity extends MapActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Menues.home(menu);
 		Menues.compose(menu);
+		Menues.reportMyLocation(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Menues.executeAction(this, item.getItemId());
+		Menues.executeAction(this, handler, item.getItemId());
 		return true;
 	}
 

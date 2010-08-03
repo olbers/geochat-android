@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -29,6 +30,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 public class MessagesActivity extends ListActivity implements OnItemLongClickListener {
 	
+	private final Handler handler = new Handler();
 	private boolean mainActivity;
 	private int position;
 	private Cursor cursor;
@@ -174,13 +176,14 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 		Menues.home(menu);
 		Menues.map(menu);
 		Menues.compose(menu);
+		Menues.reportMyLocation(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (!mainActivity) return super.onOptionsItemSelected(item);
-		Menues.executeAction(this, item.getItemId());
+		Menues.executeAction(this, handler, item.getItemId());
 		return true;
 	}
 }

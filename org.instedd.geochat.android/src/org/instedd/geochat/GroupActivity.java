@@ -8,11 +8,14 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
 
 public class GroupActivity extends TabActivity {
+	
+	private final Handler handler = new Handler();
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -62,12 +65,13 @@ public class GroupActivity extends TabActivity {
 		Menues.home(menu);
 		Menues.map(menu);
 		Menues.compose(menu);
+		Menues.reportMyLocation(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Menues.executeAction(this, item.getItemId(), getIntent().getData());
+		Menues.executeAction(this, handler, item.getItemId(), getIntent().getData());
 		return true;
 	}
 
