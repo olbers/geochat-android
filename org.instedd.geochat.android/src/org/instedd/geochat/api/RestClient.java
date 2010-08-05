@@ -22,7 +22,6 @@ public class RestClient implements IRestClient {
 		this.client = new DefaultHttpClient();
 	}
 
-	@Override
 	public InputStream get(String url) throws IOException {
 		HttpGet get = new HttpGet(url);
 		auth(get);
@@ -33,7 +32,6 @@ public class RestClient implements IRestClient {
 		return response.getEntity().getContent();
 	}
 	
-	@Override
 	public void post(String url, List<NameValuePair> params) throws IOException {
 		HttpPost post = new HttpPost(url);
 		auth(post);
@@ -44,7 +42,6 @@ public class RestClient implements IRestClient {
 		response.getEntity().consumeContent();
 	}
 
-	@Override
 	public void setAuth(String user, String password) {
 		this.auth = "Basic " + Base64.encodeBytes((user + ":" + password).getBytes());
 	}

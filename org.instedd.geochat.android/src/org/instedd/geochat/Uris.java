@@ -24,7 +24,7 @@ public final class Uris {
 		return Uri.withAppendedPath(Groups.CONTENT_URI, String.valueOf(groupId));
 	}
 	
-	private static Uri groupAlias(String groupAlias) {
+	public static Uri groupAlias(String groupAlias) {
 		return Uri.withAppendedPath(Groups.CONTENT_URI, groupAlias);
 	}
 	

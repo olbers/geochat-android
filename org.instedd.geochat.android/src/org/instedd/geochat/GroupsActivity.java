@@ -52,14 +52,12 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
         getListView().setOnItemLongClickListener(this);
 	}
 	
-	@Override
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 		cursor.moveToPosition(position);
 		int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
 		Actions.openGroup(this, groupId);
 	}
 	
-	@Override
 	public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
 		this.position = position;
 		showDialog(0);
@@ -69,7 +67,7 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		final CharSequence[] items = { 
-				getResources().getString(R.string.view_members_and_messages),
+				getResources().getString(R.string.open_group),
 				getResources().getString(R.string.compose)
 				};
 		
@@ -79,7 +77,6 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(name);
 		builder.setItems(items, new OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
 				switch(which) {

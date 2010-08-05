@@ -19,18 +19,15 @@ public class MockRestClient implements IRestClient {
 		this.response = response;
 	}
 
-	@Override
 	public InputStream get(String url) {
 		this.getUrl = url;
 		return new ByteArrayInputStream(response.getBytes());
 	}
 	
-	@Override
 	public void post(String url, List<NameValuePair> params) throws IOException {
 		
 	}
 
-	@Override
 	public void setAuth(String user, String password) {
 		this.user = user;
 		this.password = password;

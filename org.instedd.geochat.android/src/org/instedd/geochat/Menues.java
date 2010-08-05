@@ -12,6 +12,7 @@ public class Menues {
 	public final static int MAP = 3;
 	public final static int REPORT_MY_LOCATION = 4;
 	public final static int SETTINGS = 5;
+	public final static int PASTE_MY_LOCATION = 6;
 	
 	public static void executeAction(Context context, Handler handler, int menuItemId) {
 		executeAction(context, handler, menuItemId, null);
@@ -55,6 +56,10 @@ public class Menues {
 	
 	public static void settings(Menu menu) {
 		menu.add(0, SETTINGS, 0, R.string.settings).setIcon(R.drawable.ic_menu_preferences);
+	}
+	
+	public static void pasteMyLocation(Menu menu) {
+		menu.add(0, PASTE_MY_LOCATION, 0, R.string.paste_my_location).setIcon(R.drawable.ic_menu_mylocation);
 	}
 
 }

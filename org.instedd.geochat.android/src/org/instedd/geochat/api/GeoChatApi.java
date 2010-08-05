@@ -27,7 +27,6 @@ public class GeoChatApi implements IGeoChatApi {
 		this.password = password;
 	}
 	
-	@Override
 	public boolean credentialsAreValid() throws GeoChatApiException {
 		try {
 			InputStream is = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/verify.rss?password=" + encode(password));
@@ -40,7 +39,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 
-	@Override
 	public Group[] getGroups(int page) throws GeoChatApiException {
 		try {
 			InputStream is = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/groups.rss?page=" + page);
@@ -56,7 +54,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 
-	@Override
 	public Message[] getMessages(String groupAlias, int page) throws GeoChatApiException {
 		try {
 			InputStream is = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/messages.rss?page=" + page);
@@ -72,7 +69,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 
-	@Override
 	public User[] getUsers(String groupAlias, int page) throws GeoChatApiException {
 		try {
 			InputStream is = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/members.rss?page=" + page);
@@ -88,7 +84,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 	
-	@Override
 	public InputStream getUserIcon(String login, int size) throws GeoChatApiException {
 		try {
 			return this.client.get("https://geochat.instedd.org/api/users/" + encode(login) + "/icon?size=" + size);
@@ -97,7 +92,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 
-	@Override
 	public void sendMessage(String message) throws GeoChatApiException {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("message", message));
@@ -108,7 +102,6 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 
-	@Override
 	public void sendMessage(String groupAlias, String message) throws GeoChatApiException {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("message", message));

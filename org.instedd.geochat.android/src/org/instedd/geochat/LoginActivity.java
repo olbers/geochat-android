@@ -50,12 +50,10 @@ public class LoginActivity extends Activity {
 	    uiPassword.setText(existingPassword);
 	    
 	    uiLogin.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				new Thread() {
 					public void run() {
 						handler.post(new Runnable() {
-							@Override
 							public void run() {
 								showDialog(DIALOG_LOGGING_IN);
 								uiLogin.setEnabled(false);
@@ -83,7 +81,6 @@ public class LoginActivity extends Activity {
 								Actions.home(LoginActivity.this);
 							} else {
 								handler.post(new Runnable() {
-									@Override
 									public void run() {
 										uiLogin.setEnabled(true);
 										dismissDialog(DIALOG_LOGGING_IN);
@@ -93,7 +90,6 @@ public class LoginActivity extends Activity {
 							}
 						} catch (GeoChatApiException e) {
 							handler.post(new Runnable() {
-								@Override
 								public void run() {
 									uiLogin.setEnabled(true);
 									dismissDialog(DIALOG_LOGGING_IN);
@@ -131,7 +127,6 @@ public class LoginActivity extends Activity {
 	
 	private void resync() throws GeoChatApiException {
 		handler.post(new Runnable() {
-			@Override
 			public void run() {
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_groups));
 			}
@@ -143,7 +138,6 @@ public class LoginActivity extends Activity {
 		final Group[] groups = synchronizer.syncGroups();
 		
 		handler.post(new Runnable() {
-			@Override
 			public void run() {
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_users));
 			}
@@ -152,7 +146,6 @@ public class LoginActivity extends Activity {
 		synchronizer.syncUsers(groups);
 		
 		handler.post(new Runnable() {
-			@Override
 			public void run() {
 				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_messages));
 			}

@@ -15,6 +15,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -87,7 +88,6 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     	super.onResume();
     }
     
-    @Override
     public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
     	this.position = position;
 		showDialog(0);
@@ -96,22 +96,59 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     
     @Override
 	protected Dialog onCreateDialog(int id) {
-    	final CharSequence[] items = { getResources().getString(R.string.show_in_map) };
+    	final CharSequence[] items = {
+    			getResources().getString(R.string.open_user),
+    			getResources().getString(R.string.open_group),
+    			getResources().getString(R.string.show_in_map),
+    			getResources().getString(R.string.copy_message_text)
+    	};
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(getResources().getString(R.string.message));
 		builder.setItems(items, new OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				showInMap();
-			}
+				switch(which) {
+				case 0:
+					openUser();
+					break;
+				case 1:
+					openGroup();
+					break;
+				case 2:
+					showInMap();
+					break;
+				case 3:
+					copyMessageText();
+					break;
+				}
+				
+			}			
 		});
 		return builder.create();
 	}
+    
+    private void openUser() {
+    	cursor.moveToPosition(position);
+		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
+		Actions.openMessages(MessagesActivity.this, login);
+    }
+    
+    private void openGroup() {
+    	cursor.moveToPosition(position);
+		String alias = cursor.getString(cursor.getColumnIndex(Messages.TO_GROUP));
+		Actions.openGroup(MessagesActivity.this, alias);
+    }
     
     private void showInMap() {
 		cursor.moveToPosition(position);
 		int id = cursor.getInt(cursor.getColumnIndex(Messages._ID));
 		Actions.showMessageInMap(this, id);
+	}
+    
+    private void copyMessageText() {
+    	cursor.moveToPosition(position);
+		String message = cursor.getString(cursor.getColumnIndex(Messages.MESSAGE));
+		ClipboardManager clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+		clip.setText(message);
 	}
 	
 	private static class MessageCursorAdapter extends SimpleCursorAdapter {

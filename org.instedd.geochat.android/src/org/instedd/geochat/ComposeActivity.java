@@ -4,6 +4,7 @@ import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Groups;
+import org.instedd.geochat.map.LatLng;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
 	
@@ -88,7 +90,6 @@ public class ComposeActivity extends Activity {
 	    uiGroup.setSelection(composeGroupIndex);
 	    
 	    uiSend.setOnClickListener(new OnClickListener() {
-			@Override
 			public void onClick(View v) {
 				final Group group = (Group) uiGroup.getSelectedItem();
 				final Editable message = uiMessage.getText();
@@ -108,7 +109,6 @@ public class ComposeActivity extends Activity {
 	
 	private void sendMessage(Group group, String message) {
 		handler.post(new Runnable() {
-			@Override
 			public void run() {
 				showDialog(DIALOG_SENDING_MESSAGE);
 			}
@@ -126,14 +126,12 @@ public class ComposeActivity extends Activity {
 			Actions.home(this);
 		} catch (Exception e) {
 			handler.post(new Runnable() {
-				@Override
 				public void run() {
 					showDialog(DIALOG_CANNOT_SEND_MESSAGE);
 				}
 			});
 		} finally {
 			handler.post(new Runnable() {
-				@Override
 				public void run() {
 					dismissDialog(DIALOG_SENDING_MESSAGE);
 				}
@@ -168,12 +166,44 @@ public class ComposeActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Menues.home(menu);
+		Menues.pasteMyLocation(menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Menues.executeAction(this, handler, item.getItemId());
+		if (item.getItemId() == Menues.PASTE_MY_LOCATION) {
+			final Toast toast = Toast.makeText(this, getResources().getString(R.string.retreiving_your_location), Toast.LENGTH_LONG);
+			toast.show();
+			new Thread() {
+				public void run() {
+					final LatLng location = Actions.getLocation(ComposeActivity.this);
+					toast.cancel();
+					handler.post(new Runnable() {
+						public void run() {
+							if (location == null) {
+								Toast.makeText(ComposeActivity.this, getResources().getString(R.string.could_not_retrieve_your_location), Toast.LENGTH_LONG).show();
+							} else {
+								EditText uiMessage = (EditText) findViewById(R.id.message);
+								int start = uiMessage.getSelectionStart();
+								int end = uiMessage.getSelectionEnd();
+								Editable text = uiMessage.getText();
+								if (TextUtils.isEmpty(text)) {
+									text.append("at " + location.lat + ", " + location.lng + " * ");
+								} else {
+									if (start > 0 && text.charAt(start - 1) == '/') {
+										text.replace(start, end, location.lat + ", " + location.lng + "/");
+									} else {
+										text.replace(start, end, "/" + location.lat + ", " + location.lng + "/");
+									}
+								}
+							}		
+						}
+					});
+				};
+			}.start();
+		}
 		return true;
 	}
 

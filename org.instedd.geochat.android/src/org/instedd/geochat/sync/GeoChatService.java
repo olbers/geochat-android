@@ -42,7 +42,6 @@ public class GeoChatService extends Service implements OnSharedPreferenceChangeL
 		this.registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 	}
 	
-	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (GeoChatSettings.USER.equals(key)

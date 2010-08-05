@@ -56,13 +56,11 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
         getListView().setOnItemLongClickListener(this);
     }
 	
-	@Override
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 		this.position = position;
-		viewMessages();
+		openGroup();
 	}
 	
-	@Override
 	public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
 		this.position = position;
 		showDialog(0);
@@ -72,7 +70,7 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		final CharSequence[] items = { 
-				getResources().getString(R.string.view_messages),
+				getResources().getString(R.string.open_group),
 				getResources().getString(R.string.show_in_map)
 				};
 		
@@ -82,11 +80,10 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setTitle(displayName);
 		builder.setItems(items, new OnClickListener() {
-			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				switch(which) {
 				case 0:
-					viewMessages();
+					openGroup();
 					break;
 				case 1:
 					showInMap();
@@ -104,10 +101,10 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 		dialog.setTitle(displayName);
 	}
 	
-	private void viewMessages() {
+	private void openGroup() {
 		cursor.moveToPosition(position);
 		String login = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
-		Actions.viewUserMessages(this, login);
+		Actions.openMessages(this, login);
 	}
 	
 	private void showInMap() {

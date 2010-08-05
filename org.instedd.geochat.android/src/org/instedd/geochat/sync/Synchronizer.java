@@ -384,7 +384,6 @@ public class Synchronizer {
 				}
 			} catch (final Exception e) {
 				handler.post(new Runnable() {
-					@Override
 					public void run() {
 						AlertDialog.Builder builder = new AlertDialog.Builder(context);
 						builder

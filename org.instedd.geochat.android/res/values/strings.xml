@@ -41,8 +41,6 @@
     <string name="map">Map</string>
     <string name="something_went_wrong">Something went wrong...</string>
     <string name="members">Members</string>
-    <string name="view_messages">View messages</string>
-    <string name="view_members_and_messages">View members and messages</string>
     <string name="show_in_map">Show in map</string>
     <string name="message">Message</string>
     <string name="report_my_location">Report my location</string>
@@ -52,4 +50,8 @@
     <string name="could_not_send_your_location_message_copied_to_clipboard">Could not send your location, message was copied to clipboard:</string>
     <string name="silent_report_locations">Silent report locations</string>
     <string name="silent_report_locations_summary">When checked, reported locations will not be broadcasted to group members</string>
+    <string name="open_user">Open user</string>
+    <string name="open_group">Open group</string>
+    <string name="copy_message_text">Copy message text</string>
+    <string name="paste_my_location">Paste my location</string>
 </resources>

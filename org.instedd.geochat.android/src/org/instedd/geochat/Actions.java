@@ -5,6 +5,7 @@ import java.util.List;
 import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.map.GeoChatMapActivity;
+import org.instedd.geochat.map.LatLng;
 
 import android.content.Context;
 import android.content.Intent;
@@ -55,7 +56,7 @@ public final class Actions {
 		startActivity(context, GeoChatMapActivity.class, Uris.messageId(id));
 	}
 	
-	public static void viewUserMessages(Context context, String login) {
+	public static void openMessages(Context context, String login) {
 		startActivity(context, MessagesActivityWithTitleBar.class, Uris.userMessages(login));
 	}
 	
@@ -63,39 +64,24 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupId(groupId));
 	}
 	
+	public static void openGroup(Context context, String groupAlias) {
+		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
+	}
+	
 	public static void reportMyLocation(final Context context, final Handler handler) {
 		final Resources res = context.getResources();
 		
-		Toast.makeText(context, res.getString(R.string.retreiving_your_location), Toast.LENGTH_LONG).show();
+		final Toast toast = Toast.makeText(context, res.getString(R.string.retreiving_your_location), Toast.LENGTH_LONG);
+		toast.show();
 		
 		new Thread() {
 			public void run() {
-				LocationManager man = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+				final LatLng location = getLocation(context);
 				
-				List<String> providerNames = man.getAllProviders();
-				
-				double bestTime = 0;
-				double lat = 0;
-				double lng = 0;
+				toast.cancel();
 		        
-				// TODO this just checks the most recent location,
-				// without taking into account the provider's accuracy
-		        for(String providerName : providerNames) {
-		        	Location location = man.getLastKnownLocation(providerName);
-		        	if (location != null) {
-		        		double time = location.getTime();
-		        		if (time <= bestTime)
-		        			continue;
-		        		
-		        		bestTime = time;
-			        	lat = location.getLatitude();
-			        	lng = location.getLongitude();
-		        	}
-		        }
-		        
-		        if (bestTime == 0) {
+		        if (location == null) {
 		        	handler.post(new Runnable() {
-						@Override
 						public void run() {
 							Toast.makeText(context, res.getString(R.string.could_not_retrieve_your_location), Toast.LENGTH_LONG).show();
 						}
@@ -105,9 +91,9 @@ public final class Actions {
 		        	
 		        	final String message;
 		        	if (settings.isSilentReportLocationsEnabled()) {
-		        		message = "#my location " + lat + ", " + lng;	
+		        		message = "#my location " + location.lat + ", " + location.lng;	
 		        	} else {
-		        		message = "at " + lat + ", " + lng;
+		        		message = "at " + location.lat + ", " + location.lng;
 		        	}
 		        	
 		        	boolean hasConnectivity = Connectivity.hasConnectivity(context);
@@ -116,7 +102,6 @@ public final class Actions {
 			        	try {
 							api.sendMessage(message);
 							handler.post(new Runnable() {
-								@Override
 								public void run() {
 									Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
 								}
@@ -132,12 +117,42 @@ public final class Actions {
 		}.start();
 	}
 	
+	public static LatLng getLocation(Context context) {
+		LocationManager man = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		
+		List<String> providerNames = man.getAllProviders();
+		
+		double bestTime = 0;
+		double lat = 0;
+		double lng = 0;
+        
+		// TODO this just checks the most recent location,
+		// without taking into account the provider's accuracy
+        for(String providerName : providerNames) {
+        	Location location = man.getLastKnownLocation(providerName);
+        	if (location != null) {
+        		double time = location.getTime();
+        		if (time <= bestTime)
+        			continue;
+        		
+        		bestTime = time;
+	        	lat = location.getLatitude();
+	        	lng = location.getLongitude();
+        	}
+        }
+        
+        if (bestTime == 0) {
+        	return null;
+        } else {
+        	return new LatLng(lat, lng);
+        }
+	}
+	
 	private static void couldNotSendLocation(final Context context, final Handler handler, final String message) {
 		ClipboardManager clip = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
 		clip.setText(message);
 		
 		handler.post(new Runnable() {
-			@Override
 			public void run() {
 				Toast.makeText(context, context.getResources().getString(R.string.could_not_send_your_location_message_copied_to_clipboard) + "\n" + message, Toast.LENGTH_LONG).show();
 			}

@@ -21,7 +21,6 @@ public class Group implements Comparable<Group> {
 		return alias.toLowerCase().equals(other.alias.toLowerCase());
 	}
 
-	@Override
 	public int compareTo(Group another) {
 		return alias.toLowerCase().compareTo(another.alias.toLowerCase());
 	}

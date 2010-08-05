@@ -24,7 +24,6 @@ public class User implements Comparable<User> {
 		return login.toLowerCase().equals(other.login.toLowerCase());
 	}
 
-	@Override
 	public int compareTo(User another) {
 		return login.toLowerCase().compareTo(another.login.toLowerCase());
 	}
