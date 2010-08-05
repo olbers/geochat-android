@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -27,17 +28,37 @@ import android.widget.Toast;
 
 public class ComposeActivity extends Activity {
 	
-    private static final String[] PROJECTION = new String[] {
-            Groups._ID,
-            Groups.NAME,
-            Groups.ALIAS,
-    };
+	private final static String[] COMMANDS = {
+		"#block ", ".block ",
+		"#create ", ".create ",
+		"#invite ", ".invite ",
+		"#help ", ".help ",
+		"#join ", ".join ",
+		"#lang ", ".lang ",
+		"#leave ", ".leave ",
+		"#login ", ".login ",
+		"#logout ", ".logout ",
+		"#my email ", ".my email ",
+		"#my group ", ".my group ",
+		"#my groups ", ".my groups ",
+		"#my name ", ".my name ",
+		"#my number ", ".my number ",
+		"#my password ", ".my password ",
+		"#name ", ".name ",
+		"#off ", ".off ",
+		"#on ", ".on ",
+		"#owner ", ".owner ",
+		"#ping ", ".ping ",
+		"#whereis ", ".whereis ",
+		"#whois ", ".whois ",
+	};
     
     private final static int DIALOG_SENDING_MESSAGE = 1;
     private final static int DIALOG_CANNOT_SEND_MESSAGE = 2;
     
     private final Handler handler = new Handler();
     
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,6 +82,11 @@ public class ComposeActivity extends Activity {
 	    }
 	    int composeGroupIndex = 0;
 	    
+	    String[] PROJECTION = new String[] {
+	            Groups._ID,
+	            Groups.NAME,
+	            Groups.ALIAS,
+	    };
 	    Cursor c = getContentResolver().query(Groups.CONTENT_URI, PROJECTION, null, null, "lower(" + Groups.NAME + ")");
 	    final int nameIndex = c.getColumnIndex(Groups.NAME);
 	    final int aliasIndex = c.getColumnIndex(Groups.ALIAS);
@@ -82,7 +108,7 @@ public class ComposeActivity extends Activity {
 	    ArrayAdapter<Group> adapter = new ArrayAdapter<Group>(this, android.R.layout.simple_spinner_item, groups);
 	    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 	    
-	    final EditText uiMessage = (EditText) findViewById(R.id.message);
+	    final AutoCompleteTextView uiMessage = (AutoCompleteTextView) findViewById(R.id.message);
 	    final Spinner uiGroup = (Spinner) findViewById(R.id.group);
 	    final Button uiSend = (Button) findViewById(R.id.send);
 	    
@@ -92,7 +118,7 @@ public class ComposeActivity extends Activity {
 	    uiSend.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				final Group group = (Group) uiGroup.getSelectedItem();
-				final Editable message = uiMessage.getText();
+				final CharSequence message = uiMessage.getText();
 				
 				if (TextUtils.getTrimmedLength(message) == 0) {
 					return;
@@ -105,8 +131,12 @@ public class ComposeActivity extends Activity {
 				}.start();
 			}
 		});
+	    
+	    ArrayAdapter autocompleteAdapter = new ArrayAdapter(this,
+	            android.R.layout.simple_dropdown_item_1line, COMMANDS);
+	    uiMessage.setAdapter(autocompleteAdapter);
 	}
-	
+
 	private void sendMessage(Group group, String message) {
 		handler.post(new Runnable() {
 			public void run() {
