@@ -34,7 +34,7 @@
     <string name="sending_message">Sending message</string>
     <string name="sending_elipsis">Sending...</string>
     <string name="message_sent">Message sent</string>
-    <string name="message_could_not_be_sent_maybe_no_connection">Message could not be sent, maybe no connection?</string>
+    <string name="message_could_not_be_sent">Message could not be sent. Configure a GeoChat number in Settings.</string>
     <string name="home">Home</string>
     <string name="cannot_login_to_geochat">Cannot login to GeoChat</string>
     <string name="message_not_sent">Message not sent</string>
@@ -47,11 +47,13 @@
     <string name="retreiving_your_location">Retreiving your location...</string>
     <string name="could_not_retrieve_your_location">Could not retrieve your location</string>
     <string name="sent">Sent</string>
-    <string name="could_not_send_your_location_message_copied_to_clipboard">Could not send your location, message was copied to clipboard:</string>
     <string name="silent_report_locations">Silent report locations</string>
     <string name="silent_report_locations_summary">When checked, reported locations will not be broadcasted to group members</string>
     <string name="open_user">Open user</string>
     <string name="open_group">Open group</string>
     <string name="copy_message_text">Copy message text</string>
     <string name="paste_my_location">Paste my location</string>
+    <string name="geochat_number">GeoChat number</string>
+    <string name="geochat_number_summary">Tap here to set a number where messages will be sent when offline</string>
+    <string name="geochat_number_set_summary">Messages will be sent to %s when offline</string>
 </resources>

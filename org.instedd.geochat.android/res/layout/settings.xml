@@ -1,6 +1,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:title="@string/geochat_settings">
         
+    <EditTextPreference
+	    android:title="@string/geochat_number"
+	    android:summary="@string/geochat_number_summary"
+	    android:key="geochat_number"
+	    android:id="@+id/geochat_number"/>
+        
 	<CheckBoxPreference
 	    android:title="@string/silent_report_locations"
 	    android:defaultValue="true"

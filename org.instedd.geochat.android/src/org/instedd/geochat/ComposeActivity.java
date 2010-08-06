@@ -1,7 +1,6 @@
 package org.instedd.geochat;
 
 import org.instedd.geochat.api.Group;
-import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.map.LatLng;
@@ -145,21 +144,33 @@ public class ComposeActivity extends Activity {
 		});
 		
 		try {
-			GeoChatSettings settings = new GeoChatSettings(ComposeActivity.this);
-			IGeoChatApi api = settings.newApi();
-			if (group.alias == null) {
-				api.sendMessage(message);
+			Messenger messenger = new Messenger(this);
+			int result;
+			if (group == null) {
+				result = messenger.sendMessage(message);
 			} else {
-				api.sendMessage(group.alias, message);
+				result = messenger.sendMessage(group.alias, message);
 			}
-			settings.setComposeGroup(group == null ? null : group.alias);
-			Actions.home(this);
-		} catch (Exception e) {
-			handler.post(new Runnable() {
-				public void run() {
-					showDialog(DIALOG_CANNOT_SEND_MESSAGE);
-				}
-			});
+			
+			switch(result) {
+			case Messenger.SENT_VIA_API:
+			case Messenger.SENT_VIA_SMS:
+				new GeoChatSettings(this).setComposeGroup(group == null ? null : group.alias);
+				handler.post(new Runnable() {
+					public void run() {
+						Toast.makeText(ComposeActivity.this, R.string.message_sent, Toast.LENGTH_LONG).show();
+					}
+				});
+				Actions.home(this);
+				break;
+			case Messenger.NOT_SENT_NO_GEOCHAT_NUMBER:
+				handler.post(new Runnable() {
+					public void run() {
+						showDialog(DIALOG_CANNOT_SEND_MESSAGE);
+					}
+				});
+				break;
+			}
 		} finally {
 			handler.post(new Runnable() {
 				public void run() {
@@ -183,7 +194,7 @@ public class ComposeActivity extends Activity {
 			return progressDialog;
 		case DIALOG_CANNOT_SEND_MESSAGE:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage(R.string.message_could_not_be_sent_maybe_no_connection)
+			builder.setMessage(R.string.message_could_not_be_sent)
 				.setTitle(R.string.message_not_sent)
 				.setCancelable(true)
 				.setNeutralButton(android.R.string.ok, null);
@@ -197,6 +208,7 @@ public class ComposeActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		Menues.home(menu);
 		Menues.pasteMyLocation(menu);
+		Menues.settings(menu);
 		return true;
 	}
 	
@@ -219,7 +231,7 @@ public class ComposeActivity extends Activity {
 								int start = uiMessage.getSelectionStart();
 								int end = uiMessage.getSelectionEnd();
 								Editable text = uiMessage.getText();
-								if (TextUtils.isEmpty(text)) {
+								if (text == null || TextUtils.getTrimmedLength(text) == 0) {
 									text.append("at " + location.lat + ", " + location.lng + " * ");
 								} else {
 									if (start > 0 && text.charAt(start - 1) == '/') {

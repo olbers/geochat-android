@@ -2,8 +2,6 @@ package org.instedd.geochat;
 
 import java.util.List;
 
-import org.instedd.geochat.api.GeoChatApiException;
-import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.map.LatLng;
 
@@ -14,7 +12,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.text.ClipboardManager;
 import android.widget.Toast;
 
 public final class Actions {
@@ -88,7 +85,6 @@ public final class Actions {
 					});
 		        } else {
 		        	GeoChatSettings settings = new GeoChatSettings(context);
-		        	
 		        	final String message;
 		        	if (settings.isSilentReportLocationsEnabled()) {
 		        		message = "#my location " + location.lat + ", " + location.lng;	
@@ -96,21 +92,24 @@ public final class Actions {
 		        		message = "at " + location.lat + ", " + location.lng;
 		        	}
 		        	
-		        	boolean hasConnectivity = Connectivity.hasConnectivity(context);
-		        	if (hasConnectivity) {
-			        	IGeoChatApi api = settings.newApi();
-			        	try {
-							api.sendMessage(message);
-							handler.post(new Runnable() {
-								public void run() {
-									Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
-								}
-							});
-						} catch (GeoChatApiException e) {
-							couldNotSendLocation(context, handler, message);
-						}
-		        	} else {
-		        		couldNotSendLocation(context, handler, message);
+		        	Messenger messenger = new Messenger(context);
+		        	int result = messenger.sendMessage(message);
+		        	switch(result) {
+		        	case Messenger.SENT_VIA_API:
+		        	case Messenger.SENT_VIA_SMS:
+		        		handler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(context, res.getString(R.string.sent) + ": " + message, Toast.LENGTH_LONG).show();
+							}
+						});
+		        		break;
+		        	case Messenger.NOT_SENT_NO_GEOCHAT_NUMBER:
+		        		handler.post(new Runnable() {
+		        			public void run() {
+		        				Toast.makeText(context, context.getResources().getString(R.string.message_could_not_be_sent), Toast.LENGTH_LONG).show();
+		        			}
+		        		});
+		        		break;
 		        	}
 		        }
 			};
@@ -146,17 +145,6 @@ public final class Actions {
         } else {
         	return new LatLng(lat, lng);
         }
-	}
-	
-	private static void couldNotSendLocation(final Context context, final Handler handler, final String message) {
-		ClipboardManager clip = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-		clip.setText(message);
-		
-		handler.post(new Runnable() {
-			public void run() {
-				Toast.makeText(context, context.getResources().getString(R.string.could_not_send_your_location_message_copied_to_clipboard) + "\n" + message, Toast.LENGTH_LONG).show();
-			}
-		});
 	}
 	
 	private static void startActivity(Context context, Class<?> clazz) {

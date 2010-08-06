@@ -17,6 +17,7 @@ public class GeoChatSettings {
 	public final static String NEW_MESSAGES_COUNT = "new_messages";
 	public final static String COMPOSE_GROUP = "compose_group";
 	public final static String SILENT_REPORT_LOCATIONS = "silent_report_locations";
+	public final static String GEOCHAT_NUMBER = "geochat_number";
 	
 	private final Context context;
 	
@@ -71,6 +72,10 @@ public class GeoChatSettings {
 	
 	public boolean isSilentReportLocationsEnabled() {
 		return openRead().getBoolean(SILENT_REPORT_LOCATIONS, true);
+	}
+	
+	public String getGeoChatNumber() {
+		return openRead().getString(GEOCHAT_NUMBER, null);
 	}
 	
 	public IGeoChatApi newApi() {
