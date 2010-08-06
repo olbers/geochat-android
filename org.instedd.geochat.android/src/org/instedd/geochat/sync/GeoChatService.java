@@ -51,12 +51,10 @@ public class GeoChatService extends Service implements OnSharedPreferenceChangeL
 	}
 	
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		super.onStartCommand(intent, flags, startId);
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
 		
 		synchronizer.start();
-		
-		return START_STICKY;
 	}
 	
 	@Override

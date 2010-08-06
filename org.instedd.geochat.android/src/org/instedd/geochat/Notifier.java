@@ -11,8 +11,6 @@ public class Notifier {
 	
 	private final Context context;
 	
-	private final static String TAG = "org.instedd.geochat";
-	
 	private final static int NEW_MESSAGES = 1;
 	private final static int WRONG_CREDENTIALS = 2;
 
@@ -33,7 +31,7 @@ public class Notifier {
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(LoginActivity.EXTRA_WRONG_CREDENTIALS, true);
 		notification.setLatestEventInfo(context, title, content, PendingIntent.getActivity(context, 0, intent, 0));
-		man.notify(TAG, WRONG_CREDENTIALS, notification);
+		man.notify(WRONG_CREDENTIALS, notification);
 	}
 	
 	public void notifyNewMessages(int count) {
@@ -52,7 +50,7 @@ public class Notifier {
 		Intent intent = new Intent().setClass(context, HomeActivity.class).setAction(Actions.VIEW_MESSAGES);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 		notification.setLatestEventInfo(context, title, content, PendingIntent.getActivity(context, 0, intent, 0));
-		man.notify(TAG, NEW_MESSAGES, notification);
+		man.notify(NEW_MESSAGES, notification);
 	}
 	
 	private void setDefaults(Notification notification) {
