@@ -41,6 +41,10 @@ public class Messenger {
 			return NOT_SENT_NO_GEOCHAT_NUMBER;
 		}
 		
+		if (groupAlias != null) {
+			message = "@" + groupAlias + " " + message;
+		}
+		
 		SmsManager sms = SmsManager.getDefault();
 		ArrayList<String> parts = sms.divideMessage(message);
 		
