@@ -1,10 +1,14 @@
 package org.instedd.geochat.sync;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.instedd.geochat.Connectivity;
 import org.instedd.geochat.GeoChatSettings;
@@ -42,6 +46,7 @@ public class Synchronizer {
 	boolean running;
 	boolean resync;
 	boolean connectivityChanged;
+	ExecutorService genericExecutor;
 	SyncThread syncThread;
 
 	public Synchronizer(Context context, Handler handler) {
@@ -50,6 +55,7 @@ public class Synchronizer {
 		this.data = new GeoChatData(context);
 		this.locationResolver = new LocationResolver(context);
 		this.notifier = new Notifier(context);
+		this.genericExecutor = newThreadPool();
 		recreateApi();
 	}
 	
@@ -101,205 +107,246 @@ public class Synchronizer {
 		}
 		if (resync) return null;
 		
-		Group[] serverGroups = serverGroupsList.toArray(new Group[serverGroupsList.size()]);
-		if (resync) return null;
+		final Group[] serverGroups = serverGroupsList.toArray(new Group[serverGroupsList.size()]);
 		
-		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS, Groups.NAME, Groups.LAT, Groups.LNG }, null, null, "lower(" + Groups.ALIAS + ")");
-		
-		try {
-			int serverIndex = 0;
-			int cachedIndex = 0;
-			c.moveToNext();
-			
-			int serverGroupsLength = serverGroups.length;
-			int cachedGroupsLength = c.getCount();
-			while(serverIndex < serverGroupsLength || cachedIndex < cachedGroupsLength) {
-				if (resync) return null;
+		genericExecutor.execute(new Runnable() {
+			public void run() {
+				// Get cached groups sorted by alias
+				Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS, Groups.NAME, Groups.LAT, Groups.LNG }, null, null, "lower(" + Groups.ALIAS + ")");
 				
-				int comparison;
-				if (serverIndex >= serverGroupsLength) {
-					// Same as cached group not found
-					comparison = 1;
-				} else if (cachedIndex >= cachedGroupsLength) {
-					// Same as new group found
-					comparison = -1;
-				} else {
-					String serverAlias = serverGroups[serverIndex].alias;
-					String cachedAlias = c.getString(1);
-					comparison = serverAlias.compareTo(cachedAlias);
-				}
-				
-				if (comparison < 0) {
-					// Found new group in server, must create it
-					data.createGroup(serverGroups[serverIndex]);
-					serverIndex++;
-				} else if (comparison > 0) {
-					// Cached group not found, must delete it
-					data.deleteGroup(c.getInt(0));
-					cachedIndex++;
+				try {
+					int serverIndex = 0;
+					int cachedIndex = 0;
 					c.moveToNext();
-				} else {
-					// Server and cached match, update (if changed) and advance both
-					Group serverGroup = serverGroups[serverIndex];
-					if (!serverGroup.name.equals(c.getString(c.getColumnIndex(Groups.NAME))) ||
-						serverGroup.lat != c.getDouble(c.getColumnIndex(Groups.LAT)) ||
-						serverGroup.lng != c.getDouble(c.getColumnIndex(Groups.LNG))) {
-							data.updateGroup(c.getInt(0), serverGroup);
-					}
-					serverIndex++;
-					cachedIndex++;
-					c.moveToNext();
-				}
-			}
-			return serverGroups;
-		} finally {
-			c.close();
-		}
-	}
-	
-	public void syncUsers(Group[] groups) throws GeoChatApiException {
-		syncUsers(groups, true);
-	}
-	
-	public void syncUsers(Group[] groups, boolean fetchIcons) throws GeoChatApiException {
-		Map<User, User> serverUsersMap = new TreeMap<User, User>();
-		for(Group group : groups) {
-			if (resync) return;
-			
-			int page = 1;
-			while(true) {
-				User[] users = api.getUsers(group.alias, page);
-				if (resync) return;
-				
-				if (users.length == 0) {
-					break;
-				}
-				for(User user : users) {
-					User existing = serverUsersMap.get(user);
-					if (existing == null) {
-						existing = user;
-						serverUsersMap.put(user, user);
-					}
-					if (existing.groups == null) {
-						existing.groups = new TreeSet<String>();
-					}
-					existing.groups.add(group.alias);
-				}
-				
-				if (users.length != IGeoChatApi.MAX_PER_PAGE)
-					break;
-				page++;
-			}
-		}
-		
-		User[] serverUsers = serverUsersMap.values().toArray(new User[serverUsersMap.size()]);
-		if (resync) return;
-		
-		// Get cached groups sorted by alias
-		Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG, Users.GROUPS }, null, null, "lower(" + Users.LOGIN + ")");
-		
-		try {
-			int serverIndex = 0;
-			int cachedIndex = 0;
-			c.moveToNext();
-			
-			int serverUsersLength = serverUsers.length; 
-			int cachedUsersLength = c.getCount();
-			while(serverIndex < serverUsersLength || cachedIndex < cachedUsersLength) {
-				if (resync) return;
-				
-				int comparison;
-				if (serverIndex >= serverUsersLength) {
-					// Same as cached group not found
-					comparison = 1;
-				} else if (cachedIndex >= cachedUsersLength) {
-					// Same as new group found
-					comparison = -1;
-				} else {
-					String serverLogin = serverUsers[serverIndex].login;
-					String cachedLogin = c.getString(1);
-					comparison = serverLogin.compareTo(cachedLogin);
-				}
-				
-				if (comparison < 0) {
-					// Found new user in server, must create it
-					User user = serverUsers[serverIndex];
-					data.createUser(user);
-					InputStream icon = api.getUserIcon(user.login, ICON_SIZE);
-					if (icon != null) {
-						data.saveUserIcon(user.login, icon);
-					}
-					serverIndex++;
-				} else if (comparison > 0) {
-					// Cached user not found, must delete it
-					data.deleteUser(c.getInt(0));
-					data.deleteUserIcon(c.getString(1));
-					cachedIndex++;
-					c.moveToNext();
-				} else {
-					// Server and cached match, update (if changed) and advance both
-					User serverUser = serverUsers[serverIndex];
-					TreeSet<String> existingUserGroups = Users.getGroups(c.getString(c.getColumnIndex(Users.GROUPS)));
-					if (!serverUser.displayName.equals(c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
-						serverUser.lat != c.getDouble(c.getColumnIndex(Users.LAT)) ||
-						serverUser.lng != c.getDouble(c.getColumnIndex(Users.LNG)) ||
-						!serverUser.groups.equals(existingUserGroups)) {
-						data.updateUser(c.getInt(0), serverUser);
-					}
-					if (fetchIcons) {
-						InputStream icon = api.getUserIcon(serverUser.login, ICON_SIZE);
-						if (icon == null) {
-							data.deleteUserIcon(serverUser.login);
+					
+					int serverGroupsLength = serverGroups.length;
+					int cachedGroupsLength = c.getCount();
+					while(serverIndex < serverGroupsLength || cachedIndex < cachedGroupsLength) {
+						if (resync) return;
+						
+						int comparison;
+						if (serverIndex >= serverGroupsLength) {
+							// Same as cached group not found
+							comparison = 1;
+						} else if (cachedIndex >= cachedGroupsLength) {
+							// Same as new group found
+							comparison = -1;
 						} else {
-							data.saveUserIcon(serverUser.login, icon);
+							String serverAlias = serverGroups[serverIndex].alias;
+							String cachedAlias = c.getString(1);
+							comparison = serverAlias.compareTo(cachedAlias);
+						}
+						
+						if (comparison < 0) {
+							// Found new group in server, must create it
+							data.createGroup(serverGroups[serverIndex]);
+							serverIndex++;
+						} else if (comparison > 0) {
+							// Cached group not found, must delete it
+							data.deleteGroup(c.getInt(0));
+							cachedIndex++;
+							c.moveToNext();
+						} else {
+							// Server and cached match, update (if changed) and advance both
+							Group serverGroup = serverGroups[serverIndex];
+							if (!serverGroup.name.equals(c.getString(c.getColumnIndex(Groups.NAME))) ||
+								serverGroup.lat != c.getDouble(c.getColumnIndex(Groups.LAT)) ||
+								serverGroup.lng != c.getDouble(c.getColumnIndex(Groups.LNG))) {
+									data.updateGroup(c.getInt(0), serverGroup);
+							}
+							serverIndex++;
+							cachedIndex++;
+							c.moveToNext();
 						}
 					}
-					serverIndex++;
-					cachedIndex++;
-					c.moveToNext();
+				} finally {
+					c.close();
 				}
 			}
-		} finally {
-			c.close();
-		}
+		});
+		
+		return serverGroups;
 	}
 	
-	public int syncMessages(Group[] groups) throws GeoChatApiException {
-		int newMessagesCount = 0;
+	public User[] syncUsers(Group[] groups) throws GeoChatApiException {
+		final Map<User, User> serverUsersMap = Collections.synchronizedMap(new TreeMap<User, User>());
+		final GeoChatApiException[] exception = { null };
 		
-		for(Group group : groups) {
-			if (resync) return newMessagesCount;
-			
-			// Get guid of last cached message
-			Uri uri = Uris.groupLastMessage(group.alias);
-			
-			Cursor c = context.getContentResolver().query(uri, new String[] { Messages.GUID }, null, null, null);
-			String lastGuid = c.moveToNext() ? c.getString(0) : null;
-			
-			// Get just one page of messages
-			try {
-				Message[] messages = api.getMessages(group.alias, 1);
-				if (resync) return newMessagesCount;
-				
-				for(Message message : messages) {
-					if (resync) return newMessagesCount;
-					
-					if (message.guid != null && message.guid.equals(lastGuid)) {
-						break;
+		ExecutorService executor = newThreadPool();
+		
+		for(final Group group : groups) {
+			executor.execute(new Runnable() {
+				public void run() {
+					int page = 1;
+					while(true) {
+						if (resync) return;
+						if (exception[0] != null) return;
+						
+						User[] users;
+						try {
+							users = api.getUsers(group.alias, page);
+						} catch (GeoChatApiException e) {
+							exception[0] = e;
+							return;
+						}
+						if (resync) return;
+						
+						if (users.length == 0) {
+							break;
+						}
+						for(User user : users) {
+							User existing = serverUsersMap.get(user);
+							if (existing == null) {
+								existing = user;
+								serverUsersMap.put(user, user);
+							}
+							if (existing.groups == null) {
+								existing.groups = new TreeSet<String>();
+							}
+							existing.groups.add(group.alias);
+						}
+						
+						if (users.length != IGeoChatApi.MAX_PER_PAGE)
+							break;
+						page++;
 					}
-					
-					data.createMessage(message);
-					newMessagesCount++;
 				}
-			} finally {
-				c.close();
-			}
+			});
 		}
 		
-		if (resync) return newMessagesCount;
+		executor.shutdown();
+		try {
+			executor.awaitTermination(10 * 60, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+		}
 		
-		return newMessagesCount;
+		if (exception[0] != null)
+			throw exception[0];
+		
+		final User[] serverUsers = serverUsersMap.values().toArray(new User[serverUsersMap.size()]);
+		
+		genericExecutor.execute(new Runnable() {
+			public void run() {
+				// Get cached groups sorted by alias
+				Cursor c = context.getContentResolver().query(Users.CONTENT_URI, new String[] { Users._ID, Users.LOGIN, Users.DISPLAY_NAME, Users.LAT, Users.LNG, Users.GROUPS }, null, null, "lower(" + Users.LOGIN + ")");
+				
+				try {
+					int serverIndex = 0;
+					int cachedIndex = 0;
+					c.moveToNext();
+					
+					int serverUsersLength = serverUsers.length; 
+					int cachedUsersLength = c.getCount();
+					while(serverIndex < serverUsersLength || cachedIndex < cachedUsersLength) {
+						if (resync) return;
+						
+						int comparison;
+						if (serverIndex >= serverUsersLength) {
+							// Same as cached group not found
+							comparison = 1;
+						} else if (cachedIndex >= cachedUsersLength) {
+							// Same as new group found
+							comparison = -1;
+						} else {
+							String serverLogin = serverUsers[serverIndex].login;
+							String cachedLogin = c.getString(1);
+							comparison = serverLogin.compareTo(cachedLogin);
+						}
+						
+						if (comparison < 0) {
+							// Found new user in server, must create it
+							User user = serverUsers[serverIndex];
+							data.createUser(user);
+							serverIndex++;
+						} else if (comparison > 0) {
+							// Cached user not found, must delete it
+							data.deleteUser(c.getInt(0));
+							data.deleteUserIcon(c.getString(1));
+							cachedIndex++;
+							c.moveToNext();
+						} else {
+							// Server and cached match, update (if changed) and advance both
+							User serverUser = serverUsers[serverIndex];
+							TreeSet<String> existingUserGroups = Users.getGroups(c.getString(c.getColumnIndex(Users.GROUPS)));
+							if (!serverUser.displayName.equals(c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
+								serverUser.lat != c.getDouble(c.getColumnIndex(Users.LAT)) ||
+								serverUser.lng != c.getDouble(c.getColumnIndex(Users.LNG)) ||
+								!serverUser.groups.equals(existingUserGroups)) {
+								data.updateUser(c.getInt(0), serverUser);
+							}
+							serverIndex++;
+							cachedIndex++;
+							c.moveToNext();
+						}
+					}
+				} finally {
+					c.close();
+				}
+			}
+		});
+		
+		return serverUsers;
+	}
+	
+	private void syncUserIcons(User[] users) {
+		for(User user : users) {
+			genericExecutor.execute(new DownloadUserIcon(user.login));
+		}
+	}	
+	
+	public int syncMessages(Group[] groups) throws GeoChatApiException {
+		final int newMessagesCount[] = { 0 };
+		final GeoChatApiException[] exception = { null };
+		
+		ExecutorService executor = newThreadPool();
+		
+		for(final Group group : groups) {
+			executor.execute(new Runnable() {
+				public void run() {
+					if (resync) return;
+					if (exception[0] != null) return;
+					
+					// Get guid of last cached message
+					Uri uri = Uris.groupLastMessage(group.alias);
+					
+					Cursor c = context.getContentResolver().query(uri, new String[] { Messages.GUID }, null, null, null);
+					String lastGuid = c.moveToNext() ? c.getString(0) : null;
+					
+					// Get just one page of messages
+					try {
+						Message[] messages;
+						try {
+							messages = api.getMessages(group.alias, 1);
+						} catch (GeoChatApiException e) {
+							exception[0] = e;
+							return;
+						}
+						if (resync) return;
+						
+						for(Message message : messages) {
+							if (resync) return;
+							
+							if (message.guid != null && message.guid.equals(lastGuid)) {
+								break;
+							}
+							
+							data.createMessage(message);
+							newMessagesCount[0]++;
+						}
+					} finally {
+						c.close();
+					}
+				}
+			});
+		}
+		
+		executor.shutdown();
+		try {
+			executor.awaitTermination(10 * 60, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+		}
+		
+		return newMessagesCount[0];
 	}
 	
 	public void deleteOldMessages(Group[] groups) {
@@ -317,6 +364,33 @@ public class Synchronizer {
 	
 	private void recreateApi() {
 		api = new GeoChatSettings(context).newApi();
+	}
+	
+	private ExecutorService newThreadPool() {
+		return Executors.newCachedThreadPool();
+	}
+	
+	private class DownloadUserIcon implements Runnable {
+		
+		private final String login;
+
+		public DownloadUserIcon(String login) {
+			this.login = login;
+		}
+		
+		public void run() {
+			try {
+				InputStream icon = api.getUserIcon(login, ICON_SIZE);
+				if (icon == null) {
+					data.deleteUserIcon(login);
+				} else {
+					data.saveUserIcon(login, icon);
+				}
+			} catch (GeoChatApiException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	private class SyncThread extends Thread {
@@ -356,7 +430,12 @@ public class Synchronizer {
 							}
 							if (resync) continue;
 							
-							syncUsers(groups, fetchIcons);
+							User[] users = syncUsers(groups);
+							if (resync) continue;
+							
+							if (fetchIcons) {
+								syncUserIcons(users);
+							}
 							
 							// Don't fetch icons the next times
 							fetchIcons = false;
@@ -395,7 +474,7 @@ public class Synchronizer {
 					}
 				});
 			}
-		}		
+		}
 		
 	}
 

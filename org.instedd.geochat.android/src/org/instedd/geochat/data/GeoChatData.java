@@ -69,6 +69,8 @@ public class GeoChatData {
 			out.close();
 			bin.close();
 			icon.close();
+			
+			context.getContentResolver().notifyChange(Uris.userLogin(login), null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +85,10 @@ public class GeoChatData {
 	}
 
 	public void deleteUserIcon(String login) {
-		context.deleteFile(getUserIconFilename(login));
+		if (hasUserIconFor(login)) {
+			context.deleteFile(getUserIconFilename(login));
+			context.getContentResolver().notifyChange(Uris.userLogin(login), null);
+		}
 	}
 	
 	public void deleteUser(int id) {
