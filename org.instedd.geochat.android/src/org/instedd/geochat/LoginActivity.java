@@ -2,7 +2,6 @@ package org.instedd.geochat;
 
 import org.instedd.geochat.api.GeoChatApi;
 import org.instedd.geochat.api.GeoChatApiException;
-import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.RestClient;
 import org.instedd.geochat.sync.Synchronizer;
@@ -12,6 +11,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -34,6 +36,8 @@ public class LoginActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.login);
+	    
+	    receiveLocationUpdates();
 	    
 	    Intent intent = getIntent();
 	    wrongCredentials = intent != null && intent.getBooleanExtra(EXTRA_WRONG_CREDENTIALS, false);
@@ -103,6 +107,23 @@ public class LoginActivity extends Activity {
 		});
 	}
 	
+	private void receiveLocationUpdates() {
+		LocationManager man = (LocationManager) getSystemService(LOCATION_SERVICE);
+		
+		for(String provider : man.getProviders(true)) {
+			man.requestLocationUpdates(provider, 10 * 60 * 1000, 100, new LocationListener() {
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+				}
+				public void onProviderEnabled(String provider) {
+				}
+				public void onProviderDisabled(String provider) {
+				}
+				public void onLocationChanged(Location location) {
+				}
+			});
+		}
+	}
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if (id == DIALOG_LOGGING_IN) {
@@ -126,32 +147,37 @@ public class LoginActivity extends Activity {
 	}
 	
 	private void resync() throws GeoChatApiException {
-		handler.post(new Runnable() {
-			public void run() {
-				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_groups));
-			}
-		});
+//		handler.post(new Runnable() {
+//			public void run() {
+//				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_groups));
+//			}
+//		});
 		
 		Synchronizer synchronizer = new Synchronizer(LoginActivity.this, handler);
 		synchronizer.clearExistingData();
 		
-		final Group[] groups = synchronizer.syncGroups();
-		
-		handler.post(new Runnable() {
-			public void run() {
-				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_users));
-			}
-		});
-		
-		synchronizer.syncUsers(groups);
-		
-		handler.post(new Runnable() {
-			public void run() {
-				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_messages));
-			}
-		});
-		
-		synchronizer.syncMessages(groups);
+//		long time = System.currentTimeMillis();
+//		
+//		final Group[] groups = synchronizer.syncGroups();
+//		
+//		handler.post(new Runnable() {
+//			public void run() {
+//				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_users));
+//			}
+//		});
+//		
+//		synchronizer.syncUsers(groups, true /* download user icons */);
+//		
+//		handler.post(new Runnable() {
+//			public void run() {
+//				progressDialog.setMessage(getResources().getString(R.string.first_time_logging_fetching_messages));
+//			}
+//		});
+//		
+//		synchronizer.syncMessages(groups);
+//		
+//		time = System.currentTimeMillis() - time;
+//		System.out.println(time);
 	}
 
 }

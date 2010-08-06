@@ -53,7 +53,7 @@ public final class Actions {
 		startActivity(context, GeoChatMapActivity.class, Uris.messageId(id));
 	}
 	
-	public static void openMessages(Context context, String login) {
+	public static void openUser(Context context, String login) {
 		startActivity(context, MessagesActivityWithTitleBar.class, Uris.userMessages(login));
 	}
 	
@@ -75,8 +75,12 @@ public final class Actions {
 			public void run() {
 				final LatLng location = getLocation(context);
 				
-				toast.cancel();
-		        
+				handler.post(new Runnable() {
+					public void run() {
+						toast.cancel();
+					}
+				});
+				
 		        if (location == null) {
 		        	handler.post(new Runnable() {
 						public void run() {

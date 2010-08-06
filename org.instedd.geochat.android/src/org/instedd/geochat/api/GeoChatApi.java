@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
@@ -29,11 +30,16 @@ public class GeoChatApi implements IGeoChatApi {
 	
 	public boolean credentialsAreValid() throws GeoChatApiException {
 		try {
-			InputStream is = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/verify.rss?password=" + encode(password));
-			if (is == null) throw new GeoChatApiException("404 on credentialsAreValid");
+			HttpResponse response = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/verify.rss?password=" + encode(password));
+			if (response == null) throw new GeoChatApiException("Status not HTTP_OK (200) on credentialsAreValid");
 			
-			int b = is.read();
-			return b == 't' || b == 'T';
+			InputStream content = response.getEntity().getContent();
+			try {
+				int b = content.read();
+				return b == 't' || b == 'T';
+			} finally {
+				content.close();
+			}
 		} catch (IOException e) {
 			throw new GeoChatApiException(e);
 		}
@@ -41,12 +47,17 @@ public class GeoChatApi implements IGeoChatApi {
 
 	public Group[] getGroups(int page) throws GeoChatApiException {
 		try {
-			InputStream is = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/groups.rss?page=" + page);
-			if (is == null) throw new GeoChatApiException("404 on getGroups");
+			HttpResponse response = this.client.get("https://geochat.instedd.org/api/users/" + encode(user) + "/groups.rss?page=" + page);
+			if (response == null) throw new GeoChatApiException("Status not HTTP_OK (200) on getGroups");
 			
-			GroupHandler handler = new GroupHandler();
-			Xml.parse(is, Encoding.UTF_8, handler);
-			return handler.getGroups();
+			InputStream content = response.getEntity().getContent();
+			try {
+				GroupHandler handler = new GroupHandler();
+				Xml.parse(content, Encoding.UTF_8, handler);
+				return handler.getGroups();
+			} finally {
+				content.close();
+			}
 		} catch (IOException e) {
 			throw new GeoChatApiException(e);
 		} catch (SAXException e) {
@@ -56,12 +67,17 @@ public class GeoChatApi implements IGeoChatApi {
 
 	public Message[] getMessages(String groupAlias, int page) throws GeoChatApiException {
 		try {
-			InputStream is = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/messages.rss?page=" + page);
-			if (is == null) throw new GeoChatApiException("404 on getMessages");
+			HttpResponse response = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/messages.rss?page=" + page);
+			if (response == null) throw new GeoChatApiException("Status not HTTP_OK (200) on getMessages");
 			
-			MessageHandler handler = new MessageHandler();
-			Xml.parse(is, Encoding.UTF_8, handler);
-			return handler.getMessages();
+			InputStream content = response.getEntity().getContent();
+			try {
+				MessageHandler handler = new MessageHandler();
+				Xml.parse(content, Encoding.UTF_8, handler);
+				return handler.getMessages();
+			} finally {
+				content.close();
+			}
 		} catch (IOException e) {
 			throw new GeoChatApiException(e);
 		} catch (SAXException e) {
@@ -71,12 +87,17 @@ public class GeoChatApi implements IGeoChatApi {
 
 	public User[] getUsers(String groupAlias, int page) throws GeoChatApiException {
 		try {
-			InputStream is = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/members.rss?page=" + page);
-			if (is == null) throw new GeoChatApiException("404 on getUsers");
+			HttpResponse response = this.client.get("https://geochat.instedd.org/api/groups/" + encode(groupAlias) + "/members.rss?page=" + page);
+			if (response == null) throw new GeoChatApiException("Status not HTTP_OK (200) on getUsers");
 			
-			UserHandler handler = new UserHandler();
-			Xml.parse(is, Encoding.UTF_8, handler);
-			return handler.getUsers();
+			InputStream content = response.getEntity().getContent();
+			try {
+				UserHandler handler = new UserHandler();
+				Xml.parse(content, Encoding.UTF_8, handler);
+				return handler.getUsers();
+			} finally {
+				content.close();
+			}
 		} catch (IOException e) {
 			throw new GeoChatApiException(e);
 		} catch (SAXException e) {
@@ -84,7 +105,7 @@ public class GeoChatApi implements IGeoChatApi {
 		}
 	}
 	
-	public InputStream getUserIcon(String login, int size) throws GeoChatApiException {
+	public HttpResponse getUserIcon(String login, int size) throws GeoChatApiException {
 		try {
 			return this.client.get("https://geochat.instedd.org/api/users/" + encode(login) + "/icon?size=" + size);
 		} catch (IOException e) {

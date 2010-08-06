@@ -308,7 +308,8 @@ public class GeoChatProvider extends ContentProvider {
         	break;
         case USER_ID:
         	qb.setTables(USERS_TABLE_NAME);
-        	qb.appendWhere(Users._ID + " = " + uri.getPathSegments().get(1));
+        	qb.appendWhere(Users._ID + " = " + uri.getPathSegments().get(1) + " OR " + Users.LOGIN + " = ");
+        	qb.appendWhereEscapeString(uri.getPathSegments().get(1));
         	if (TextUtils.isEmpty(sortOrder)) {
                 orderBy = GeoChat.Users.DEFAULT_SORT_ORDER;
             }
@@ -369,6 +370,7 @@ public class GeoChatProvider extends ContentProvider {
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "users", USERS);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/#", USER_ID);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/*", USER_LOGIN);
+        URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/#/messages", USER_MESSAGES);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "users/*/messages", USER_MESSAGES);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups", GROUPS);
         URI_MATCHER.addURI(GeoChat.AUTHORITY, "groups/#", GROUP_ID);

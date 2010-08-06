@@ -218,12 +218,15 @@ public class ComposeActivity extends Activity {
 		if (item.getItemId() == Menues.PASTE_MY_LOCATION) {
 			final Toast toast = Toast.makeText(this, getResources().getString(R.string.retreiving_your_location), Toast.LENGTH_LONG);
 			toast.show();
+			
 			new Thread() {
 				public void run() {
 					final LatLng location = Actions.getLocation(ComposeActivity.this);
-					toast.cancel();
+					
 					handler.post(new Runnable() {
 						public void run() {
+							toast.cancel();
+							
 							if (location == null) {
 								Toast.makeText(ComposeActivity.this, getResources().getString(R.string.could_not_retrieve_your_location), Toast.LENGTH_LONG).show();
 							} else {

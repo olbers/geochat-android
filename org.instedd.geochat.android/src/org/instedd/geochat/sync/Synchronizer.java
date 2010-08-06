@@ -1,5 +1,6 @@
 package org.instedd.geochat.sync;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
@@ -8,8 +9,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
+import org.apache.http.HttpResponse;
 import org.instedd.geochat.Connectivity;
 import org.instedd.geochat.GeoChatSettings;
 import org.instedd.geochat.Notifier;
@@ -55,7 +56,7 @@ public class Synchronizer {
 		this.data = new GeoChatData(context);
 		this.locationResolver = new LocationResolver(context);
 		this.notifier = new Notifier(context);
-		this.genericExecutor = newThreadPool();
+		this.genericExecutor = Executors.newCachedThreadPool();
 		recreateApi();
 	}
 	
@@ -168,60 +169,45 @@ public class Synchronizer {
 		return serverGroups;
 	}
 	
-	public User[] syncUsers(Group[] groups) throws GeoChatApiException {
+	public void syncUsers(Group[] groups, final boolean fetchIcons) throws GeoChatApiException {
 		final Map<User, User> serverUsersMap = Collections.synchronizedMap(new TreeMap<User, User>());
 		final GeoChatApiException[] exception = { null };
 		
-		ExecutorService executor = newThreadPool();
-		
 		for(final Group group : groups) {
-			executor.execute(new Runnable() {
-				public void run() {
-					int page = 1;
-					while(true) {
-						if (resync) return;
-						if (exception[0] != null) return;
-						
-						User[] users;
-						try {
-							users = api.getUsers(group.alias, page);
-						} catch (GeoChatApiException e) {
-							exception[0] = e;
-							return;
-						}
-						if (resync) return;
-						
-						if (users.length == 0) {
-							break;
-						}
-						for(User user : users) {
-							User existing = serverUsersMap.get(user);
-							if (existing == null) {
-								existing = user;
-								serverUsersMap.put(user, user);
-							}
-							if (existing.groups == null) {
-								existing.groups = new TreeSet<String>();
-							}
-							existing.groups.add(group.alias);
-						}
-						
-						if (users.length != IGeoChatApi.MAX_PER_PAGE)
-							break;
-						page++;
-					}
+			int page = 1;
+			while(true) {
+				if (resync) return;
+				if (exception[0] != null) return;
+				
+				User[] users;
+				try {
+					users = api.getUsers(group.alias, page);
+				} catch (GeoChatApiException e) {
+					exception[0] = e;
+					return;
 				}
-			});
+				if (resync) return;
+				
+				if (users.length == 0) {
+					break;
+				}
+				for(User user : users) {
+					User existing = serverUsersMap.get(user);
+					if (existing == null) {
+						existing = user;
+						serverUsersMap.put(user, user);
+					}
+					if (existing.groups == null) {
+						existing.groups = new TreeSet<String>();
+					}
+					existing.groups.add(group.alias);
+				}
+				
+				if (users.length != IGeoChatApi.MAX_PER_PAGE)
+					break;
+				page++;
+			}
 		}
-		
-		executor.shutdown();
-		try {
-			executor.awaitTermination(10 * 60, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-		}
-		
-		if (exception[0] != null)
-			throw exception[0];
 		
 		final User[] serverUsers = serverUsersMap.values().toArray(new User[serverUsersMap.size()]);
 		
@@ -257,6 +243,9 @@ public class Synchronizer {
 							// Found new user in server, must create it
 							User user = serverUsers[serverIndex];
 							data.createUser(user);
+							if (fetchIcons) {
+								downloadUserIcon(user.login);
+							}
 							serverIndex++;
 						} else if (comparison > 0) {
 							// Cached user not found, must delete it
@@ -274,6 +263,9 @@ public class Synchronizer {
 								!serverUser.groups.equals(existingUserGroups)) {
 								data.updateUser(c.getInt(0), serverUser);
 							}
+							if (fetchIcons) {
+								downloadUserIcon(serverUser.login);
+							}
 							serverIndex++;
 							cachedIndex++;
 							c.moveToNext();
@@ -284,69 +276,45 @@ public class Synchronizer {
 				}
 			}
 		});
-		
-		return serverUsers;
 	}
 	
-	private void syncUserIcons(User[] users) {
-		for(User user : users) {
-			genericExecutor.execute(new DownloadUserIcon(user.login));
-		}
-	}	
-	
 	public int syncMessages(Group[] groups) throws GeoChatApiException {
-		final int newMessagesCount[] = { 0 };
-		final GeoChatApiException[] exception = { null };
-		
-		ExecutorService executor = newThreadPool();
-		
-		for(final Group group : groups) {
-			executor.execute(new Runnable() {
-				public void run() {
-					if (resync) return;
-					if (exception[0] != null) return;
-					
-					// Get guid of last cached message
-					Uri uri = Uris.groupLastMessage(group.alias);
-					
-					Cursor c = context.getContentResolver().query(uri, new String[] { Messages.GUID }, null, null, null);
-					String lastGuid = c.moveToNext() ? c.getString(0) : null;
-					
-					// Get just one page of messages
-					try {
-						Message[] messages;
-						try {
-							messages = api.getMessages(group.alias, 1);
-						} catch (GeoChatApiException e) {
-							exception[0] = e;
-							return;
-						}
-						if (resync) return;
-						
-						for(Message message : messages) {
-							if (resync) return;
-							
-							if (message.guid != null && message.guid.equals(lastGuid)) {
-								break;
-							}
-							
-							data.createMessage(message);
-							newMessagesCount[0]++;
-						}
-					} finally {
-						c.close();
+		int newMessagesCount = 0;
+
+		for (final Group group : groups) {
+			if (resync)
+				return newMessagesCount;
+
+			// Get guid of last cached message
+			Uri uri = Uris.groupLastMessage(group.alias);
+
+			Cursor c = context.getContentResolver().query(uri,
+					new String[] { Messages.GUID }, null, null, null);
+			String lastGuid = c.moveToNext() ? c.getString(0) : null;
+
+			// Get just one page of messages
+			try {
+				Message[] messages = api.getMessages(group.alias, 1);
+				if (resync)
+					return newMessagesCount;
+
+				for (Message message : messages) {
+					if (resync)
+						return newMessagesCount;
+
+					if (message.guid != null && message.guid.equals(lastGuid)) {
+						break;
 					}
+
+					data.createMessage(message);
+					newMessagesCount++;
 				}
-			});
+			} finally {
+				c.close();
+			}
 		}
-		
-		executor.shutdown();
-		try {
-			executor.awaitTermination(10 * 60, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-		}
-		
-		return newMessagesCount[0];
+
+		return newMessagesCount;
 	}
 	
 	public void deleteOldMessages(Group[] groups) {
@@ -356,9 +324,10 @@ public class Synchronizer {
 	}
 	
 	public void clearExistingData() {
-		context.getContentResolver().delete(Groups.CONTENT_URI, null, null);
-		context.getContentResolver().delete(Users.CONTENT_URI, null, null);
-		context.getContentResolver().delete(Messages.CONTENT_URI, null, null);
+		data.deleteGroups();
+		data.deleteUsers();
+		data.deleteUserIcons();
+		data.deleteMessages();
 		new GeoChatSettings(context).clearUserData();
 	}
 	
@@ -366,31 +335,26 @@ public class Synchronizer {
 		api = new GeoChatSettings(context).newApi();
 	}
 	
-	private ExecutorService newThreadPool() {
-		return Executors.newCachedThreadPool();
-	}
-	
-	private class DownloadUserIcon implements Runnable {
-		
-		private final String login;
-
-		public DownloadUserIcon(String login) {
-			this.login = login;
-		}
-		
-		public void run() {
-			try {
-				InputStream icon = api.getUserIcon(login, ICON_SIZE);
-				if (icon == null) {
-					data.deleteUserIcon(login);
-				} else {
-					data.saveUserIcon(login, icon);
+	private void downloadUserIcon(String login) {
+		try {
+			HttpResponse response = api.getUserIcon(login, ICON_SIZE);
+			if (response == null) {
+				data.deleteUserIcon(login);
+			} else {
+				try {
+					InputStream content = response.getEntity().getContent();
+					try {
+						data.saveUserIcon(login, content);
+					} finally {
+						content.close();
+					}
+				} catch (IOException e) {
+					
 				}
-			} catch (GeoChatApiException e) {
-				e.printStackTrace();
 			}
+		} catch (GeoChatApiException e) {
+			
 		}
-		
 	}
 	
 	private class SyncThread extends Thread {
@@ -424,21 +388,16 @@ public class Synchronizer {
 							Group[] groups = syncGroups();
 							if (resync) continue;
 							
+							syncUsers(groups, fetchIcons);
+							if (resync) continue;
+							
+							// Don't fetch icons the next times
+							fetchIcons = false;
+							
 							int newMessagesCount = syncMessages(groups);
 							if (newMessagesCount > 0) {
 								notifier.notifyNewMessages(newMessagesCount);
 							}
-							if (resync) continue;
-							
-							User[] users = syncUsers(groups);
-							if (resync) continue;
-							
-							if (fetchIcons) {
-								syncUserIcons(users);
-							}
-							
-							// Don't fetch icons the next times
-							fetchIcons = false;
 							
 							if (resync) continue;
 							

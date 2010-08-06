@@ -43,6 +43,10 @@ public class GeoChatData {
 		context.getContentResolver().delete(Uris.groupId(id), null, null);
 	}
 	
+	public void deleteGroups() {
+		context.getContentResolver().delete(Groups.CONTENT_URI, null, null);
+	}
+	
 	public void createUser(User user) {
 		context.getContentResolver().insert(Users.CONTENT_URI, getContentValues(user));
 	}
@@ -95,12 +99,26 @@ public class GeoChatData {
 		context.getContentResolver().delete(Uris.userId(id), null, null);
 	}
 	
+	public void deleteUsers() {
+		context.getContentResolver().delete(Users.CONTENT_URI, null, null);
+	}
+	
+	public void deleteUserIcons() {
+		for(String file : context.fileList()) {
+			context.deleteFile(file);
+		}
+	}
+	
 	public void createMessage(Message message) {
 		context.getContentResolver().insert(Messages.CONTENT_URI, getContentValues(message));
 	}
 	
 	public void deleteOldMessages(String groupAlias) {
 		context.getContentResolver().delete(Uris.groupOldMessages(groupAlias), null, null);
+	}
+	
+	public void deleteMessages() {
+		context.getContentResolver().delete(Messages.CONTENT_URI, null, null);
 	}
 	
 	private ContentValues getContentValues(Group group) {

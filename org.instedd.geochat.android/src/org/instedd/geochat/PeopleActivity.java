@@ -58,7 +58,7 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	
 	public void onItemClick(AdapterView<?> parentView, View childView, int position, long id) {
 		this.position = position;
-		openGroup();
+		openUser();
 	}
 	
 	public boolean onItemLongClick(AdapterView<?> parentView, View childView, int position, long id) {
@@ -83,7 +83,7 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 			public void onClick(DialogInterface dialog, int which) {
 				switch(which) {
 				case 0:
-					openGroup();
+					openUser();
 					break;
 				case 1:
 					showInMap();
@@ -101,10 +101,10 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 		dialog.setTitle(displayName);
 	}
 	
-	private void openGroup() {
+	private void openUser() {
 		cursor.moveToPosition(position);
 		String login = cursor.getString(cursor.getColumnIndex(Users.LOGIN));
-		Actions.openMessages(this, login);
+		Actions.openUser(this, login);
 	}
 	
 	private void showInMap() {

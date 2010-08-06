@@ -1,7 +1,6 @@
 package org.instedd.geochat.api;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -24,6 +23,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.BasicHttpContext;
 
 public class RestClient implements IRestClient {
 	
@@ -37,7 +37,7 @@ public class RestClient implements IRestClient {
 	private HttpClient initClient() {
 		// Create and initialize HTTP parameters
 		HttpParams params = new BasicHttpParams();
-		ConnManagerParams.setMaxTotalConnections(params, 100);
+		ConnManagerParams.setMaxTotalConnections(params, 20);
 		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 		           
 		// Create and initialize scheme registry 
@@ -52,14 +52,15 @@ public class RestClient implements IRestClient {
 		return new DefaultHttpClient(cm, params);
 	}
 
-	public InputStream get(String url) throws IOException {
+	public HttpResponse get(String url) throws IOException {
 		HttpGet get = new HttpGet(url);
 		auth(get);
-		HttpResponse response = this.client.execute(get);
-		if (response.getStatusLine().getStatusCode() == 404) {
+		HttpResponse response = this.client.execute(get, new BasicHttpContext());
+		if (response.getStatusLine().getStatusCode() != 200) {
+			response.getEntity().getContent().close();
 			return null;
 		}
-		return response.getEntity().getContent();
+		return response;
 	}
 	
 	public void post(String url, List<NameValuePair> params) throws IOException {
@@ -68,8 +69,8 @@ public class RestClient implements IRestClient {
 		post.setEntity(new UrlEncodedFormEntity(params));
 		post.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
 		
-		HttpResponse response = this.client.execute(post);
-		response.getEntity().consumeContent();
+		HttpResponse response = this.client.execute(post, new BasicHttpContext());
+		response.getEntity().getContent().close();
 	}
 
 	public void setAuth(String user, String password) {

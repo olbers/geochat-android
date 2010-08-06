@@ -1,6 +1,6 @@
 package org.instedd.geochat.api;
 
-import java.io.InputStream;
+import org.apache.http.HttpResponse;
 
 
 public interface IGeoChatApi {
@@ -13,7 +13,7 @@ public interface IGeoChatApi {
 	
 	User[] getUsers(String groupAlias, int page) throws GeoChatApiException;
 	
-	InputStream getUserIcon(String login, int size) throws GeoChatApiException;
+	HttpResponse getUserIcon(String login, int size) throws GeoChatApiException;
 	
 	Message[] getMessages(String groupAlias, int page) throws GeoChatApiException;
 

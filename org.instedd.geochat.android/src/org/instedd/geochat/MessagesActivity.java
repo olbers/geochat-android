@@ -129,7 +129,7 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     private void openUser() {
     	cursor.moveToPosition(position);
 		String login = cursor.getString(cursor.getColumnIndex(Messages.FROM_USER));
-		Actions.openMessages(MessagesActivity.this, login);
+		Actions.openUser(MessagesActivity.this, login);
     }
     
     private void openGroup() {

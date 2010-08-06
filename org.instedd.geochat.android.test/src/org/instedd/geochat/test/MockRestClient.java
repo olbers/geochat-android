@@ -2,9 +2,9 @@ package org.instedd.geochat.test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.instedd.geochat.api.IRestClient;
 
@@ -19,9 +19,9 @@ public class MockRestClient implements IRestClient {
 		this.response = response;
 	}
 
-	public InputStream get(String url) {
+	public HttpResponse get(String url) {
 		this.getUrl = url;
-		return new ByteArrayInputStream(response.getBytes());
+		return new MockHttpResponse(new ByteArrayInputStream(response.getBytes()));
 	}
 	
 	public void post(String url, List<NameValuePair> params) throws IOException {
