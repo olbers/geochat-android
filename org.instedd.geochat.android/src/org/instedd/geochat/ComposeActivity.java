@@ -4,6 +4,7 @@ import org.instedd.geochat.api.Group;
 import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.map.LatLng;
+import org.instedd.geochat.map.LocationTracker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -221,7 +222,7 @@ public class ComposeActivity extends Activity {
 			
 			new Thread() {
 				public void run() {
-					final LatLng location = Actions.getLocation(ComposeActivity.this);
+					final LatLng location = LocationTracker.getLocation(ComposeActivity.this);
 					
 					handler.post(new Runnable() {
 						public void run() {

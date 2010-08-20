@@ -1,15 +1,12 @@
 package org.instedd.geochat;
 
-import java.util.List;
-
 import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.map.LatLng;
+import org.instedd.geochat.map.LocationTracker;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.widget.Toast;
@@ -73,7 +70,7 @@ public final class Actions {
 		
 		new Thread() {
 			public void run() {
-				final LatLng location = getLocation(context);
+				final LatLng location = LocationTracker.getLocation(context);
 				
 				handler.post(new Runnable() {
 					public void run() {
@@ -88,13 +85,7 @@ public final class Actions {
 						}
 					});
 		        } else {
-		        	GeoChatSettings settings = new GeoChatSettings(context);
-		        	final String message;
-		        	if (settings.isSilentReportLocationsEnabled()) {
-		        		message = "#my location " + location.lat + ", " + location.lng;	
-		        	} else {
-		        		message = "at " + location.lat + ", " + location.lng;
-		        	}
+		        	final String message = "at " + location.lat + ", " + location.lng;
 		        	
 		        	Messenger messenger = new Messenger(context);
 		        	int result = messenger.sendMessage(message);
@@ -118,37 +109,6 @@ public final class Actions {
 		        }
 			};
 		}.start();
-	}
-	
-	public static LatLng getLocation(Context context) {
-		LocationManager man = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		
-		List<String> providerNames = man.getAllProviders();
-		
-		double bestTime = 0;
-		double lat = 0;
-		double lng = 0;
-        
-		// TODO this just checks the most recent location,
-		// without taking into account the provider's accuracy
-        for(String providerName : providerNames) {
-        	Location location = man.getLastKnownLocation(providerName);
-        	if (location != null) {
-        		double time = location.getTime();
-        		if (time <= bestTime)
-        			continue;
-        		
-        		bestTime = time;
-	        	lat = location.getLatitude();
-	        	lng = location.getLongitude();
-        	}
-        }
-        
-        if (bestTime == 0) {
-        	return null;
-        } else {
-        	return new LatLng(lat, lng);
-        }
 	}
 	
 	private static void startActivity(Context context, Class<?> clazz) {

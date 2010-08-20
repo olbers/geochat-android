@@ -1,13 +1,17 @@
 package org.instedd.geochat.map;
 
+import java.text.DecimalFormat;
+
 public class LatLng {
 	
-	public double lat;
-	public double lng;
+	private final static DecimalFormat format = new DecimalFormat("#.######");
+	
+	public String lat;
+	public String lng;
 	
 	public LatLng(double lat, double lng) {
-		this.lat = lat;
-		this.lng = lng;
+		this.lat = format.format(lat);
+		this.lng = format.format(lng);
 	}
 
 }

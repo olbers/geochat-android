@@ -6,11 +6,5 @@
 	    android:summary="@string/geochat_number_summary"
 	    android:key="geochat_number"
 	    android:id="@+id/geochat_number"/>
-        
-	<CheckBoxPreference
-	    android:title="@string/silent_report_locations"
-	    android:defaultValue="true"
-	    android:summary="@string/silent_report_locations_summary"
-	    android:key="silent_report_locations" />
 
 </PreferenceScreen>

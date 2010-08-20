@@ -4,6 +4,7 @@ import org.instedd.geochat.api.GeoChatApi;
 import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.RestClient;
+import org.instedd.geochat.map.LocationTracker;
 import org.instedd.geochat.sync.Synchronizer;
 
 import android.app.Activity;
@@ -11,9 +12,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -108,20 +106,7 @@ public class LoginActivity extends Activity {
 	}
 	
 	private void receiveLocationUpdates() {
-		LocationManager man = (LocationManager) getSystemService(LOCATION_SERVICE);
-		
-		for(String provider : man.getProviders(true)) {
-			man.requestLocationUpdates(provider, 10 * 60 * 1000, 100, new LocationListener() {
-				public void onStatusChanged(String provider, int status, Bundle extras) {
-				}
-				public void onProviderEnabled(String provider) {
-				}
-				public void onProviderDisabled(String provider) {
-				}
-				public void onLocationChanged(Location location) {
-				}
-			});
-		}
+		LocationTracker.getInstance(this);
 	}
 
 	@Override
