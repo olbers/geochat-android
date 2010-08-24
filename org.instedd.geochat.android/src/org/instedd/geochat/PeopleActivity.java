@@ -149,8 +149,12 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 			}
 			
 			String login = c.getString(c.getColumnIndex(Users.LOGIN));
+			String displayName = c.getString(c.getColumnIndex(Users.DISPLAY_NAME));
+			if (displayName == null) {
+				displayName = login;
+			}
 			
-			((TextView) v.findViewById(R.id.display_name)).setText(c.getString(c.getColumnIndex(Users.DISPLAY_NAME)));
+			((TextView) v.findViewById(R.id.display_name)).setText(displayName);
 			((TextView) v.findViewById(R.id.login)).setText(login);
 			
 			ImageView view = (ImageView) v.findViewById(R.id.icon);
