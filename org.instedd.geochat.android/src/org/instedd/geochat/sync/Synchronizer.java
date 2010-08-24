@@ -257,7 +257,7 @@ public class Synchronizer {
 							// Server and cached match, update (if changed) and advance both
 							User serverUser = serverUsers[serverIndex];
 							TreeSet<String> existingUserGroups = Users.getGroups(c.getString(c.getColumnIndex(Users.GROUPS)));
-							if (!serverUser.displayName.equals(c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
+							if (!equals(serverUser.displayName, c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
 								serverUser.lat != c.getDouble(c.getColumnIndex(Users.LAT)) ||
 								serverUser.lng != c.getDouble(c.getColumnIndex(Users.LNG)) ||
 								!serverUser.groups.equals(existingUserGroups)) {
@@ -274,6 +274,16 @@ public class Synchronizer {
 				} finally {
 					c.close();
 				}
+			}
+			
+			private boolean equals(String s1, String s2) {
+				if ((s1 == null) != (s2 == null))
+					return false;
+				
+				if (s1 == null)
+					return true;
+				
+				return s1.equals(s2);
 			}
 		});
 	}
@@ -420,7 +430,7 @@ public class Synchronizer {
 						e.printStackTrace();
 					}
 				}
-			} catch (final Exception e) {
+			} catch (final Throwable e) {
 				handler.post(new Runnable() {
 					public void run() {
 						AlertDialog.Builder builder = new AlertDialog.Builder(context);
