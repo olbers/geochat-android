@@ -1,5 +1,6 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.data.GeoChatProvider;
 import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.map.LatLng;
 import org.instedd.geochat.map.LocationTracker;
@@ -66,17 +67,26 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
 	}
 	
-	public static void refresh(final Context context, final Handler handler) {
+	public static void refresh(final Context context, final Uri data, final Handler handler) {
 		final Resources res = context.getResources();
 		
-		context.bindService(new Intent(context, GeoChatService.class), new ServiceConnection() {
+		boolean bounded = context.getApplicationContext().bindService(new Intent(context, GeoChatService.class), new ServiceConnection() {
 			public void onServiceDisconnected(ComponentName className) {
 			}
 			public void onServiceConnected(ComponentName className, IBinder service) {
 				GeoChatService geo = ((GeoChatService.LocalBinder)service).getService();
-				geo.resyncMessages();
 				
-				final Toast toast = Toast.makeText(context, res.getString(R.string.refreshing), Toast.LENGTH_LONG);
+				String title;
+				if (data != null && GeoChatProvider.URI_MATCHER.match(data) == GeoChatProvider.GROUP_ALIAS) {
+					String groupAlias = data.getLastPathSegment();
+					geo.resyncMessages(groupAlias);
+					title = res.getString(R.string.refreshing_group, groupAlias);
+				} else {
+					geo.resyncMessages();
+					title = res.getString(R.string.refreshing);
+				}
+				
+				final Toast toast = Toast.makeText(context, title, Toast.LENGTH_LONG);
 				handler.post(new Runnable() {
 					public void run() {
 						toast.show();
@@ -84,6 +94,7 @@ public final class Actions {
 				});
 			}
 		}, Context.BIND_AUTO_CREATE);
+		System.out.println(bounded);
 	}
 	
 	public static void reportMyLocation(final Context context, final Handler handler) {

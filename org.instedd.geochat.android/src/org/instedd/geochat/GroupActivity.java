@@ -15,7 +15,8 @@ import android.widget.TabHost;
 
 public class GroupActivity extends TabActivity {
 	
-	private final Handler handler = new Handler();
+	final Handler handler = new Handler();
+	String alias;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -34,7 +35,7 @@ public class GroupActivity extends TabActivity {
 	    	return;
 	    }
 	    
-	    String alias = c.getString(c.getColumnIndex(Groups.ALIAS));
+	    this.alias = c.getString(c.getColumnIndex(Groups.ALIAS));
 	    String name = c.getString(c.getColumnIndex(Groups.NAME));
 	    c.close();
 	    
@@ -73,7 +74,7 @@ public class GroupActivity extends TabActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Menues.executeAction(this, handler, item.getItemId(), getIntent().getData());
+		Menues.executeAction(this, handler, item.getItemId(), Uris.groupAlias(alias));
 		return true;
 	}
 

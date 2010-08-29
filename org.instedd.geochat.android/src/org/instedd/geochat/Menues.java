@@ -37,7 +37,7 @@ public class Menues {
 			Actions.settings(context);
 			break;
 		case Menues.REFRESH:
-			Actions.refresh(context, handler);
+			Actions.refresh(context, data, handler);
 			break;
 		}
 	}

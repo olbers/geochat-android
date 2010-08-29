@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +24,10 @@ import android.widget.AdapterView.OnItemLongClickListener;
 
 public class GroupsActivity extends ListActivity implements OnItemClickListener, OnItemLongClickListener {
 	
-	private Cursor cursor;
-	private int position;
+	final Handler handler = new Handler();
+	
+	Cursor cursor;
+	int position;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -68,7 +71,8 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 	protected Dialog onCreateDialog(int id) {
 		final CharSequence[] items = { 
 				getResources().getString(R.string.open_group),
-				getResources().getString(R.string.compose)
+				getResources().getString(R.string.compose),
+				getResources().getString(R.string.refresh),
 				};
 		
 		cursor.moveToPosition(position);
@@ -79,12 +83,16 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 		builder.setItems(items, new OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				int groupId = cursor.getInt(cursor.getColumnIndex(Groups._ID));
+				String groupAlias = cursor.getString(cursor.getColumnIndex(Groups.ALIAS));
 				switch(which) {
 				case 0:
 					Actions.openGroup(GroupsActivity.this, groupId);
 					break;
 				case 1:
 					Actions.compose(GroupsActivity.this, groupId);
+					break;
+				case 2:
+					Actions.refresh(GroupsActivity.this, Uris.groupAlias(groupAlias), handler);
 					break;
 				}
 			}

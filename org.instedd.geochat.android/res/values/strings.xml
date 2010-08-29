@@ -58,4 +58,6 @@
     <string name="refresh">Refresh</string>
     <string name="from_user_to_group">%s to %s</string>
     <string name="refreshing">Refreshing...</string>
+    <string name="refreshing_group">Refreshing %s...</string>
+    <string name="no_messages">no messages</string>
 </resources>

@@ -81,5 +81,9 @@ public class GeoChatService extends Service implements OnSharedPreferenceChangeL
 	public void resyncMessages() {
 		synchronizer.resyncMessages();
 	}
+	
+	public void resyncMessages(String groupAlias) {
+		synchronizer.resyncMessages(groupAlias);
+	}
 
 }

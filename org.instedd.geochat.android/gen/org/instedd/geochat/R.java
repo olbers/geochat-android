@@ -98,6 +98,7 @@ public final class R {
         public static final int message_sent=0x7f040020;
         public static final int messages=0x7f040004;
         public static final int new_geochat_messages=0x7f040010;
+        public static final int no_messages=0x7f04003b;
         public static final int open_group=0x7f040031;
         public static final int open_user=0x7f040030;
         public static final int password=0x7f040009;
@@ -108,6 +109,7 @@ public final class R {
         public static final int people=0x7f040003;
         public static final int refresh=0x7f040037;
         public static final int refreshing=0x7f040039;
+        public static final int refreshing_group=0x7f04003a;
         public static final int report_my_location=0x7f04002a;
         public static final int retrieving_your_location=0x7f04002b;
         public static final int send=0x7f04001d;

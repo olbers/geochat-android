@@ -43,23 +43,6 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 		if (intent.getData() == null) {
 			intent.setData(Messages.CONTENT_URI);
 		}
-		
-		if (GeoChatProvider.URI_MATCHER.match(intent.getData()) == GeoChatProvider.USER_MESSAGES) {
-			String[] PROJECTION = new String[] {
-	                Users._ID,
-	                Users.DISPLAY_NAME,
-	        };
-	        Cursor cursor = getContentResolver().query(Uris.userLogin(intent.getData().getPathSegments().get(1)), PROJECTION, null, null,
-	        		Users.DEFAULT_SORT_ORDER);
-	        if (cursor.moveToNext()) {
-	        	String displayName = cursor.getString(1);
-	        	setTitle(getResources().getString(R.string.app_name) + " - " + displayName);
-	        }
-	        cursor.close();
-	        mainActivity = true;
-		} else {
-			mainActivity = false;
-		}
 
         String[] PROJECTION = new String[] {
                 Messages._ID,
@@ -78,6 +61,31 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
         setListAdapter(adapter);
         
         getListView().setOnItemLongClickListener(this);
+        
+        if (GeoChatProvider.URI_MATCHER.match(intent.getData()) == GeoChatProvider.USER_MESSAGES) {
+			String[] UPROJECTION = new String[] {
+	                Users._ID,
+	                Users.LOGIN,
+	                Users.DISPLAY_NAME,
+	        };
+	        Cursor uCursor = getContentResolver().query(Uris.userLogin(intent.getData().getPathSegments().get(1)), UPROJECTION, null, null,
+	        		Users.DEFAULT_SORT_ORDER);
+	        if (uCursor.moveToNext()) {
+	        	String displayName = uCursor.getString(2);
+	        	if (displayName == null) {
+	        		displayName = uCursor.getString(1);
+	        	}
+	        	String title = getResources().getString(R.string.app_name) + " - " + displayName; 
+	        	if (cursor.getCount() == 0) {
+	        		title += " (" + getResources().getString(R.string.no_messages) + ")";
+	        	}
+	        	setTitle(title);
+	        }
+	        uCursor.close();
+	        mainActivity = true;
+		} else {
+			mainActivity = false;
+		}
     }
     
     @Override

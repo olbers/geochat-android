@@ -46,7 +46,8 @@ public class Synchronizer {
 	final Notifier notifier;
 	boolean running;
 	boolean resync;
-	boolean resyncOnlyMessages = true;
+	boolean resyncOnlyMessages;
+	String resyncGroupAlias;
 	boolean connectivityChanged;
 	ExecutorService genericExecutor;
 	SyncThread syncThread;
@@ -84,6 +85,12 @@ public class Synchronizer {
 	
 	public synchronized void resyncMessages() {
 		this.resyncOnlyMessages = true;
+		this.resync = true;
+	}
+	
+	public synchronized void resyncMessages(String groupAlias) {
+		this.resyncOnlyMessages = true;
+		this.resyncGroupAlias = groupAlias;
 		this.resync = true;
 	}
 	
@@ -429,14 +436,19 @@ public class Synchronizer {
 							} else {
 								resyncOnlyMessages = false;
 								
-								Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, "lower(" + Groups.ALIAS + ")");
-								groupAliases = new String[c.getCount()];
-								try {
-									for(int i = 0; c.moveToNext(); i++) {
-										groupAliases[i] = c.getString(1);
+								if (resyncGroupAlias == null) {
+									Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, "lower(" + Groups.ALIAS + ")");
+									groupAliases = new String[c.getCount()];
+									try {
+										for(int i = 0; c.moveToNext(); i++) {
+											groupAliases[i] = c.getString(1);
+										}
+									} finally {
+										c.close();
 									}
-								} finally {
-									c.close();
+								} else {
+									groupAliases = new String[] { resyncGroupAlias };
+									resyncGroupAlias = null;
 								}
 							}
 							
