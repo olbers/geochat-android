@@ -46,6 +46,7 @@ public class Synchronizer {
 	final Notifier notifier;
 	boolean running;
 	boolean resync;
+	boolean resyncOnlyMessages = true;
 	boolean connectivityChanged;
 	ExecutorService genericExecutor;
 	SyncThread syncThread;
@@ -77,6 +78,12 @@ public class Synchronizer {
 		if (!connectivityChanged) {
 			recreateApi();
 		}
+		this.resyncOnlyMessages = false;
+		this.resync = true;
+	}
+	
+	public synchronized void resyncMessages() {
+		this.resyncOnlyMessages = true;
 		this.resync = true;
 	}
 	
@@ -169,11 +176,11 @@ public class Synchronizer {
 		return serverGroups;
 	}
 	
-	public void syncUsers(Group[] groups, final boolean fetchIcons) throws GeoChatApiException {
+	public void syncUsers(String[] groupAliases, final boolean fetchIcons) throws GeoChatApiException {
 		final Map<User, User> serverUsersMap = Collections.synchronizedMap(new TreeMap<User, User>());
 		final GeoChatApiException[] exception = { null };
 		
-		for(final Group group : groups) {
+		for(final String group : groupAliases) {
 			int page = 1;
 			while(true) {
 				if (resync) return;
@@ -181,7 +188,7 @@ public class Synchronizer {
 				
 				User[] users;
 				try {
-					users = api.getUsers(group.alias, page);
+					users = api.getUsers(group, page);
 				} catch (GeoChatApiException e) {
 					exception[0] = e;
 					return;
@@ -200,7 +207,7 @@ public class Synchronizer {
 					if (existing.groups == null) {
 						existing.groups = new TreeSet<String>();
 					}
-					existing.groups.add(group.alias);
+					existing.groups.add(group);
 				}
 				
 				if (users.length != IGeoChatApi.MAX_PER_PAGE)
@@ -288,15 +295,25 @@ public class Synchronizer {
 		});
 	}
 	
-	public int syncMessages(Group[] groups) throws GeoChatApiException {
+	private String[] getGroupAliases(Group[] groups) {
+		String[] aliases = new String[groups.length];
+		for (int i = 0; i < groups.length; i++) {
+			aliases[i] = groups[i].alias;
+		}
+		return aliases;
+	}
+	
+	public SyncMessagesResult syncMessages(String[] groupsAliases) throws GeoChatApiException {
 		int newMessagesCount = 0;
+		Message lastMessage = null;
 
-		for (final Group group : groups) {
+	loop:
+		for (final String group : groupsAliases) {
 			if (resync)
-				return newMessagesCount;
+				break loop;
 
 			// Get guid of last cached message
-			Uri uri = Uris.groupLastMessage(group.alias);
+			Uri uri = Uris.groupLastMessage(group);
 
 			Cursor c = context.getContentResolver().query(uri,
 					new String[] { Messages.GUID }, null, null, null);
@@ -304,13 +321,13 @@ public class Synchronizer {
 
 			// Get just one page of messages
 			try {
-				Message[] messages = api.getMessages(group.alias, 1);
+				Message[] messages = api.getMessages(group, 1);
 				if (resync)
-					return newMessagesCount;
+					break loop;
 
 				for (Message message : messages) {
 					if (resync)
-						return newMessagesCount;
+						break loop;
 
 					if (message.guid != null && message.guid.equals(lastGuid)) {
 						break;
@@ -318,18 +335,19 @@ public class Synchronizer {
 
 					data.createMessage(message);
 					newMessagesCount++;
+					lastMessage = message;
 				}
 			} finally {
 				c.close();
 			}
 		}
 
-		return newMessagesCount;
+		return new SyncMessagesResult(newMessagesCount, lastMessage);
 	}
 	
-	public void deleteOldMessages(Group[] groups) {
-		for(Group group : groups) {
-			data.deleteOldMessages(group.alias);
+	public void deleteOldMessages(String[] groupAliases) {
+		for(String group : groupAliases) {
+			data.deleteOldMessages(group);
 		}
 	}
 	
@@ -395,23 +413,41 @@ public class Synchronizer {
 						}
 						
 						if (hasConnectivity && credentialsAreValid) {
-							Group[] groups = syncGroups();
-							if (resync) continue;
+							String[] groupAliases;
 							
-							syncUsers(groups, fetchIcons);
-							if (resync) continue;
+							if (!resyncOnlyMessages) {
+								Group[] groups = syncGroups();
+								if (resync) continue;
+								
+								groupAliases = getGroupAliases(groups);
+								
+								syncUsers(groupAliases, fetchIcons);
+								if (resync) continue;
+								
+								// Don't fetch icons the next times
+								fetchIcons = false;
+							} else {
+								resyncOnlyMessages = false;
+								
+								Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, "lower(" + Groups.ALIAS + ")");
+								groupAliases = new String[c.getCount()];
+								try {
+									for(int i = 0; c.moveToNext(); i++) {
+										groupAliases[i] = c.getString(1);
+									}
+								} finally {
+									c.close();
+								}
+							}
 							
-							// Don't fetch icons the next times
-							fetchIcons = false;
-							
-							int newMessagesCount = syncMessages(groups);
-							if (newMessagesCount > 0) {
-								notifier.notifyNewMessages(newMessagesCount);
+							SyncMessagesResult result = syncMessages(groupAliases);
+							if (result.count > 0) {
+								notifier.notifyNewMessages(result.count, result.lastMessage);
 							}
 							
 							if (resync) continue;
 							
-							deleteOldMessages(groups);
+							deleteOldMessages(groupAliases);
 							if (resync) continue;
 						}
 					} catch (GeoChatApiException e) {
@@ -445,6 +481,15 @@ public class Synchronizer {
 			}
 		}
 		
+	}
+	
+	class SyncMessagesResult {
+		int count;
+		Message lastMessage;
+		public SyncMessagesResult(int count, Message lastMessage) {
+			this.count = count;
+			this.lastMessage = lastMessage;
+		}
 	}
 
 }

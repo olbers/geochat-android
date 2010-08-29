@@ -17,7 +17,6 @@
     <string name="cannott_login_maybe_no_connection">Cannot login, maybe no connection?</string>
     <string name="logging_in_to_geochat">Logging in to GeoChat...</string>
     <string name="new_geochat_messages">New GeoChat messages</string>
-    <string name="one_new_messages">1 new messages</string>
     <string name="d_new_messages">%d new messages</string>
     <string name="disconnected_from_geochat">Disconnected from GeoChat</string>
     <string name="first_time_logging_fetching_groups">First time login.\nThis might take several minutes.\nFetching groups...</string>
@@ -44,7 +43,7 @@
     <string name="show_in_map">Show in map</string>
     <string name="message">Message</string>
     <string name="report_my_location">Report my location</string>
-    <string name="retreiving_your_location">Retreiving your location...</string>
+    <string name="retrieving_your_location">Retrieving your location...</string>
     <string name="could_not_retrieve_your_location">Could not retrieve your location</string>
     <string name="sent">Sent</string>
     <string name="silent_report_locations">Silent report locations</string>
@@ -56,4 +55,7 @@
     <string name="geochat_number">GeoChat number</string>
     <string name="geochat_number_summary">Tap here to set a number where messages will be sent when offline</string>
     <string name="geochat_number_set_summary">Messages will be sent to %s when offline</string>
+    <string name="refresh">Refresh</string>
+    <string name="from_user_to_group">%s to %s</string>
+    <string name="refreshing">Refreshing...</string>
 </resources>

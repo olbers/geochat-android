@@ -65,6 +65,7 @@ public class GroupActivity extends TabActivity {
 		Menues.home(menu);
 		Menues.map(menu);
 		Menues.compose(menu);
+		Menues.refresh(menu);
 		Menues.reportMyLocation(menu);
 		Menues.settings(menu);
 		return true;

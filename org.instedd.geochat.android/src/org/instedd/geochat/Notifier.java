@@ -1,5 +1,7 @@
 package org.instedd.geochat;
 
+import org.instedd.geochat.api.Message;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,7 +36,7 @@ public class Notifier {
 		man.notify(WRONG_CREDENTIALS, notification);
 	}
 	
-	public void notifyNewMessages(int count) {
+	public void notifyNewMessages(int count, Message lastMessage) {
 		GeoChatSettings settings = new GeoChatSettings(context);
 		count += settings.getNewMessagesCount();
 		settings.setNewMessagesCount(count);
@@ -44,8 +46,15 @@ public class Notifier {
 		setDefaults(notification);
 		
 		Resources r = context.getResources();
-		String title = r.getString(R.string.new_geochat_messages);
-		String content = count == 1 ? r.getString(R.string.one_new_messages) : r.getString(R.string.d_new_messages, count);
+		String title;
+		String content;
+		if (count == 1) {
+			title = r.getString(R.string.from_user_to_group, lastMessage.fromUser, lastMessage.toGroup);
+			content = lastMessage.message;			
+		} else {
+			title = r.getString(R.string.new_geochat_messages);
+			content = r.getString(R.string.d_new_messages, count);
+		}
 		
 		Intent intent = new Intent().setClass(context, HomeActivity.class).setAction(Actions.VIEW_MESSAGES);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

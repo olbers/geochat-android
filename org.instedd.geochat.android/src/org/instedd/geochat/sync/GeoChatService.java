@@ -10,12 +10,21 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.ConnectivityManager;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 
 public class GeoChatService extends Service implements OnSharedPreferenceChangeListener {
 	
-	private Synchronizer synchronizer;
+	public class LocalBinder extends Binder {
+		public GeoChatService getService() {
+            return GeoChatService.this;
+        }
+    }
+	
+	final IBinder mBinder = new LocalBinder();
+	
+	Synchronizer synchronizer;
 	final Handler handler = new Handler();
 	
 	private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -66,7 +75,11 @@ public class GeoChatService extends Service implements OnSharedPreferenceChangeL
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
-	}	
+		return mBinder;
+	}
+	
+	public void resyncMessages() {
+		synchronizer.resyncMessages();
+	}
 
 }

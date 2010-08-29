@@ -217,7 +217,7 @@ public class ComposeActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Menues.executeAction(this, handler, item.getItemId());
 		if (item.getItemId() == Menues.PASTE_MY_LOCATION) {
-			final Toast toast = Toast.makeText(this, getResources().getString(R.string.retreiving_your_location), Toast.LENGTH_LONG);
+			final Toast toast = Toast.makeText(this, getResources().getString(R.string.retrieving_your_location), Toast.LENGTH_LONG);
 			toast.show();
 			
 			new Thread() {

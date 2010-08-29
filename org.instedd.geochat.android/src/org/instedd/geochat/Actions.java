@@ -3,12 +3,16 @@ package org.instedd.geochat;
 import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.map.LatLng;
 import org.instedd.geochat.map.LocationTracker;
+import org.instedd.geochat.sync.GeoChatService;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.IBinder;
 import android.widget.Toast;
 
 public final class Actions {
@@ -62,11 +66,35 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
 	}
 	
+	public static void refresh(final Context context, final Handler handler) {
+		final Resources res = context.getResources();
+		
+		context.bindService(new Intent(context, GeoChatService.class), new ServiceConnection() {
+			public void onServiceDisconnected(ComponentName className) {
+			}
+			public void onServiceConnected(ComponentName className, IBinder service) {
+				GeoChatService geo = ((GeoChatService.LocalBinder)service).getService();
+				geo.resyncMessages();
+				
+				final Toast toast = Toast.makeText(context, res.getString(R.string.refreshing), Toast.LENGTH_LONG);
+				handler.post(new Runnable() {
+					public void run() {
+						toast.show();
+					}
+				});
+			}
+		}, Context.BIND_AUTO_CREATE);
+	}
+	
 	public static void reportMyLocation(final Context context, final Handler handler) {
 		final Resources res = context.getResources();
 		
-		final Toast toast = Toast.makeText(context, res.getString(R.string.retreiving_your_location), Toast.LENGTH_LONG);
-		toast.show();
+		final Toast toast = Toast.makeText(context, res.getString(R.string.retrieving_your_location), Toast.LENGTH_LONG);
+		handler.post(new Runnable() {
+			public void run() {
+				toast.show();
+			}
+		});
 		
 		new Thread() {
 			public void run() {
