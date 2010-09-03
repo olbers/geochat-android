@@ -39,6 +39,7 @@ public class Synchronizer {
 	
 	final Context context;
 	IGeoChatApi api;
+	String currentUser;
 	final GeoChatData data;
 	final LocationResolver locationResolver;
 	final Notifier notifier;
@@ -269,7 +270,7 @@ public class Synchronizer {
 							// Server and cached match, update (if changed) and advance both
 							User serverUser = serverUsers[serverIndex];
 							TreeSet<String> existingUserGroups = Users.getGroups(c.getString(c.getColumnIndex(Users.GROUPS)));
-							if (!equals(serverUser.displayName, c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
+							if (!Synchronizer.equals(serverUser.displayName, c.getString(c.getColumnIndex(Users.DISPLAY_NAME))) ||
 								serverUser.lat != c.getDouble(c.getColumnIndex(Users.LAT)) ||
 								serverUser.lng != c.getDouble(c.getColumnIndex(Users.LNG)) ||
 								!serverUser.groups.equals(existingUserGroups)) {
@@ -286,16 +287,6 @@ public class Synchronizer {
 				} finally {
 					c.close();
 				}
-			}
-			
-			private boolean equals(String s1, String s2) {
-				if ((s1 == null) != (s2 == null))
-					return false;
-				
-				if (s1 == null)
-					return true;
-				
-				return s1.equals(s2);
 			}
 		});
 	}
@@ -339,7 +330,9 @@ public class Synchronizer {
 					}
 
 					data.createMessage(message);
-					newMessagesCount++;
+					if (!equals(message.fromUser, currentUser)) {
+						newMessagesCount++;
+					}
 					lastMessage = message;
 				}
 			} finally {
@@ -365,7 +358,9 @@ public class Synchronizer {
 	}
 	
 	private void recreateApi() {
-		api = new GeoChatSettings(context).newApi();
+		GeoChatSettings settings = new GeoChatSettings(context);
+		api = settings.newApi();
+		currentUser = settings.getUser();
 	}
 	
 	private void downloadUserIcon(String login) {
@@ -388,6 +383,16 @@ public class Synchronizer {
 		} catch (GeoChatApiException e) {
 			
 		}
+	}
+	
+	private static boolean equals(String s1, String s2) {
+		if ((s1 == null) != (s2 == null))
+			return false;
+		
+		if (s1 == null)
+			return true;
+		
+		return s1.equals(s2);
 	}
 	
 	private class SyncThread extends Thread {
