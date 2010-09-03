@@ -17,6 +17,7 @@ import org.instedd.geochat.map.LocationResolver;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 
 public class GeoChatData {
@@ -41,6 +42,33 @@ public class GeoChatData {
 	
 	public void deleteGroup(int id) {
 		context.getContentResolver().delete(Uris.groupId(id), null, null);
+	}
+	
+	public String getGroupAlias(Uri uri) {
+		if (uri == null)
+			return null;
+		
+		int match = GeoChatProvider.URI_MATCHER.match(uri);
+		switch(match) {
+		case GeoChatProvider.GROUP_ALIAS:
+			return uri.getLastPathSegment();
+		case GeoChatProvider.GROUP_ID:
+			String[] PROJECTION = new String[] {
+	                Groups._ID,
+	                Groups.ALIAS,
+	        };
+		    Cursor c = context.getContentResolver().query(uri, PROJECTION, null, null, null);
+		    try {
+			    if (c.moveToNext())
+			    	return c.getString(1);
+			    else
+			    	return null;
+		    } finally {
+		    	c.close();
+		    }
+		default:
+			return null;
+		}
 	}
 	
 	public void deleteGroups() {
@@ -134,7 +162,7 @@ public class GeoChatData {
 	private ContentValues getContentValues(User user) {
 		ContentValues values = new ContentValues();
 		values.put(Users.LOGIN, user.login);
-		values.put(Users.DISPLAY_NAME, user.displayName);
+		values.put(Users.DISPLAY_NAME, user.displayName == null ? "" : user.displayName);
 		values.put(Users.LAT, user.lat);
 		values.put(Users.LNG, user.lng);
 		values.put(Users.LOCATION_NAME, locationResolver.getLocationName(user.lat, user.lng));

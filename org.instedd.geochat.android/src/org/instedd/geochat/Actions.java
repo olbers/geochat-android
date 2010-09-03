@@ -1,6 +1,6 @@
 package org.instedd.geochat;
 
-import org.instedd.geochat.data.GeoChatProvider;
+import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.map.GeoChatMapActivity;
 import org.instedd.geochat.map.LatLng;
 import org.instedd.geochat.map.LocationTracker;
@@ -77,8 +77,8 @@ public final class Actions {
 				GeoChatService geo = ((GeoChatService.LocalBinder)service).getService();
 				
 				String title;
-				if (data != null && GeoChatProvider.URI_MATCHER.match(data) == GeoChatProvider.GROUP_ALIAS) {
-					String groupAlias = data.getLastPathSegment();
+				String groupAlias = new GeoChatData(context).getGroupAlias(data);
+				if (groupAlias != null) {
 					geo.resyncMessages(groupAlias);
 					title = res.getString(R.string.refreshing_group, groupAlias);
 				} else {

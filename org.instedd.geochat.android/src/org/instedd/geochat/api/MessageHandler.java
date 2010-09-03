@@ -87,11 +87,15 @@ public class MessageHandler extends DefaultHandler {
 		case PUB_DATE:
 			String date = new String(ch, start, length);
 			try {
-				// This is faster, but I don't know if it always works
-				message.createdDate = org.apache.http.impl.cookie.DateUtils.parseDate(date).getTime();
-			} catch (DateParseException e) {
-				// This works, but it's slower
-				message.createdDate = org.instedd.geochat.api.DateUtils.parseDate(date).getTime();
+				try {
+					// This is faster, but I don't know if it always works
+					message.createdDate = org.apache.http.impl.cookie.DateUtils.parseDate(date).getTime();
+				} catch (DateParseException e) {
+					// This works, but it's slower
+					message.createdDate = org.instedd.geochat.api.DateUtils.parseDate(date).getTime();
+				}
+			} catch (NullPointerException e) {
+				
 			}
 			break;
 		case SENDER_ALIAS:

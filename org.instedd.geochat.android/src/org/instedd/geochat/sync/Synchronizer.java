@@ -14,7 +14,6 @@ import org.apache.http.HttpResponse;
 import org.instedd.geochat.Connectivity;
 import org.instedd.geochat.GeoChatSettings;
 import org.instedd.geochat.Notifier;
-import org.instedd.geochat.R;
 import org.instedd.geochat.Uris;
 import org.instedd.geochat.api.GeoChatApiException;
 import org.instedd.geochat.api.Group;
@@ -27,7 +26,6 @@ import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
 import org.instedd.geochat.map.LocationResolver;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -399,97 +397,83 @@ public class Synchronizer {
 		
 		@Override
 		public void run() {
-			try {
-				while(running) {
-					try {
-						boolean hasConnectivity = Connectivity.hasConnectivity(context);
-						boolean credentialsAreValid = true;
-						if (hasConnectivity) {
-							credentialsAreValid = api.credentialsAreValid();
-						}
-						
-						if (resync) {
-							if (!connectivityChanged) {
-								if (!credentialsAreValid) {
-									notifier.notifyWrongCredentials();
-								}
+			while(running) {
+				try {
+					boolean hasConnectivity = Connectivity.hasConnectivity(context);
+					boolean credentialsAreValid = true;
+					if (hasConnectivity) {
+						credentialsAreValid = api.credentialsAreValid();
+					}
+					
+					if (resync) {
+						if (!connectivityChanged) {
+							if (!credentialsAreValid) {
+								notifier.notifyWrongCredentials();
 							}
-							connectivityChanged = false;
-							
-							resyncFinished();
 						}
+						connectivityChanged = false;
 						
-						if (hasConnectivity && credentialsAreValid) {
-							String[] groupAliases;
+						resyncFinished();
+					}
+					
+					if (hasConnectivity && credentialsAreValid) {
+						String[] groupAliases;
+						
+						if (!resyncOnlyMessages) {
+							Group[] groups = syncGroups();
+							if (resync) continue;
 							
-							if (!resyncOnlyMessages) {
-								Group[] groups = syncGroups();
-								if (resync) continue;
-								
-								groupAliases = getGroupAliases(groups);
-								
-								syncUsers(groupAliases, fetchIcons);
-								if (resync) continue;
-								
-								// Don't fetch icons the next times
-								fetchIcons = false;
-							} else {
-								resyncOnlyMessages = false;
-								
-								if (resyncGroupAlias == null) {
-									Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, "lower(" + Groups.ALIAS + ")");
-									groupAliases = new String[c.getCount()];
-									try {
-										for(int i = 0; c.moveToNext(); i++) {
-											groupAliases[i] = c.getString(1);
-										}
-									} finally {
-										c.close();
+							groupAliases = getGroupAliases(groups);
+							
+							syncUsers(groupAliases, fetchIcons);
+							if (resync) continue;
+							
+							// Don't fetch icons the next times
+							fetchIcons = false;
+						} else {
+							resyncOnlyMessages = false;
+							
+							if (resyncGroupAlias == null) {
+								Cursor c = context.getContentResolver().query(Groups.CONTENT_URI, new String[] { Groups._ID, Groups.ALIAS }, null, null, "lower(" + Groups.ALIAS + ")");
+								groupAliases = new String[c.getCount()];
+								try {
+									for(int i = 0; c.moveToNext(); i++) {
+										groupAliases[i] = c.getString(1);
 									}
-								} else {
-									groupAliases = new String[] { resyncGroupAlias };
-									resyncGroupAlias = null;
+								} finally {
+									c.close();
 								}
+							} else {
+								groupAliases = new String[] { resyncGroupAlias };
+								resyncGroupAlias = null;
 							}
-							
-							SyncMessagesResult result = syncMessages(groupAliases);
-							if (result.count > 0) {
-								notifier.notifyNewMessages(result.count, result.lastMessage);
-							}
-							
-							if (resync) continue;
-							
-							deleteOldMessages(groupAliases);
-							if (resync) continue;
 						}
-					} catch (GeoChatApiException e) {
-						// TODO handle this exception
-						e.printStackTrace();
-					}
 						
-					// Wait 15 minutes in intervals of 5 seconds,
-					// so wait
-					try {
-						for(int i = 0; i < 3 * 60; i++) {
-							sleep(5000);
-							if (resync) break;
+						SyncMessagesResult result = syncMessages(groupAliases);
+						if (result.count > 0) {
+							notifier.notifyNewMessages(result.count, result.lastMessage);
 						}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+						
+						if (resync) continue;
+						
+						deleteOldMessages(groupAliases);
+						if (resync) continue;
 					}
+				} catch (GeoChatApiException e) {
+					// TODO handle this exception
+					e.printStackTrace();
 				}
-			} catch (final Throwable e) {
-				handler.post(new Runnable() {
-					public void run() {
-						AlertDialog.Builder builder = new AlertDialog.Builder(context);
-						builder
-							.setTitle(context.getResources().getString(R.string.something_went_wrong))
-							.setMessage(e.getMessage())
-							.setNegativeButton(android.R.string.ok, null)
-							.setCancelable(true)
-							.create().show();
+					
+				// Wait 15 minutes in intervals of 5 seconds,
+				// so wait
+				try {
+					for(int i = 0; i < 3 * 60; i++) {
+						sleep(5000);
+						if (resync) break;
 					}
-				});
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		

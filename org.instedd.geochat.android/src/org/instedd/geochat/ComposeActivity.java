@@ -1,7 +1,7 @@
 package org.instedd.geochat;
 
 import org.instedd.geochat.api.Group;
-import org.instedd.geochat.data.GeoChatProvider;
+import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.map.LatLng;
 import org.instedd.geochat.map.LocationTracker;
@@ -64,20 +64,8 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 	    setContentView(R.layout.compose);
 	    
-	    String composeGroup;	    
-	    if (getIntent().getData() != null && GeoChatProvider.URI_MATCHER.match(getIntent().getData()) == GeoChatProvider.GROUP_ID) {
-	    	String[] PROJECTION = new String[] {
-	                Groups._ID,
-	                Groups.ALIAS,
-	        };
-		    Cursor c = getContentResolver().query(getIntent().getData(), PROJECTION, null, null, null);
-		    if (c.moveToNext()) {
-		    	composeGroup = c.getString(1);
-		    } else {
-		    	composeGroup = new GeoChatSettings(this).getComposeGroup();
-		    }
-		    c.close();
-	    } else {
+	    String composeGroup = new GeoChatData(this).getGroupAlias(getIntent().getData());
+	    if (composeGroup == null) {
 	    	composeGroup = new GeoChatSettings(this).getComposeGroup();
 	    }
 	    int composeGroupIndex = 0;

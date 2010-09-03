@@ -11,7 +11,7 @@ public class User implements Comparable<User> {
 	public TreeSet<String> groups;
 	
 	public String getDisplayName() {
-		if (displayName == null)
+		if (displayName == null || displayName.length() == 0)
 			return login;
 		return displayName;
 	}
@@ -36,7 +36,7 @@ public class User implements Comparable<User> {
 	
 	@Override
 	public String toString() {
-		if (displayName == null)
+		if (displayName == null || displayName.length() == 0)
 			return login;
 		return login + " (" + displayName + ")";
 	}

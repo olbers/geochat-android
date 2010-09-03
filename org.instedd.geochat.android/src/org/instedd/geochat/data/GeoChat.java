@@ -62,7 +62,7 @@ public class GeoChat {
         /**
          * The default sort order for this table
          */
-        public static final String DEFAULT_SORT_ORDER = "lower(display_name) ASC";
+        public static final String DEFAULT_SORT_ORDER = "lower(display_name || login) ASC";
         
         /**
          * The login of the user

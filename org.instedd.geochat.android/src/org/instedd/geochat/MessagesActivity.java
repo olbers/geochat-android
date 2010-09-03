@@ -200,8 +200,13 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 			((TextView) v.findViewById(R.id.from)).setText(login);
 			((TextView) v.findViewById(R.id.group)).setText(c.getString(c.getColumnIndex(Messages.TO_GROUP)));
 			
-			CharSequence date = DateUtils.getRelativeDateTimeString(context, c.getLong(c.getColumnIndex(Messages.CREATED_DATE)), DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
-			((TextView) v.findViewById(R.id.date)).setText(date);
+			long longDate = c.getLong(c.getColumnIndex(Messages.CREATED_DATE));
+			if (longDate > 0) {
+				CharSequence date = DateUtils.getRelativeDateTimeString(context, longDate, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);;
+				((TextView) v.findViewById(R.id.date)).setText(date);
+			} else {
+				((TextView) v.findViewById(R.id.date)).setText("");
+			}
 			
 			ImageView view = (ImageView) v.findViewById(R.id.icon);
 			if (data.hasUserIconFor(login)) {
