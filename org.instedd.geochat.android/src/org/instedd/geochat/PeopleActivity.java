@@ -70,7 +70,7 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		final CharSequence[] items = { 
-				getResources().getString(R.string.open_group),
+				getResources().getString(R.string.view_user),
 				getResources().getString(R.string.show_in_map)
 				};
 		

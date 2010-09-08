@@ -48,8 +48,8 @@
     <string name="sent">Sent</string>
     <string name="silent_report_locations">Silent report locations</string>
     <string name="silent_report_locations_summary">When checked, reported locations will not be broadcasted to group members</string>
-    <string name="open_user">Open user</string>
-    <string name="open_group">Open group</string>
+    <string name="view_user">View user</string>
+    <string name="view_group">View group</string>
     <string name="copy_message_text">Copy message text</string>
     <string name="paste_my_location">Paste my location</string>
     <string name="geochat_number">GeoChat number</string>
@@ -60,4 +60,5 @@
     <string name="refreshing">Refreshing...</string>
     <string name="refreshing_group">Refreshing %s...</string>
     <string name="no_messages">no messages</string>
+    <string name="reply_to_group">Reply to group</string>
 </resources>

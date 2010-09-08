@@ -105,8 +105,9 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
     @Override
 	protected Dialog onCreateDialog(int id) {
     	final CharSequence[] items = {
-    			getResources().getString(R.string.open_user),
-    			getResources().getString(R.string.open_group),
+    			getResources().getString(R.string.reply_to_group),
+    			getResources().getString(R.string.view_user),
+    			getResources().getString(R.string.view_group),
     			getResources().getString(R.string.show_in_map),
     			getResources().getString(R.string.copy_message_text)
     	};
@@ -116,15 +117,18 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 			public void onClick(DialogInterface dialog, int which) {
 				switch(which) {
 				case 0:
-					openUser();
+					replyToGroup();
 					break;
 				case 1:
-					openGroup();
+					openUser();
 					break;
 				case 2:
-					showInMap();
+					openGroup();
 					break;
 				case 3:
+					showInMap();
+					break;
+				case 4:
 					copyMessageText();
 					break;
 				}
@@ -133,6 +137,12 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 		});
 		return builder.create();
 	}
+    
+    private void replyToGroup() {
+    	cursor.moveToPosition(position);
+    	String alias = cursor.getString(cursor.getColumnIndex(Messages.TO_GROUP));
+    	Actions.compose(this, alias);
+    }
     
     private void openUser() {
     	cursor.moveToPosition(position);

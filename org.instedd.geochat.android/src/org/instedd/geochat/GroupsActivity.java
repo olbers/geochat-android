@@ -70,7 +70,7 @@ public class GroupsActivity extends ListActivity implements OnItemClickListener,
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		final CharSequence[] items = { 
-				getResources().getString(R.string.open_group),
+				getResources().getString(R.string.view_group),
 				getResources().getString(R.string.compose),
 				getResources().getString(R.string.refresh),
 				};

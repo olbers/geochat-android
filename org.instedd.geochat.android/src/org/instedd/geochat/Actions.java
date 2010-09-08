@@ -28,7 +28,7 @@ public final class Actions {
 	}
 	
 	public static void compose(Context context) {
-		compose(context, null);
+		compose(context, (Uri)null);
 	}
 	
 	public static void compose(Context context, Uri data) {
@@ -37,6 +37,10 @@ public final class Actions {
 	
 	public static void compose(Context context, int groupId) {
 		compose(context, Uris.groupId(groupId));
+	}
+	
+	public static void compose(Context context, String groupAlias) {
+		compose(context, Uris.groupAlias(groupAlias));
 	}
 	
 	public static void map(Context context) {
