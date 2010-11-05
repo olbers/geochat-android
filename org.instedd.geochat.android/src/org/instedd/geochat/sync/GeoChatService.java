@@ -81,17 +81,20 @@ public class GeoChatService extends CompatibilityService implements OnSharedPref
 	
 	@Override
 	public void onDestroy() {
-		synchronizer.stop();
-		
-		// Remove foreground notification
-		stopForegroundCompat(Notifier.SERVICE);
-		
+		stopSynchronizing();
 		super.onDestroy();
 	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;
+	}
+	
+	public void stopSynchronizing() {
+		synchronizer.stop();
+		
+		// Remove foreground notification
+		stopForegroundCompat(Notifier.SERVICE);
 	}
 	
 	public void resyncMessages() {

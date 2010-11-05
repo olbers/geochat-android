@@ -19,8 +19,10 @@ import android.widget.Toast;
 public final class Actions {
 	
 	private final static String PREFIX = "org.instedd.geochat.";
-	
 	public final static String VIEW_MESSAGES = PREFIX + "view_messages";
+	
+	private static GeoChatService geochatService;
+	private static ServiceConnection geochatServiceConnection;
 	
 	public static void home(Context context) {
 		context.startActivity(new Intent().setClass(context, HomeActivity.class)
@@ -71,39 +73,53 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
 	}
 	
-	public static void logoff(Context context) {
-		context.stopService(new Intent().setClass(context, GeoChatService.class));
+	public static synchronized void logoff(Context context) {
+		if (geochatService != null) {
+			context.getApplicationContext().unbindService(geochatServiceConnection);
+			geochatService = null;
+			geochatServiceConnection = null;
+		}
+		
+		context.getApplicationContext().stopService(new Intent().setClass(context, GeoChatService.class));
 		startActivity(context, LoginActivity.class);
 	}
 	
-	public static void refresh(final Context context, final Uri data, final Handler handler) {
+	public static synchronized void refresh(final Context context, final Uri data, final Handler handler) {
+		if (geochatService == null) {
+			geochatServiceConnection = new ServiceConnection() {
+				public void onServiceDisconnected(ComponentName className) {
+					geochatService = null;
+				}
+				public void onServiceConnected(ComponentName className, IBinder service) {
+					geochatService = ((GeoChatService.LocalBinder)service).getService();
+					refreshInternal(context, data, handler);
+				}
+			};
+			context.getApplicationContext().bindService(new Intent(context, GeoChatService.class), geochatServiceConnection, Context.BIND_AUTO_CREATE);
+		} else {
+			refreshInternal(context, data, handler);	
+		}
+	}
+	
+	private static void refreshInternal(final Context context, final Uri data, final Handler handler) {
 		final Resources res = context.getResources();
 		
-		boolean bounded = context.getApplicationContext().bindService(new Intent(context, GeoChatService.class), new ServiceConnection() {
-			public void onServiceDisconnected(ComponentName className) {
+		String title;
+		String groupAlias = new GeoChatData(context).getGroupAlias(data);
+		if (groupAlias != null) {
+			geochatService.resyncMessages(groupAlias);
+			title = res.getString(R.string.refreshing_group, groupAlias);
+		} else {
+			geochatService.resyncMessages();
+			title = res.getString(R.string.refreshing);
+		}
+		
+		final Toast toast = Toast.makeText(context, title, Toast.LENGTH_LONG);
+		handler.post(new Runnable() {
+			public void run() {
+				toast.show();
 			}
-			public void onServiceConnected(ComponentName className, IBinder service) {
-				GeoChatService geo = ((GeoChatService.LocalBinder)service).getService();
-				
-				String title;
-				String groupAlias = new GeoChatData(context).getGroupAlias(data);
-				if (groupAlias != null) {
-					geo.resyncMessages(groupAlias);
-					title = res.getString(R.string.refreshing_group, groupAlias);
-				} else {
-					geo.resyncMessages();
-					title = res.getString(R.string.refreshing);
-				}
-				
-				final Toast toast = Toast.makeText(context, title, Toast.LENGTH_LONG);
-				handler.post(new Runnable() {
-					public void run() {
-						toast.show();
-					}
-				});
-			}
-		}, Context.BIND_AUTO_CREATE);
-		System.out.println(bounded);
+		});
 	}
 	
 	public static void reportMyLocation(final Context context, final Handler handler) {

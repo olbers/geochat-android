@@ -326,7 +326,7 @@ public class Synchronizer {
 	
 		loop:
 			for (final String group : groupsAliases) {
-				if (resync) 
+				if (resync)
 					break loop;
 				
 				if (running)

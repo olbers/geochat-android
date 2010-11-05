@@ -19,7 +19,7 @@ public class HomeActivity extends TabActivity {
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.main);
 	    
-	    startService(new Intent().setClass(this, GeoChatService.class));
+	    getApplicationContext().startService(new Intent().setClass(this, GeoChatService.class));
 	    
 	    Resources res = getResources();
 	    TabHost tabHost = getTabHost();
@@ -45,6 +45,13 @@ public class HomeActivity extends TabActivity {
 	    tabHost.addTab(spec);
 	    
 	    tabHost.setCurrentTab(2);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		getApplicationContext().startService(new Intent().setClass(this, GeoChatService.class));
 	}
 	
 	@Override
