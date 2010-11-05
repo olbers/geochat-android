@@ -65,4 +65,5 @@
     <string name="synchronizing_groups">Synchronizing groups...</string>
     <string name="synchronizing_group_users">Synchronizing %s users...</string>
     <string name="synchronizing_group_messages">Synchronizing %s messages...</string>
+    <string name="logoff">Log off</string>
 </resources>

@@ -68,6 +68,7 @@ public class HomeActivity extends TabActivity {
 		Menues.refresh(menu);
 		Menues.reportMyLocation(menu);
 		Menues.settings(menu);
+		Menues.logoff(menu);
 		return true;
 	}
 	

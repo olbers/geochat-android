@@ -71,6 +71,11 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
 	}
 	
+	public static void logoff(Context context) {
+		context.stopService(new Intent().setClass(context, GeoChatService.class));
+		startActivity(context, LoginActivity.class);
+	}
+	
 	public static void refresh(final Context context, final Uri data, final Handler handler) {
 		final Resources res = context.getResources();
 		

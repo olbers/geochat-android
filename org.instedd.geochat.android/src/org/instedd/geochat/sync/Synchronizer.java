@@ -72,6 +72,7 @@ public class Synchronizer {
 	
 	public synchronized void stop() {
 		running = false;
+		resync = true;
 	}
 	
 	public synchronized void resync() {
@@ -102,7 +103,8 @@ public class Synchronizer {
 	}
 	
 	public Group[] syncGroups() throws GeoChatApiException {
-		notifier.startSynchronizingGroups();
+		if (running)
+			notifier.startSynchronizingGroups();
 		
 		try {
 			// Get groups from server and sort them by alias
@@ -184,7 +186,8 @@ public class Synchronizer {
 			
 			return serverGroups;
 		} finally {
-			notifier.stopSynchronizing();
+			if (running)
+				notifier.stopSynchronizing();
 		}
 	}
 	
@@ -194,7 +197,11 @@ public class Synchronizer {
 			final GeoChatApiException[] exception = { null };
 			
 			for(final String group : groupAliases) {
-				notifier.startSynchronizingUsers(group);
+				if (resync)
+					return;
+				
+				if (running)
+					notifier.startSynchronizingUsers(group);
 				
 				int page = 1;
 				while(true) {
@@ -299,7 +306,8 @@ public class Synchronizer {
 				}
 			});
 		} finally {
-			notifier.stopSynchronizing();
+			if (running)
+				notifier.stopSynchronizing();
 		}
 	}
 	
@@ -321,7 +329,8 @@ public class Synchronizer {
 				if (resync) 
 					break loop;
 				
-				notifier.startSynchronizingMessages(group);
+				if (running)
+					notifier.startSynchronizingMessages(group);
 	
 				// Get guid of last cached message
 				Uri uri = Uris.groupLastMessage(group);
@@ -357,7 +366,8 @@ public class Synchronizer {
 	
 			return new SyncMessagesResult(newMessagesCount, lastMessage);
 		} finally {
-			notifier.stopSynchronizing();
+			if (running)
+				notifier.stopSynchronizing();
 		}
 	}
 	
@@ -431,7 +441,8 @@ public class Synchronizer {
 					if (resync) {
 						if (!connectivityChanged) {
 							if (!credentialsAreValid) {
-								notifier.notifyWrongCredentials();
+								if (running)
+									notifier.notifyWrongCredentials();
 							}
 						}
 						connectivityChanged = false;
