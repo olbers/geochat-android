@@ -198,7 +198,7 @@ public class ComposeActivity extends Activity {
 		Menues.home(menu);
 		Menues.pasteMyLocation(menu);
 		Menues.settings(menu);
-		Menues.logoff(menu);
+		Menues.signout(menu);
 		return true;
 	}
 	

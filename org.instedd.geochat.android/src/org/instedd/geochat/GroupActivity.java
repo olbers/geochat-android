@@ -69,7 +69,7 @@ public class GroupActivity extends TabActivity {
 		Menues.refresh(menu);
 		Menues.reportMyLocation(menu);
 		Menues.settings(menu);
-		Menues.logoff(menu);
+		Menues.signout(menu);
 		return true;
 	}
 	

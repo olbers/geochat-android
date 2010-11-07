@@ -61,10 +61,10 @@
     <string name="refreshing_group">Refreshing %s...</string>
     <string name="no_messages">no messages</string>
     <string name="reply_to_group">Reply to group</string>
-    <string name="geochat_is_running">GeoChat is running</string>
+    <string name="signed_in_as_user">Signed in as %s</string>
     <string name="synchronizing">Synchronizing...</string>
     <string name="synchronizing_groups">Synchronizing groups...</string>
     <string name="synchronizing_group_users">Synchronizing %s users...</string>
     <string name="synchronizing_group_messages">Synchronizing %s messages...</string>
-    <string name="logoff">Log off</string>
+    <string name="signout">Sign out</string>
 </resources>

@@ -4,15 +4,15 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:paddingTop="5dp"
-    android:paddingBottom="5dp"
+    android:paddingBottom="10dp"
     >
-    <ImageView
+    <org.instedd.geochat.BorderImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:minWidth="50px"
 		android:minHeight="50px"
-		android:paddingRight="5dp"
-		android:layout_marginTop="5dp"
+		android:layout_marginRight="9dp"
+		android:layout_marginTop="9dp"
 		android:src="@drawable/default_user_icon"
 		android:id="@+id/icon" />
 	<TextView

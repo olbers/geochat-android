@@ -73,7 +73,7 @@ public final class Actions {
 		startActivity(context, GroupActivity.class, Uris.groupAlias(groupAlias));
 	}
 	
-	public static synchronized void logoff(Context context) {
+	public static synchronized void signout(Context context) {
 		if (geochatService != null) {
 			context.getApplicationContext().unbindService(geochatServiceConnection);
 			geochatService = null;

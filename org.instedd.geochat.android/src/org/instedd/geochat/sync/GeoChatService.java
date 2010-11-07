@@ -58,7 +58,7 @@ public class GeoChatService extends CompatibilityService implements OnSharedPref
 	
 	private void displayForegroundNotification() {
 		String title = getResources().getString(R.string.app_name);
-		String content = getResources().getString(R.string.geochat_is_running);
+		String content = getResources().getString(R.string.signed_in_as_user, new GeoChatSettings(this).getUser());
 		Notification notification = new Notification(R.drawable.ic_stat_geochat, null, System.currentTimeMillis());
 		notification.setLatestEventInfo(this, title, content, PendingIntent.getActivity(this, 0, Notifier.getViewMessagesIntent(this), 0));
 		startForegroundCompat(Notifier.SERVICE, notification);

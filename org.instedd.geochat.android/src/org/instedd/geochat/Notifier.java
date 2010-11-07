@@ -78,7 +78,7 @@ public class Notifier {
 	}
 	
 	public void stopSynchronizing() {
-		setForegroundNotificationContent(R.drawable.ic_stat_geochat, R.string.geochat_is_running);
+		setForegroundNotificationContent(R.drawable.ic_stat_geochat, R.string.signed_in_as_user, new GeoChatSettings(context).getUser());
 	}
 	
 	private void setForegroundNotificationContent(int icon, int resource) {

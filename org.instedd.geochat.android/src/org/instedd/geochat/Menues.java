@@ -14,7 +14,7 @@ public class Menues {
 	public final static int SETTINGS = 5;
 	public final static int PASTE_MY_LOCATION = 6;
 	public final static int REFRESH = 7;
-	public final static int LOGOFF = 8;
+	public final static int SIGNOUT = 8;
 	
 	public static void executeAction(Context context, Handler handler, int menuItemId) {
 		executeAction(context, handler, menuItemId, null);
@@ -40,8 +40,8 @@ public class Menues {
 		case Menues.REFRESH:
 			Actions.refresh(context, data, handler);
 			break;
-		case Menues.LOGOFF:
-			Actions.logoff(context);
+		case Menues.SIGNOUT:
+			Actions.signout(context);
 			break;
 		}
 	}
@@ -74,8 +74,8 @@ public class Menues {
 		menu.add(0, REFRESH, 0, R.string.refresh).setIcon(R.drawable.ic_menu_refresh);
 	}
 	
-	public static void logoff(Menu menu) {
-		menu.add(0, LOGOFF, 0, R.string.logoff).setIcon(R.drawable.ic_menu_logoff);
+	public static void signout(Menu menu) {
+		menu.add(0, SIGNOUT, 0, R.string.signout).setIcon(R.drawable.ic_menu_signout);
 	}
 
 }

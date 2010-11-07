@@ -14,11 +14,11 @@ public final class R {
         public static final int default_user_icon=0x7f020000;
         public static final int ic_menu_compose=0x7f020001;
         public static final int ic_menu_home=0x7f020002;
-        public static final int ic_menu_logoff=0x7f020003;
-        public static final int ic_menu_mapmode=0x7f020004;
-        public static final int ic_menu_mylocation=0x7f020005;
-        public static final int ic_menu_preferences=0x7f020006;
-        public static final int ic_menu_refresh=0x7f020007;
+        public static final int ic_menu_mapmode=0x7f020003;
+        public static final int ic_menu_mylocation=0x7f020004;
+        public static final int ic_menu_preferences=0x7f020005;
+        public static final int ic_menu_refresh=0x7f020006;
+        public static final int ic_menu_signout=0x7f020007;
         public static final int ic_stat_geochat=0x7f020008;
         public static final int ic_stat_geochat_sync=0x7f020009;
         public static final int ic_tab_groups=0x7f02000a;
@@ -81,7 +81,6 @@ public final class R {
         public static final int first_time_logging_fetching_messages=0x7f040015;
         public static final int first_time_logging_fetching_users=0x7f040014;
         public static final int from_user_to_group=0x7f040038;
-        public static final int geochat_is_running=0x7f04003d;
         public static final int geochat_number=0x7f040034;
         public static final int geochat_number_set_summary=0x7f040036;
         public static final int geochat_number_summary=0x7f040035;
@@ -93,7 +92,6 @@ public final class R {
         public static final int logging_in_to_geochat=0x7f04000f;
         public static final int login=0x7f04001b;
         public static final int login_colon=0x7f04001a;
-        public static final int logoff=0x7f040042;
         public static final int map=0x7f040025;
         public static final int members=0x7f040027;
         public static final int message=0x7f040029;
@@ -121,6 +119,8 @@ public final class R {
         public static final int sent=0x7f04002d;
         public static final int settings=0x7f04000c;
         public static final int show_in_map=0x7f040028;
+        public static final int signed_in_as_user=0x7f04003d;
+        public static final int signout=0x7f040042;
         public static final int silent_report_locations=0x7f04002e;
         public static final int silent_report_locations_summary=0x7f04002f;
         public static final int something_went_wrong=0x7f040026;
