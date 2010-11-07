@@ -440,11 +440,13 @@ public class Synchronizer {
 		
 		@Override
 		public void run() {
+			boolean hasConnectivity = false;
+			
 			while(running) {
 				try {
 					notifier.startSynchronizing();
 					
-					boolean hasConnectivity = Connectivity.hasConnectivity(context);
+					hasConnectivity = Connectivity.hasConnectivity(context);
 					boolean credentialsAreValid = true;
 					if (hasConnectivity) {
 						credentialsAreValid = api.credentialsAreValid();
@@ -511,6 +513,11 @@ public class Synchronizer {
 				}
 				
 				// Wait 15 minutes
+				if (hasConnectivity) { 
+					notifier.stopSynchronizing();
+				} else {
+					notifier.offline();
+				}
 				lock = new Object();
 				synchronized (lock) {
 					try {

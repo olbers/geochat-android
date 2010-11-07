@@ -62,6 +62,7 @@
     <string name="no_messages">no messages</string>
     <string name="reply_to_group">Reply to group</string>
     <string name="signed_in_as_user">Signed in as %s</string>
+    <string name="signed_in_as_user_offline">Signed in as %s (offline)</string>
     <string name="synchronizing">Synchronizing...</string>
     <string name="synchronizing_groups">Synchronizing groups...</string>
     <string name="synchronizing_group_users">Synchronizing %s users...</string>

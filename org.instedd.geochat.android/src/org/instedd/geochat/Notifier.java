@@ -81,6 +81,10 @@ public class Notifier {
 		setForegroundNotificationContent(R.drawable.ic_stat_geochat, R.string.signed_in_as_user, new GeoChatSettings(context).getUser());
 	}
 	
+	public void offline() {
+		setForegroundNotificationContent(R.drawable.ic_stat_geochat, R.string.signed_in_as_user_offline, new GeoChatSettings(context).getUser());
+	}	
+	
 	private void setForegroundNotificationContent(int icon, int resource) {
 		setForegroundNotificationContent(icon, resource, null);
 	}

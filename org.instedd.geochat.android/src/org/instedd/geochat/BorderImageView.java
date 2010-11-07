@@ -20,6 +20,8 @@ public class BorderImageView extends ImageView {
 		paints[4].setARGB(128, 0, 0, 0);
 	}
 	
+	private boolean showBorders = false;
+	
 	public BorderImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -28,9 +30,19 @@ public class BorderImageView extends ImageView {
 		super(context, attrs, defStyle);
 	}
 	
+	public void showBorders() {
+		showBorders = true;
+	}
+	
+	public void hideBorders() {
+		showBorders = false;
+	}
+	
 	@Override
 	public void draw(Canvas canvas) {
 		super.draw(canvas);
+		
+		if (!showBorders) return;
 		
 		canvas.drawRect(0, 0, 48, 1, paints[0]);
 		canvas.drawRect(0, 2, 1, 48, paints[1]);
