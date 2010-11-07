@@ -93,7 +93,7 @@ public final class R {
         public static final int logging_in_to_geochat=0x7f04000f;
         public static final int login=0x7f04001b;
         public static final int login_colon=0x7f04001a;
-        public static final int logoff=0x7f040041;
+        public static final int logoff=0x7f040042;
         public static final int map=0x7f040025;
         public static final int members=0x7f040027;
         public static final int message=0x7f040029;
@@ -124,9 +124,10 @@ public final class R {
         public static final int silent_report_locations=0x7f04002e;
         public static final int silent_report_locations_summary=0x7f04002f;
         public static final int something_went_wrong=0x7f040026;
-        public static final int synchronizing_group_messages=0x7f040040;
-        public static final int synchronizing_group_users=0x7f04003f;
-        public static final int synchronizing_groups=0x7f04003e;
+        public static final int synchronizing=0x7f04003e;
+        public static final int synchronizing_group_messages=0x7f040041;
+        public static final int synchronizing_group_users=0x7f040040;
+        public static final int synchronizing_groups=0x7f04003f;
         public static final int to=0x7f04001c;
         public static final int user=0x7f040006;
         public static final int user_colon=0x7f040017;

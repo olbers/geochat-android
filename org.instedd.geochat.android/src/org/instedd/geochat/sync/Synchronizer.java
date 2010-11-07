@@ -50,6 +50,7 @@ public class Synchronizer {
 	boolean connectivityChanged;
 	ExecutorService genericExecutor;
 	SyncThread syncThread;
+	Object lock;
 
 	public Synchronizer(Context context, Handler handler) {
 		this.context = context;
@@ -72,7 +73,7 @@ public class Synchronizer {
 	
 	public synchronized void stop() {
 		running = false;
-		resync = true;
+		this.resyncStart();
 	}
 	
 	public synchronized void resync() {
@@ -80,22 +81,31 @@ public class Synchronizer {
 			recreateApi();
 		}
 		this.resyncOnlyMessages = false;
-		this.resync = true;
+		this.resyncStart();
 	}
 	
 	public synchronized void resyncMessages() {
 		this.resyncOnlyMessages = true;
-		this.resync = true;
+		this.resyncStart();
 	}
 	
 	public synchronized void resyncMessages(String groupAlias) {
 		this.resyncOnlyMessages = true;
 		this.resyncGroupAlias = groupAlias;
-		this.resync = true;
+		this.resyncStart();
 	}
 	
 	public synchronized void connectivityChanged() {
 		this.connectivityChanged = true;
+	}
+	
+	private synchronized void resyncStart() {
+		if (lock != null) {
+			synchronized(lock) {
+				lock.notify();
+			}
+		}
+		this.resync = true;
 	}
 	
 	private synchronized void resyncFinished() {
@@ -432,6 +442,8 @@ public class Synchronizer {
 		public void run() {
 			while(running) {
 				try {
+					notifier.startSynchronizing();
+					
 					boolean hasConnectivity = Connectivity.hasConnectivity(context);
 					boolean credentialsAreValid = true;
 					if (hasConnectivity) {
@@ -497,17 +509,16 @@ public class Synchronizer {
 					// TODO handle this exception
 					e.printStackTrace();
 				}
-					
-				// Wait 15 minutes in intervals of 5 seconds,
-				// so wait
-				try {
-					for(int i = 0; i < 3 * 60; i++) {
-						sleep(5000);
-						if (resync) break;
+				
+				// Wait 15 minutes
+				lock = new Object();
+				synchronized (lock) {
+					try {
+						lock.wait(1000 * 60 * 15);
+					} catch (InterruptedException e) {
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
 				}
+				lock = null;
 			}
 		}
 		

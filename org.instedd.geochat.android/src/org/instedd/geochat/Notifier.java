@@ -61,6 +61,10 @@ public class Notifier {
 		man.notify(NEW_MESSAGES, notification);
 	}
 	
+	public void startSynchronizing() {
+		setForegroundNotificationContent(R.drawable.ic_stat_geochat_sync, R.string.synchronizing);
+	}
+	
 	public void startSynchronizingGroups() {
 		setForegroundNotificationContent(R.drawable.ic_stat_geochat_sync, R.string.synchronizing_groups);
 	}
@@ -110,6 +114,6 @@ public class Notifier {
 	private void setDefaults(Notification notification) {
 		notification.defaults |= Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS;
 		notification.flags = Notification.FLAG_AUTO_CANCEL;
-	}
+	}	
 
 }
