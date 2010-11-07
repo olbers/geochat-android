@@ -366,8 +366,8 @@ public class Synchronizer {
 						data.createMessage(message);
 						if (!equals(message.fromUser, currentUser)) {
 							newMessagesCount++;
+							lastMessage = message;
 						}
-						lastMessage = message;
 					}
 				} finally {
 					c.close();
