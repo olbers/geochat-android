@@ -510,14 +510,15 @@ public class Synchronizer {
 				} catch (GeoChatApiException e) {
 					// TODO handle this exception
 					e.printStackTrace();
+				} finally {
+					if (hasConnectivity) { 
+						notifier.stopSynchronizing();
+					} else {
+						notifier.offline();
+					}
 				}
 				
 				// Wait 15 minutes
-				if (hasConnectivity) { 
-					notifier.stopSynchronizing();
-				} else {
-					notifier.offline();
-				}
 				lock = new Object();
 				synchronized (lock) {
 					try {
