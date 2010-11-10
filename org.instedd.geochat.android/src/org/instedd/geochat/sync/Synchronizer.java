@@ -98,7 +98,7 @@ public class Synchronizer {
 		this.connectivityChanged = true;
 	}
 	
-	private synchronized void resyncStart() {
+	synchronized void resyncStart() {
 		if (lock != null) {
 			synchronized(lock) {
 				lock.notify();
@@ -107,7 +107,7 @@ public class Synchronizer {
 		this.resync = true;
 	}
 	
-	private synchronized void resyncFinished() {
+	synchronized void resyncFinished() {
 		this.resync = false;
 	}
 	
@@ -320,7 +320,7 @@ public class Synchronizer {
 		}
 	}
 	
-	private String[] getGroupAliases(Group[] groups) {
+	String[] getGroupAliases(Group[] groups) {
 		String[] aliases = new String[groups.length];
 		for (int i = 0; i < groups.length; i++) {
 			aliases[i] = groups[i].alias;
@@ -394,13 +394,13 @@ public class Synchronizer {
 		new GeoChatSettings(context).clearUserData();
 	}
 	
-	private void recreateApi() {
+	void recreateApi() {
 		GeoChatSettings settings = new GeoChatSettings(context);
 		api = settings.newApi();
 		currentUser = settings.getUser();
 	}
 	
-	private void downloadUserIcon(String login) {
+	void downloadUserIcon(String login) {
 		try {
 			HttpResponse response = api.getUserIcon(login, ICON_SIZE);
 			if (response == null) {
@@ -422,7 +422,7 @@ public class Synchronizer {
 		}
 	}
 	
-	private static boolean equals(String s1, String s2) {
+	static boolean equals(String s1, String s2) {
 		if ((s1 == null) != (s2 == null))
 			return false;
 		
@@ -432,10 +432,10 @@ public class Synchronizer {
 		return s1.equals(s2);
 	}
 	
-	private class SyncThread extends Thread {
+	class SyncThread extends Thread {
 		
 		// Fetch icons the first time
-		private boolean fetchIcons = true;
+		boolean fetchIcons = true;
 		
 		@Override
 		public void run() {
