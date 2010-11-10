@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, GeoChatTabsActivity!</string>
     <string name="app_name">GeoChat</string>
     <string name="groups">Groups</string>
     <string name="people">People</string>
