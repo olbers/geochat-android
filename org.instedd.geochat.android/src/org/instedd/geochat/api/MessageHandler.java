@@ -45,7 +45,7 @@ public class MessageHandler extends DefaultHandler {
 		if (!inItem) {
 			if ("item".equals(localName)) {
 				if (messages == null) {
-					messages = new Message[10];
+					messages = new Message[IGeoChatApi.MAX_PER_PAGE];
 				}
 				message = new Message();
 				inItem = true;

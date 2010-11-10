@@ -38,7 +38,7 @@ public class GroupHandler extends DefaultHandler {
 		if (!inItem) {
 			if ("item".equals(localName)) {
 				if (groups == null) {
-					groups = new Group[10];
+					groups = new Group[IGeoChatApi.MAX_PER_PAGE];
 				}
 				group = new Group();
 				inItem = true;

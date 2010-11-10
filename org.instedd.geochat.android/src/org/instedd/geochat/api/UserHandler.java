@@ -38,7 +38,7 @@ public class UserHandler extends DefaultHandler {
 		if (!inItem) {
 			if ("item".equals(localName)) {
 				if (users == null) {
-					users = new User[10];
+					users = new User[IGeoChatApi.MAX_PER_PAGE];
 				}
 				user = new User();
 				inItem = true;
