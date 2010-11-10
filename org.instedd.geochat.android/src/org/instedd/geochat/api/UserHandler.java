@@ -35,18 +35,17 @@ public class UserHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		if ("item".equals(localName)) {
-			if (users == null) {
-				users = new User[10];
+		if (!inItem) {
+			if ("item".equals(localName)) {
+				if (users == null) {
+					users = new User[10];
+				}
+				user = new User();
+				inItem = true;
+				tagName = NONE;
 			}
-			user = new User();
-			inItem = true;
-			tagName = NONE;
 			return;
 		}
-		
-		if (!inItem)
-			return;
 		
 		if ("title".equals(localName)) {
 			tagName = TITLE;
@@ -92,7 +91,7 @@ public class UserHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		if ("item".equals(localName)) {
+		if (inItem && "item".equals(localName)) {
 			users[usersCount] = user;
 			usersCount++;
 			inItem = false;

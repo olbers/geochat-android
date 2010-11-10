@@ -1,11 +1,14 @@
 package org.instedd.geochat.api;
 
-import org.apache.http.impl.cookie.DateParseException;
+import java.text.SimpleDateFormat;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class MessageHandler extends DefaultHandler {
+	
+	private final static SimpleDateFormat format = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
 	
 	private Message[] NO_MESSAGES = {};
 	
@@ -39,18 +42,18 @@ public class MessageHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		if ("item".equals(localName)) {
-			if (messages == null) {
-				messages = new Message[10];
+		if (!inItem) {
+			if ("item".equals(localName)) {
+				if (messages == null) {
+					messages = new Message[10];
+				}
+				message = new Message();
+				inItem = true;
+				tagName = NONE;
+				return;
 			}
-			message = new Message();
-			inItem = true;
-			tagName = NONE;
 			return;
 		}
-		
-		if (!inItem)
-			return;
 		
 		if ("title".equals(localName)) {
 			tagName = TITLE;
@@ -89,8 +92,8 @@ public class MessageHandler extends DefaultHandler {
 			try {
 				try {
 					// This is faster, but I don't know if it always works
-					message.createdDate = org.apache.http.impl.cookie.DateUtils.parseDate(date).getTime();
-				} catch (DateParseException e) {
+					message.createdDate = format.parse(date).getTime();
+				} catch (Exception e) {
 					// This works, but it's slower
 					message.createdDate = org.instedd.geochat.api.DateUtils.parseDate(date).getTime();
 				}
@@ -122,7 +125,7 @@ public class MessageHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		if ("item".equals(localName)) {
+		if (inItem && "item".equals(localName)) {
 			messages[messagesCount] = message;
 			messagesCount++;
 			inItem = false;

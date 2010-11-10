@@ -2,7 +2,6 @@ package org.instedd.geochat.sync;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -203,7 +202,7 @@ public class Synchronizer {
 	
 	public void syncUsers(String[] groupAliases, final boolean fetchIcons) throws GeoChatApiException {
 		try {
-			final Map<User, User> serverUsersMap = Collections.synchronizedMap(new TreeMap<User, User>());
+			final Map<User, User> serverUsersMap = new TreeMap<User, User>();
 			final GeoChatApiException[] exception = { null };
 			
 			for(final String group : groupAliases) {

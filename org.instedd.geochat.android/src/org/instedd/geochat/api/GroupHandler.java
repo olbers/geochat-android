@@ -35,18 +35,17 @@ public class GroupHandler extends DefaultHandler {
 	@Override
 	public void startElement(String uri, String localName, String qName,
 			Attributes attributes) throws SAXException {
-		if ("item".equals(localName)) {
-			if (groups == null) {
-				groups = new Group[10];
+		if (!inItem) {
+			if ("item".equals(localName)) {
+				if (groups == null) {
+					groups = new Group[10];
+				}
+				group = new Group();
+				inItem = true;
+				tagName = NONE;
 			}
-			group = new Group();
-			inItem = true;
-			tagName = NONE;
 			return;
 		}
-		
-		if (!inItem)
-			return;
 		
 		if ("title".equals(localName)) {
 			tagName = TITLE;
@@ -92,7 +91,7 @@ public class GroupHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName)
 			throws SAXException {
-		if ("item".equals(localName)) {
+		if (inItem && "item".equals(localName)) {
 			groups[groupsCount] = group;
 			groupsCount++;
 			inItem = false;
