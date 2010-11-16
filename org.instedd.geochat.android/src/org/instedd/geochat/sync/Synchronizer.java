@@ -37,6 +37,7 @@ public class Synchronizer {
 	final Handler handler;
 	
 	final Context context;
+	GeoChatSettings settings;
 	IGeoChatApi api;
 	String currentUser;
 	final GeoChatData data;
@@ -58,6 +59,7 @@ public class Synchronizer {
 		this.locationResolver = new LocationResolver(context);
 		this.notifier = new Notifier(context);
 		this.genericExecutor = Executors.newCachedThreadPool();
+		this.settings = new GeoChatSettings(context);
 		recreateApi();
 	}
 	
@@ -391,11 +393,10 @@ public class Synchronizer {
 		data.deleteUsers();
 		data.deleteUserIcons();
 		data.deleteMessages();
-		new GeoChatSettings(context).clearUserData();
+		settings.clearUserData();
 	}
 	
 	void recreateApi() {
-		GeoChatSettings settings = new GeoChatSettings(context);
 		api = settings.newApi();
 		currentUser = settings.getUser();
 	}
@@ -517,11 +518,11 @@ public class Synchronizer {
 					}
 				}
 				
-				// Wait 15 minutes
+				// Wait some minutes
 				lock = new Object();
 				synchronized (lock) {
 					try {
-						lock.wait(1000 * 60 * 15);
+						lock.wait(settings.getRefreshRateInMilliseconds());
 					} catch (InterruptedException e) {
 					}
 				}

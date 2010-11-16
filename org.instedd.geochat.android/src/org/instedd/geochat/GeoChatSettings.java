@@ -16,6 +16,7 @@ public class GeoChatSettings {
 	public final static String PASSWORD = "password";
 	public final static String NEW_MESSAGES_COUNT = "new_messages";
 	public final static String COMPOSE_GROUP = "compose_group";
+	public final static String REFRESH_RATE = "refreshRate";
 	public final static String GEOCHAT_NUMBER = "geochat_number";
 	
 	private final Context context;
@@ -71,6 +72,14 @@ public class GeoChatSettings {
 	
 	public String getGeoChatNumber() {
 		return openRead().getString(GEOCHAT_NUMBER, null);
+	}
+	
+	public int getRefreshRateInMinutes() {
+		return Integer.parseInt(openRead().getString(REFRESH_RATE, "15"));
+	}
+	
+	public int getRefreshRateInMilliseconds() {
+		return 1000 * 60 * getRefreshRateInMinutes();
 	}
 	
 	public IGeoChatApi newApi() {

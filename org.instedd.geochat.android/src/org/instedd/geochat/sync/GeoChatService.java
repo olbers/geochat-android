@@ -67,7 +67,8 @@ public class GeoChatService extends CompatibilityService implements OnSharedPref
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		if (GeoChatSettings.USER.equals(key)
-				|| GeoChatSettings.PASSWORD.equals(key)) {
+				|| GeoChatSettings.PASSWORD.equals(key)
+				|| GeoChatSettings.REFRESH_RATE.equals(key)) {
 			synchronizer.resync();
 		}
 	}

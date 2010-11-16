@@ -67,4 +67,21 @@
     <string name="synchronizing_group_users">Synchronizing %s users...</string>
     <string name="synchronizing_group_messages">Synchronizing %s messages...</string>
     <string name="signout">Sign out</string>
+    <string name="refresh_rate">Refresh rate</string>
+    <string-array name="refresh_rate_entries">
+    	<item>1 minute</item>
+    	<item>5 minutes</item>
+    	<item>10 minutes</item>
+    	<item>15 minutes</item>
+    	<item>30 minutes</item>
+    	<item>1 hour</item>
+    </string-array>
+    <string-array name="refresh_rate_entry_values">
+    	<item>1</item>
+    	<item>5</item>
+    	<item>10</item>
+    	<item>15</item>
+    	<item>30</item>
+    	<item>60</item>
+    </string-array>
 </resources>
