@@ -82,6 +82,14 @@ public class GeoChatService extends CompatibilityService implements OnSharedPref
 	@Override
 	public void onDestroy() {
 		stopSynchronizing();
+		
+		// Stop listening for preference changes
+		this.getSharedPreferences(GeoChatSettings.SHARED_PREFS_NAME, 0)
+			.unregisterOnSharedPreferenceChangeListener(this);
+		
+		// Unregister the network changes receiver
+		this.unregisterReceiver(receiver);
+		
 		super.onDestroy();
 	}
 

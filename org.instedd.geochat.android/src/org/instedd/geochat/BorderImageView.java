@@ -44,15 +44,17 @@ public class BorderImageView extends ImageView {
 		
 		if (!showBorders) return;
 		
-		canvas.drawRect(0, 0, 48, 1, paints[0]);
-		canvas.drawRect(0, 2, 1, 48, paints[1]);
-		canvas.drawRect(48, 2, 52, 52, paints[2]);
-		canvas.drawRect(0, 48, 52, 52, paints[3]);
+		final float scale = getContext().getResources().getDisplayMetrics().density;
 		
-		canvas.drawRect(0, 0, 1, 1, paints[4]);
-		canvas.drawRect(49, 0, 52, 1, paints[4]);
-		canvas.drawRect(0, 49, 1, 52, paints[4]);
-		canvas.drawRect(49, 49, 52, 52, paints[4]);
+		canvas.drawRect(0, 0, 48*scale, 1*scale, paints[0]);
+		canvas.drawRect(0, 2*scale, 1*scale, 48*scale, paints[1]);
+		canvas.drawRect(48*scale, 2*scale, 52*scale, 52*scale, paints[2]);
+		canvas.drawRect(0, 48*scale, 52*scale, 52*scale, paints[3]);
+		
+		canvas.drawRect(0, 0, 1*scale, 1*scale, paints[4]);
+		canvas.drawRect(49*scale, 0, 52*scale, 1*scale, paints[4]);
+		canvas.drawRect(0, 49*scale, 1*scale, 52*scale, paints[4]);
+		canvas.drawRect(49*scale, 49*scale, 52*scale, 52*scale, paints[4]);
 	}
 
 }
