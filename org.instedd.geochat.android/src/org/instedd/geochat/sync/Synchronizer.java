@@ -197,8 +197,7 @@ public class Synchronizer {
 			
 			return serverGroups;
 		} finally {
-			if (running)
-				notifier.stopSynchronizing();
+			stopSynchronizing();
 		}
 	}
 	
@@ -317,8 +316,7 @@ public class Synchronizer {
 				}
 			});
 		} finally {
-			if (running)
-				notifier.stopSynchronizing();
+			stopSynchronizing();
 		}
 	}
 	
@@ -377,8 +375,7 @@ public class Synchronizer {
 	
 			return new SyncMessagesResult(newMessagesCount, lastMessage);
 		} finally {
-			if (running)
-				notifier.stopSynchronizing();
+			stopSynchronizing();
 		}
 	}
 	
@@ -421,6 +418,16 @@ public class Synchronizer {
 		} catch (GeoChatApiException e) {
 			
 		}
+	}
+	
+	void stopSynchronizing() {
+		if (running)
+			notifier.stopSynchronizing();
+	}
+	
+	void offline() {
+		if (running)
+			notifier.offline();
 	}
 	
 	static boolean equals(String s1, String s2) {
@@ -512,11 +519,14 @@ public class Synchronizer {
 					e.printStackTrace();
 				} finally {
 					if (hasConnectivity) { 
-						notifier.stopSynchronizing();
+						stopSynchronizing();
 					} else {
-						notifier.offline();
+						offline();
 					}
 				}
+				
+				if (!running)
+					break;
 				
 				// Wait some minutes
 				lock = new Object();
