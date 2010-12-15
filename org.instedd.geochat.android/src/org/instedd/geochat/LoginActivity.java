@@ -14,6 +14,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -129,6 +130,16 @@ public class LoginActivity extends Activity {
 				.setNeutralButton(android.R.string.ok, null);
 			return builder.create();
 		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// This is to go HOME when the user pressed BACK
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+	        moveTaskToBack(true);
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
 	
 	private void resync() throws GeoChatApiException {
