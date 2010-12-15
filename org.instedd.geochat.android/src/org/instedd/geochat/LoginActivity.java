@@ -134,7 +134,7 @@ public class LoginActivity extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// This is to go HOME when the user pressed BACK
+		// This is to go HOME when the user presses BACK
 		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
 	        moveTaskToBack(true);
 	        return true;
