@@ -132,9 +132,11 @@ public final class Actions {
 			}
 		});
 		
+		final LocationTracker locationTracker = LocationTracker.getInstance(context);
+		
 		new Thread() {
 			public void run() {
-				final LatLng location = LocationTracker.getLocation(context);
+				final LatLng location = locationTracker.getLocation();
 				
 				handler.post(new Runnable() {
 					public void run() {
