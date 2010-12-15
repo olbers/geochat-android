@@ -22,16 +22,15 @@ public final class LocationTracker implements LocationListener {
 		}
 	}
 	
+	/**
+	 * This method *must not* be called inside a Thread#run method.
+	 */
 	public static LocationTracker getInstance(Context context) {
 		if (instance == null) {
 			LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 			instance = new LocationTracker(manager);
 		}
 		return instance;
-	}
-	
-	public static LatLng getLocation(Context context) {
-		return getInstance(context).getLocation();
 	}
 	
 	public LatLng getLocation() {

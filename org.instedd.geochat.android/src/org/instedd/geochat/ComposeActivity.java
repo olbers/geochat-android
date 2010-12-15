@@ -209,9 +209,11 @@ public class ComposeActivity extends Activity {
 			final Toast toast = Toast.makeText(this, getResources().getString(R.string.retrieving_your_location), Toast.LENGTH_LONG);
 			toast.show();
 			
+			final LocationTracker locationTracker = LocationTracker.getInstance(this);
+			
 			new Thread() {
 				public void run() {
-					final LatLng location = LocationTracker.getLocation(ComposeActivity.this);
+					final LatLng location = locationTracker.getLocation();
 					
 					handler.post(new Runnable() {
 						public void run() {
