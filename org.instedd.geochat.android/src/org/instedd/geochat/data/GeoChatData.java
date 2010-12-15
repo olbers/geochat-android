@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 import org.instedd.geochat.Uris;
 import org.instedd.geochat.api.Group;
@@ -183,8 +184,11 @@ public class GeoChatData {
 		return values;
 	}
 	
-	private static String getUserIconFilename(String login) {
+	public static String getUserIconFilename(String login) {
+		login = validFileNamePattern.matcher(login).replaceAll("_");
 		return "user_" + login + ".png";
-	}	
+	}
+	
+	private static Pattern validFileNamePattern = Pattern.compile("[^a-zA-Z0-9_]");
 
 }
