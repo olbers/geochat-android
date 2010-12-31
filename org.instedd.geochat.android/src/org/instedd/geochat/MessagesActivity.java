@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -217,12 +218,10 @@ public class MessagesActivity extends ListActivity implements OnItemLongClickLis
 				((TextView) v.findViewById(R.id.date)).setText("");
 			}
 			
-			BorderImageView view = (BorderImageView) v.findViewById(R.id.icon);
+			ImageView view = (ImageView) v.findViewById(R.id.icon);
 			if (data.hasUserIconFor(login)) {
-				view.showBorders();
 				view.setImageURI(data.getUserIconUri(login));
 			} else {
-				view.hideBorders();
 				view.setImageResource(R.drawable.default_user_icon);
 			}
 			

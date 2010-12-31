@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -156,12 +157,10 @@ public class PeopleActivity extends ListActivity implements OnItemClickListener,
 			((TextView) v.findViewById(R.id.display_name)).setText(displayName);
 			((TextView) v.findViewById(R.id.login)).setText(login);
 			
-			BorderImageView view = (BorderImageView) v.findViewById(R.id.icon);
+			ImageView view = (ImageView) v.findViewById(R.id.icon);
 			if (data.hasUserIconFor(login)) {
-				view.showBorders();
 				view.setImageURI(data.getUserIconUri(login));
 			} else {
-				view.hideBorders();
 				view.setImageResource(R.drawable.default_user_icon);
 			}
 			
