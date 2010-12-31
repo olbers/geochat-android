@@ -52,7 +52,7 @@ public class GeoChatProvider extends ContentProvider {
     public final static int USER_LOGIN = 12;
     public final static int GROUP_ALIAS = 13;
     
-    private final static int MAX_MESSAGES_COUNT = 10;
+    private final static int MAX_MESSAGES_COUNT = 50;
     private final static String MAX_MESSAGES_COUNT_PLUS_ONE_STRING = String.valueOf(MAX_MESSAGES_COUNT + 1);
     
     public static final UriMatcher URI_MATCHER;
