@@ -6,7 +6,7 @@
     android:paddingTop="5dp"
     android:paddingBottom="10dp"
     >
-    <org.instedd.geochat.BorderImageView
+    <ImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:minWidth="50dp"
