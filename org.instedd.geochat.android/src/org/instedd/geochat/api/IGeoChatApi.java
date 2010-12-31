@@ -5,7 +5,7 @@ import org.apache.http.HttpResponse;
 
 public interface IGeoChatApi {
 	
-	int MAX_PER_PAGE = 10;
+	int MAX_PER_PAGE = 50;
 
 	boolean credentialsAreValid() throws GeoChatApiException;
 	
