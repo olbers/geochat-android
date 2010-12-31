@@ -10,12 +10,6 @@ public class User implements Comparable<User> {
 	public double lng;
 	public TreeSet<String> groups;
 	
-	public String getDisplayName() {
-		if (displayName == null || displayName.length() == 0)
-			return login;
-		return displayName;
-	}
-	
 	@Override
 	public int hashCode() {
 		return login.hashCode();

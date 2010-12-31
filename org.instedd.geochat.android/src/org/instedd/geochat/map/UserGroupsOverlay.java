@@ -40,7 +40,7 @@ public class UserGroupsOverlay extends Overlay {
 			int usersLength = users.size();
 			for (int i = 0; i < usersLength; i++) {
 				User user = users.get(i);
-				String text = user.getDisplayName();
+				String text = user.login;
 				canvas.drawText(text, point.x, point.y + 4 - (i + 1) * 12, textPaint);	
 			}	
 		} else {
@@ -93,7 +93,7 @@ public class UserGroupsOverlay extends Overlay {
 				
 				for (int i = start, j = 0; i != end; i += increment, j++) {
 					User user = users.get(i);
-					String text = user.getDisplayName();
+					String text = user.login;
 					canvas.drawText(text, targetX, targetY + upOrDown * (4 - (j + 1) * 14), textPaint);	
 				}
 				
