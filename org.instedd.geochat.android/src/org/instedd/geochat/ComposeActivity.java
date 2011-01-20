@@ -120,7 +120,8 @@ public class ComposeActivity extends Activity {
 			}
 		});
 	    
-	    ArrayAdapter autocompleteAdapter = new ArrayAdapter(this,
+	    @SuppressWarnings("rawtypes")
+		ArrayAdapter autocompleteAdapter = new ArrayAdapter(this,
 	            android.R.layout.simple_dropdown_item_1line, COMMANDS);
 	    uiMessage.setAdapter(autocompleteAdapter);
 	}
