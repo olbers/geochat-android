@@ -9,9 +9,9 @@ public interface IGeoChatApi {
 
 	boolean credentialsAreValid() throws GeoChatApiException;
 	
-	Group[] getGroups(int page) throws GeoChatApiException;
+	Group[] getGroups() throws GeoChatApiException;
 	
-	User[] getUsers(String groupAlias, int page) throws GeoChatApiException;
+	User[] getUsers(String groupAlias) throws GeoChatApiException;
 	
 	HttpResponse getUserIcon(String login, int size) throws GeoChatApiException;
 	

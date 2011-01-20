@@ -2,8 +2,8 @@ package org.instedd.geochat.sync;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -19,10 +19,10 @@ import org.instedd.geochat.api.Group;
 import org.instedd.geochat.api.IGeoChatApi;
 import org.instedd.geochat.api.Message;
 import org.instedd.geochat.api.User;
-import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.data.GeoChat.Groups;
 import org.instedd.geochat.data.GeoChat.Messages;
 import org.instedd.geochat.data.GeoChat.Users;
+import org.instedd.geochat.data.GeoChatData;
 import org.instedd.geochat.map.LocationResolver;
 
 import android.content.Context;
@@ -119,25 +119,8 @@ public class Synchronizer {
 		
 		try {
 			// Get groups from server and sort them by alias
-			Set<Group> serverGroupsList = new TreeSet<Group>();
-			int page = 1;
-			while(true) {
-				if (resync) return null;
-				
-				Group[] serverGroups = api.getGroups(page);
-				if (serverGroups.length == 0) {
-					break;
-				}
-				for(Group serverGroup : serverGroups) {
-					serverGroupsList.add(serverGroup);
-				}
-				if (serverGroups.length != IGeoChatApi.MAX_PER_PAGE)
-					break;
-				page++;
-			}
-			if (resync) return null;
-			
-			final Group[] serverGroups = serverGroupsList.toArray(new Group[serverGroupsList.size()]);
+			final Group[] serverGroups = api.getGroups();
+			Arrays.sort(serverGroups);
 			
 			genericExecutor.execute(new Runnable() {
 				public void run() {
@@ -213,38 +196,31 @@ public class Synchronizer {
 				if (running)
 					notifier.startSynchronizingUsers(group);
 				
-				int page = 1;
-				while(true) {
-					if (resync) return;
-					if (exception[0] != null) return;
-					
-					User[] users;
-					try {
-						users = api.getUsers(group, page);
-					} catch (GeoChatApiException e) {
-						exception[0] = e;
-						return;
+				if (resync) return;
+				if (exception[0] != null) return;
+				
+				User[] users;
+				try {
+					users = api.getUsers(group);
+				} catch (GeoChatApiException e) {
+					exception[0] = e;
+					return;
+				}
+				if (resync) return;
+				
+				if (users.length == 0) {
+					break;
+				}
+				for(User user : users) {
+					User existing = serverUsersMap.get(user);
+					if (existing == null) {
+						existing = user;
+						serverUsersMap.put(user, user);
 					}
-					if (resync) return;
-					
-					if (users.length == 0) {
-						break;
+					if (existing.groups == null) {
+						existing.groups = new TreeSet<String>();
 					}
-					for(User user : users) {
-						User existing = serverUsersMap.get(user);
-						if (existing == null) {
-							existing = user;
-							serverUsersMap.put(user, user);
-						}
-						if (existing.groups == null) {
-							existing.groups = new TreeSet<String>();
-						}
-						existing.groups.add(group);
-					}
-					
-					if (users.length != IGeoChatApi.MAX_PER_PAGE)
-						break;
-					page++;
+					existing.groups.add(group);
 				}
 			}
 			

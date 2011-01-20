@@ -78,7 +78,7 @@ public class GeoChatApiTest extends TestCase {
 				"</rss>");
 		
 		GeoChatApi api = new GeoChatApi(restClient, "foo", "bar");
-		Group[] groups = api.getGroups(1);
+		Group[] groups = api.getGroups();
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
@@ -122,7 +122,7 @@ public class GeoChatApiTest extends TestCase {
 				"</rss>");
 		
 		GeoChatApi api = new GeoChatApi(restClient, "foo", "bar");
-		User[] users = api.getUsers("group", 1);
+		User[] users = api.getUsers("group");
 		
 		assertEquals("foo", restClient.getUser());
 		assertEquals("bar", restClient.getPassword());
