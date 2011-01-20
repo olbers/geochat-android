@@ -55,7 +55,7 @@
     <string name="geochat_number_summary">Tap here to set a number where messages will be sent when offline</string>
     <string name="geochat_number_set_summary">Messages will be sent to %s when offline</string>
     <string name="refresh">Refresh</string>
-    <string name="from_user_to_group">%s to %s</string>
+    <string name="from_user_to_group">%1$s to %2$s</string>
     <string name="refreshing">Refreshing...</string>
     <string name="refreshing_group">Refreshing %s...</string>
     <string name="no_messages">no messages</string>
